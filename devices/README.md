@@ -14,6 +14,6 @@ Pour créer une nouvelle unité, copier `TEMPLATE.md` vers `unit-XX/unit-XX.md` 
 
 | Unité | Emplacement prévu | Firmware version | Statut | Date commissioning |
 |---|---|---|---|---|
-| unit-01 | — | — | ⬜ non démarrée | — |
+| [unit-01](unit-01/unit-01.md) | — (unité de dev/test) | blink (smoke test) | 🔧 en cours — Étape 0 validée | — |
 
 _(Mettre à jour cette table à chaque nouvelle unité créée)_
