@@ -17,13 +17,13 @@ Cahier des charges complet : [docs/XIAO-Door-specs.md](docs/XIAO-Door-specs.md)
 
 ## Avancement
 
-- [ ] Étape 0 — Préparation environnement
-- [ ] Priorité 1 — Matter Door Lock sur réseau Thread existant
+- [x] Étape 0 — Préparation environnement
+- [ ] Priorité 1 — Matter Door Lock sur réseau Thread existant — 🔴 **bloqué**, voir [firmware/apps/lock/KNOWN-ISSUES.md](firmware/apps/lock/KNOWN-ISSUES.md)
 - [ ] Priorité 2 — IMU 6 axes + Wake-up
 - [ ] Priorité 3 — NFC (commissioning)
 - [ ] Option 4 — Aliro / HomeKey (reportée)
 
-Détail par étape : voir `docs/`.
+Détail par étape : voir `docs/`. **Point de reprise pour la prochaine session : [firmware/apps/lock/KNOWN-ISSUES.md](firmware/apps/lock/KNOWN-ISSUES.md)** (le firmware Matter compile et flashe, mais le stack Matter/Bluetooth ne s'initialise jamais — investigation détaillée + prochaine étape déjà identifiée).
 
 ## Suivi des ~20 unités
 

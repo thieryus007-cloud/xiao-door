@@ -13,6 +13,9 @@ ncs/
 # OS
 .DS_Store
 
+# Claude Code local settings (machine-specific, not for sharing)
+.claude/
+
 # Editor
 .vscode/*
 !.vscode/settings.json
