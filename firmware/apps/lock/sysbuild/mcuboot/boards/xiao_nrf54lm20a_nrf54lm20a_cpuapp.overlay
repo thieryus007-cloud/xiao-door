@@ -1,0 +1,18 @@
+/*
+ * Overlay MCUboot pour XIAO nRF54LM20A Sense — active la flash externe
+ * (py25q64) pour l'accès au secondary slot (OTA), sur le modèle de
+ * l'overlay MCUboot officiel Nordic pour nrf54lm20dk_nrf54lm20a_cpuapp.
+ * Sans ceci, MCUboot reste bloqué au boot en essayant d'accéder à une
+ * flash externe non initialisée dans son propre build (constaté par
+ * débogage : PC figé dans le code MCUboot, jamais de saut vers l'app).
+ */
+
+/ {
+	chosen {
+		nordic,pm-ext-flash = &py25q64;
+	};
+};
+
+&py25q64 {
+	status = "okay";
+};

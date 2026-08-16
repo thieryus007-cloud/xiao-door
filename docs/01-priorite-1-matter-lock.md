@@ -9,7 +9,8 @@ Objectif : l'appareil rejoint le réseau Thread/Matter existant et apparaît dan
 - [x] Sleepy End Device — déjà configuré par défaut dans l'échantillon (MTD + poll period + PM_DEVICE), pas de config supplémentaire nécessaire à ce stade
 - [x] Compiler — succès dès la première tentative (FLASH 40.97%, RAM 33.39%)
 - [x] Flasher sur unit-01 via OpenOCD
-- [ ] Commissionner l'appareil sur le réseau Thread existant (via Home Assistant / app Matter)
+- [x] Bug bloquant identifié et corrigé — MCUboot restait bloqué au démarrage (config flash externe manquante côté MCUboot), voir `firmware/apps/lock/README.md`. L'appareil ne démarrait donc jamais son application, expliquant 3 échecs de commissioning consécutifs sans aucune activité BLE/LED.
+- [ ] Commissionner l'appareil sur le réseau Thread existant (via Home Assistant / app Matter) — à retester suite au correctif
 - [ ] Vérifier dans Home Assistant que l'appareil apparaît correctement (état Locked/Unlocked)
 
 ## Build

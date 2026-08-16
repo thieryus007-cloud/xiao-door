@@ -2,8 +2,21 @@
 
 Basé sur l'échantillon officiel Nordic `samples/matter/lock` (NCS v3.2.1), non copié dans ce repo — build directement depuis le SDK installé, avec uniquement nos fichiers spécifiques à la board ici :
 
-- `boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay` — active la flash externe (py25q64, 8 MB) pour le secondary slot MCUboot / OTA, sur le modèle de l'overlay officiel `nrf54lm20dk_nrf54lm20a_cpuapp` (mx25r64 → py25q64)
+- `boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay` — active la flash externe (py25q64, 8 MB) pour le secondary slot MCUboot / OTA, **côté application**, sur le modèle de l'overlay officiel `nrf54lm20dk_nrf54lm20a_cpuapp` (mx25r64 → py25q64)
 - `pm_static_xiao_nrf54lm20a_nrf54lm20a_cpuapp.yml` — table de partitions, copiée de la config officielle DK pour le même SoC (2 MB interne), device externe renommé `PY25Q64HA`
+- `sysbuild/mcuboot/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay` + `.conf` — **la même activation de flash externe, mais côté image MCUboot**. Indispensable, voir bug critique ci-dessous.
+
+## 🐛 Bug critique corrigé — MCUboot restait bloqué au démarrage
+
+**Symptôme** : le firmware compile et flashe sans erreur, mais l'appareil n'apparaît jamais en Bluetooth, aucune LED ne s'allume, "Unable to Add Accessory" côté app de commissioning — à chaque tentative.
+
+**Cause** : la table de partitions (`pm_static`) assigne le secondary slot MCUboot à la flash externe (`py25q64`), mais MCUboot est buildé par sysbuild comme une **image séparée avec son propre devicetree** — l'overlay activant `py25q64` n'était appliqué qu'à l'application, pas à MCUboot. Résultat : MCUboot essaie d'accéder au secondary slot sur une flash externe qu'il ne sait pas piloter, et reste bloqué indéfiniment **avant même de sauter vers l'application**. Le firmware applicatif ne démarre donc jamais — aucun symptôme classique (pas de crash, pas de hardfault) car MCUboot lui-même ne plante pas, il attend.
+
+**Diagnostic** : confirmé en lisant le Program Counter via OpenOCD après reset (`halt` + `reg pc`) et en résolvant l'adresse avec `addr2line` — le PC restait figé exactement au même endroit à chaque halt, dans le binaire MCUboot (adresse < 0xD000), jamais dans la plage de l'application (> 0xD800). Confirmation supplémentaire : scan BLE actif (Python + `bleak`) ne détectait jamais l'appareil, cohérent avec une application qui ne tourne pas.
+
+**Correction** : ajout des fichiers `sysbuild/mcuboot/boards/...overlay` et `.conf` (repris de l'overlay MCUboot officiel du DK Nordic pour ce SoC), passés au build via `-Dmcuboot_EXTRA_DTC_OVERLAY_FILE=` et `-Dmcuboot_EXTRA_CONF_FILE=`. Après correction, le PC démarre bien dans la plage applicative après reset.
+
+**⚠️ Cette étape sera nécessaire sur chacune des ~20 unités** — c'est un problème de configuration de build, pas un défaut matériel unité par unité. Toujours utiliser la commande de build complète ci-dessous (avec les flags `mcuboot_EXTRA_*`), jamais la version simplifiée sans ces flags.
 
 ## Build
 
@@ -16,12 +29,14 @@ west build -p always -b xiao_nrf54lm20a/nrf54lm20a/cpuapp \
   -- \
   -DBOARD_ROOT=$(pwd)/firmware \
   -DEXTRA_DTC_OVERLAY_FILE=$(pwd)/firmware/apps/lock/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay \
-  -DPM_STATIC_YML_FILE=$(pwd)/firmware/apps/lock/pm_static_xiao_nrf54lm20a_nrf54lm20a_cpuapp.yml
+  -DPM_STATIC_YML_FILE=$(pwd)/firmware/apps/lock/pm_static_xiao_nrf54lm20a_nrf54lm20a_cpuapp.yml \
+  -Dmcuboot_EXTRA_DTC_OVERLAY_FILE=$(pwd)/firmware/apps/lock/sysbuild/mcuboot/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay \
+  -Dmcuboot_EXTRA_CONF_FILE=$(pwd)/firmware/apps/lock/sysbuild/mcuboot/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.conf
 
 west flash -d /tmp/build-lock --runner openocd
 ```
 
-Résultat (première compilation, succès sans modification supplémentaire) : FLASH 809704 B (40.97%), RAM 174708 B (33.39%).
+Résultat : FLASH 809704 B (40.97%), RAM 174708 B (33.39%).
 
 ## Sleepy End Device — déjà configuré par défaut
 
@@ -42,6 +57,8 @@ Chaque build génère des **factory data** aléatoires et propres à cette compi
 
 Ces fichiers **ne doivent jamais être commit dans ce repo** (public). Le code de commissioning d'une unité est à usage unique par device physique — le noter uniquement en local (hors git) ou physiquement sur l'unité elle-même, pas dans `devices/unit-XX.md`.
 
-## Console série
+## Console série / débogage
 
-La sonde de debug CMSIS-DAP intégrée au XIAO **ne fait pas de pont UART** vers `/dev/tty.usbmodem*` — aucun log de boot n'est accessible par ce port. Pour du débogage nécessitant les logs Matter/Thread en direct, il faudra câbler un adaptateur USB-série externe sur les pins UART20 (TX/RX) du connecteur XIAO, ou utiliser RTT si réactivé (`CONFIG_USE_SEGGER_RTT`, désactivé par défaut dans ce sample pour réduire la taille du firmware).
+- La sonde de debug CMSIS-DAP intégrée au XIAO **ne fait pas de pont UART** vers `/dev/tty.usbmodem*` — aucun log de boot n'est accessible par ce port.
+- RTT (`CONFIG_USE_SEGGER_RTT` + `CONFIG_LOG_BACKEND_RTT` + `CONFIG_RTT_CONSOLE`, voir `debug-rtt.conf`) a été testé mais le control block RTT n'est jamais initialisé en mémoire sur cette carte/config — cause non résolue, non bloquant (le diagnostic du bug MCUboot ci-dessus a été fait par lecture directe du Program Counter via OpenOCD, sans logs).
+- Pour du débogage nécessitant de vrais logs Matter/Thread en direct, il faudra câbler un adaptateur USB-série externe sur les pins UART20 (TX/RX) du connecteur XIAO.
