@@ -1,0 +1,16 @@
+/*
+ * Overlay Matter Door Lock pour XIAO nRF54LM20A Sense.
+ * Active la flash externe (py25q64, 8 MB) requise par le partitionnement
+ * Matter (secondary slot MCUboot + OTA), sur le modèle de l'overlay officiel
+ * Nordic pour nrf54lm20dk_nrf54lm20a_cpuapp (mx25r64 -> py25q64).
+ */
+
+/ {
+	chosen {
+		nordic,pm-ext-flash = &py25q64;
+	};
+};
+
+&py25q64 {
+	status = "okay";
+};
