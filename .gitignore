@@ -1,0 +1,19 @@
+# nRF Connect SDK / Zephyr build artifacts
+build/
+*.uf2
+*.hex
+*.elf
+*.map
+.west/
+
+# SDK toolchain (installed locally, not versioned)
+toolchain/
+ncs/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
