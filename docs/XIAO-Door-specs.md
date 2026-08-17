@@ -9,6 +9,14 @@ Avoir un appareil Matter over Thread sur réseau existant qui :
 	•	implementer Aliro Home key si possible
 
 
+Révision 17/08/2026 — précisions Priorité 2/3 (voir aussi Priorité 1 : ✅ commissioning Matter validé, voir firmware/apps/lock/KNOWN-ISSUES.md)
+	•	Télémétrie périodique (5 min) : limitée à l'état batterie (cluster Power Source), pas aux échantillons IMU bruts — aligné sur le cycle de poll Thread SED existant (~236s), pas de nouveau réveil dédié à créer. Confirme §4.1.2 déjà présent ci-dessous.
+	•	Ouverture via NFC et/ou BLE RSSI (proximité, pas Channel Sounding — plus simple, moins de risque d'implémentation) : chemin principal = relais via Matter/HA (voir Priorité 3 ci-dessous et docs/04-auth-architecture.md pour l'architecture d'enrollment/gestion des credentials). Un chemin BLE direct vers la gâche (sans passer par HA) est noté comme option différée : nécessite un produit de gâche BLE concret + gérer 3 rôles radio simultanés sur le XIAO (peripheral Matter, central vers la gâche, Thread) — à ne pas sous-estimer.
+	•	Gâche électrique : confirmé que le XIAO n'alimente jamais la gâche (alimentation propre à la gâche/son relais), le XIAO émet uniquement des commandes logiques (cluster Door Lock → automation HA → Shelly, voir §2.5 et §4.3).
+	•	Fréquence d'ouverture cible : < 15/jour — donnée d'entrée pour le futur budget de consommation (Phase 5).
+	•	Batterie retenue : LiPo 604050, 3.7V, 1500 mAh (voir §6.2, remplace la fourchette générique 1000-2000 mAh).
+	•	Radar de présence HLK-LD6001B : **hors périmètre de ce firmware**, fait l'objet d'un projet annexe séparé. Le XIAO doit fonctionner de façon autonome et complète sans dépendre du radar ; une intégration éventuelle (ex. automation HA combinant présence radar + détection XIAO) se ferait uniquement au niveau Home Assistant, jamais par câblage direct au XIAO.
+
 Prérequis
 	•	XIAO nRF54LM20A Sense
 	•	Antenne NFC soudée (pads N1 / N2)
@@ -65,8 +73,9 @@ Objectif : Utiliser le NFC pour faciliter le pairing Matter et éventuellement u
 	◦	Commissioning Matter (le plus utile)
 	◦	Éventuellement écrire un petit payload NDEF (texte ou URI) pour un usage simple.
 	4	Tester le commissioning via NFC avec un téléphone.
+	5	Enrollment et gestion des credentials NFC (tag/iPhone/Android) et adresse BLE (proximité RSSI) reconnus, pour piloter l'ouverture de la porte via le cluster Door Lock — architecture détaillée dans docs/04-auth-architecture.md (cluster Matter vendor-specific dédié, enrollment déclenché depuis HA, stockage NVS). À traiter après l'étape 4 (NFC/BLE validés isolément avant combinaison).
 Note : On ne cherche pas encore le déblocage sécurisé type Aliro/HomeKey (option 4).
-Livrable : Commissioning possible via NFC + tag basique fonctionnel.
+Livrable : Commissioning possible via NFC + tag basique fonctionnel + (étape 5) ouverture pilotée par credential NFC/BLE reconnu, relayée via Matter/HA.
 
 Option 4 (reportée)
 Déblocage sécurisé à l’approche d’un iPhone connu (Aliro ou HomeKey). À traiter uniquement une fois les priorités 1-2-3 stables et validées.
@@ -285,6 +294,10 @@ Mode Veille Profonde (System OFF)
 | Transmission Thread | ~15 mA (pic TX) | — |
 | **Autonomie réelle estimée** | — | **2-3 ans** |
 
+Fréquence d'ouverture cible retenue le 17/08/2026 : **< 15 ouvertures/jour** — l'actionnement (Door Lock)
+n'est donc pas le poste de consommation dominant ; ce sont le scan/veille BLE et Thread qui domineront le
+budget énergétique réel.
+
 ### 4.2 Authentification et Ouverture
 
 #### 4.2.1 Méthode 1 : NFC (Tag/Badge)
@@ -301,9 +314,9 @@ Mode Veille Profonde (System OFF)
 
 | Paramètre | Valeur |
 |-----------|--------|
-| **Technologie** | BLE 6.0 Channel Sounding (précision distance) |
-| **Détection** | RSSI + Channel Sounding pour estimation distance |
-| **Processus** | 1. Scan périodique BLE (toutes les 2s en veille)<br>2. Détection iPhone appairé<br>3. Vérification proximité (< 2m)<br>4. Si authentifié → commande d'ouverture |
+| **Technologie** | RSSI (retenu 17/08/2026 — plus simple/moins risqué que Channel Sounding, qui reste une option future si la précision RSSI s'avère insuffisante) |
+| **Détection** | RSSI pour estimation grossière de proximité |
+| **Processus** | 1. Scan périodique BLE (toutes les 2s en veille)<br>2. Détection iPhone/Android appairé<br>3. Vérification proximité (< 2m)<br>4. Si authentifié → commande d'ouverture |
 | **Sécurité** | Pairing BLE sécurisé + chiffrement Matter |
 | **Temps de réponse** | < 2s |
 
@@ -345,6 +358,13 @@ Mode Veille Profonde (System OFF)
 | **Feedback** | LED RGB verte = ouverture en cours |
 | **Sécurité** | Double validation (authentification + confirmation) |
 | **Timeout** | 10s max sans confirmation de porte ouverte |
+
+**Option différée (17/08/2026) — commande BLE directe vers la gâche** : envisagée en complément/alternative
+au chemin HA ci-dessus, si un modèle de gâche/relais compatible BLE est retenu. Non prioritaire : nécessite
+que le XIAO tienne simultanément un rôle BLE central (vers la gâche) en plus de peripheral (commissioning
+Matter) et Thread — complexité radio/stack non négligeable, à ne considérer qu'une fois le chemin HA validé
+et un produit concret choisi. Le XIAO n'alimente dans tous les cas jamais la gâche (alimentation propre à
+celle-ci ou à son relais).
 
 ---
 
@@ -447,11 +467,16 @@ action:
 
 | Paramètre | Valeur |
 |-----------|--------|
-| **Type** | LiPo 3.7V |
-| **Capacité** | 1000-2000 mAh |
+| **Type** | LiPo 3.7V, format 604050 |
+| **Capacité** | 1500 mAh (retenu 17/08/2026) |
 | **Connecteur** | JST-PH 2.0mm |
 | **Charge** | Via USB-C (nPM1300 intégré) |
 | **Autonomie cible** | 2-3 ans |
+
+⚠️ Ce budget d'autonomie suppose que tout composant consommant significativement (ex. le radar de présence
+HLK-LD6001B, voir note en tête de document) est **alimenté indépendamment**, pas sur cette même batterie —
+un radar mmWave scannant en continu consommerait typiquement des dizaines de mA, incompatible avec une
+autonomie de plusieurs années sur 1500 mAh.
 
 ### 6.3 Boîtier
 
