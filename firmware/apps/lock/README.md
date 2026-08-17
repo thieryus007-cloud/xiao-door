@@ -30,13 +30,31 @@ west build -p always -b xiao_nrf54lm20a/nrf54lm20a/cpuapp \
   -DBOARD_ROOT=$(pwd)/firmware \
   -DEXTRA_DTC_OVERLAY_FILE=$(pwd)/firmware/apps/lock/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay \
   -DPM_STATIC_YML_FILE=$(pwd)/firmware/apps/lock/pm_static_xiao_nrf54lm20a_nrf54lm20a_cpuapp.yml \
+  -DEXTRA_CONF_FILE=$(pwd)/firmware/apps/lock/pairing-autostart.conf \
   -Dmcuboot_EXTRA_DTC_OVERLAY_FILE=$(pwd)/firmware/apps/lock/sysbuild/mcuboot/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay \
   -Dmcuboot_EXTRA_CONF_FILE=$(pwd)/firmware/apps/lock/sysbuild/mcuboot/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.conf
+
+# Étape indispensable — contourne un bug de génération des factory data du SDK
+# qui empêche le stack Matter/BLE de démarrer (voir KNOWN-ISSUES.md) :
+python3 firmware/apps/lock/fix_factory_data.py /tmp/build-lock
 
 west flash -d /tmp/build-lock --runner openocd
 ```
 
 Résultat : FLASH 809704 B (40.97%), RAM 174708 B (33.39%).
+
+**⚠️ `-DEXTRA_CONF_FILE=.../pairing-autostart.conf` et le script `fix_factory_data.py` sont indispensables** —
+sans eux le stack Matter/Bluetooth ne s'initialise jamais et aucune publicité BLE n'est émise. Voir
+[KNOWN-ISSUES.md](KNOWN-ISSUES.md) pour le détail des deux bugs (génération des factory data + Kconfig
+NCS `CHIP_ENABLE_PAIRING_AUTOSTART=n` par défaut) et leur diagnostic.
+
+**✅ Commissioning de bout en bout validé** (17/08/2026, Home Assistant + iPhone). Avec les deux fixes
+ci-dessus, l'appareil publicise en BLE et le Thread join réussit, mais le commissioning échoue quand même
+côté Device Attestation : ce build utilise les certificats DAC/PAI de **développement** fournis par le SDK
+Nordic, non reconnus par la politique de confiance par défaut de Home Assistant. Il faut activer **« Enable
+test-net DCL usage »** dans les options du Matter Server (Home Assistant → Paramètres → Appareils et
+services → Matter → Configurer) avant de commissionner — voir cause n°3 dans
+[KNOWN-ISSUES.md](KNOWN-ISSUES.md). Ce réglage se fait côté Home Assistant, aucun rebuild nécessaire.
 
 ## Sleepy End Device — déjà configuré par défaut
 
