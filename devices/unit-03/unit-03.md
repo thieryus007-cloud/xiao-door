@@ -7,6 +7,7 @@
 | Emplacement final (porte) | — (unité de développement/test) |
 | Version firmware flashée | `firmware/apps/lock` (identique à unit-01/unit-02 au moment du flash : fork NCS v3.2.1 `samples/matter/lock` + IMU/Boolean State Priorité 2 + `fix_factory_data.py`) |
 | Commit firmware (hash git) | — |
+| N° série debug probe | `C5F0E209` (CMSIS-DAP intégrée, VID:PID 0x2886:0x0068) |
 | MAC / Extended PAN ID Thread | — (non commissionnée sur le réseau Thread/Matter à ce stade, utilisée uniquement pour un test de comparaison matériel) |
 | Code de commissioning Matter (QR/PIN) | ⚠️ ne pas noter ici (repo public) — voir note ci-dessous |
 | IMU — calibration (offsets X/Y/Z) | — |
