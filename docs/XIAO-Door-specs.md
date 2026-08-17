@@ -67,13 +67,26 @@ Livrable : Données 6 axes visibles dans Home Assistant + wake-up fonctionnel su
 
 Priorité 3 – NFC pour le commissioning (et usage simple)
 Objectif : Utiliser le NFC pour faciliter le pairing Matter et éventuellement un usage basique.
-	1	Activer l’interface NFC (pads N1/N2) dans l’overlay.
-	2	Intégrer l’exemple NFC de Seeed / Nordic (tag emulation ou NDEF).
+
+**✅ Étapes 1-4 déjà acquises sans code supplémentaire (découvert 17/08/2026)** : `&nfct` est déjà
+`status = "okay"` dans le devicetree de board (fait dès l'Étape 0), et le framework Nordic partagé
+(`nrf/samples/matter/common`) active par défaut `CONFIG_CHIP_NFC_ONBOARDING_PAYLOAD=y` — confirmé présent
+dans le `.config` compilé de `firmware/apps/lock`. `Nrf::Matter::PrepareServer()` (appelé sans argument dans
+`AppTask::Init()`) enregistre par défaut `Nrf::Matter::DefaultEventHandler`, qui démarre automatiquement
+l'émulation de tag NFC partageant le payload d'onboarding (QR code) dès que la publicité BLE démarre — voir
+`nrf/samples/matter/common/src/app/matter_event_handler.cpp`. **Rien à coder** : le commissioning via NFC
+est déjà actif sur le firmware `firmware/apps/lock` tel quel.
+**Reste à faire avant de pouvoir tester** : souder l'antenne NFC sur les pads N1/N2 (prérequis matériel,
+jamais confirmé fait sur `unit-01` à ce stade — voir `devices/unit-01/unit-01.md`), puis tester en approchant
+un téléphone.
+
+	1	Activer l’interface NFC (pads N1/N2) dans l’overlay. — ✅ fait (Étape 0)
+	2	Intégrer l’exemple NFC de Seeed / Nordic (tag emulation ou NDEF). — ✅ fait par défaut (framework Nordic, voir ci-dessus)
 	3	Configurer le NFC pour :
-	◦	Commissioning Matter (le plus utile)
-	◦	Éventuellement écrire un petit payload NDEF (texte ou URI) pour un usage simple.
-	4	Tester le commissioning via NFC avec un téléphone.
-	5	Enrollment et gestion des credentials NFC (tag/iPhone/Android) et adresse BLE (proximité RSSI) reconnus, pour piloter l'ouverture de la porte via le cluster Door Lock — architecture détaillée dans docs/04-auth-architecture.md (cluster Matter vendor-specific dédié, enrollment déclenché depuis HA, stockage NVS). À traiter après l'étape 4 (NFC/BLE validés isolément avant combinaison).
+	◦	Commissioning Matter (le plus utile) — ✅ fait par défaut
+	◦	Éventuellement écrire un petit payload NDEF (texte ou URI) pour un usage simple. — pas fait, secondaire
+	4	Tester le commissioning via NFC avec un téléphone. — ⏳ bloqué sur la soudure de l'antenne
+	5	Enrollment et gestion des credentials NFC (tag/iPhone/Android) et adresse BLE (proximité RSSI) reconnus, pour piloter l'ouverture de la porte via le cluster Door Lock — architecture détaillée dans docs/04-auth-architecture.md (cluster Matter vendor-specific dédié, enrollment déclenché depuis HA, stockage NVS). À traiter après l'étape 4 (NFC/BLE validés isolément avant combinaison) — donc également en attente de l'antenne.
 Note : On ne cherche pas encore le déblocage sécurisé type Aliro/HomeKey (option 4).
 Livrable : Commissioning possible via NFC + tag basique fonctionnel + (étape 5) ouverture pilotée par credential NFC/BLE reconnu, relayée via Matter/HA.
 

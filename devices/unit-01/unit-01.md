@@ -13,7 +13,8 @@
 | IMU — calibration (offsets X/Y/Z) | — |
 | Angle "ouvert" calibré | — |
 | NFC — UID tag(s) associé(s) | — |
-| Statut | 🔧 en cours — Étape 0 ✅, Priorité 1 ✅ (commissionnée avec succès dans Home Assistant, nœud Matter `@1:22`, fabric "Santuario", endpoint `DoorLock`), Priorité 2 🟡 en pause (code IMU/Boolean State prêt, bloqué par un bug PMIC I2C matériel/driver, voir `KNOWN-ISSUES.md`) |
+| Antenne NFC (pads N1/N2) | ❓ non confirmée soudée — à vérifier/faire avant de tester Priorité 3 (le firmware actuel supporte déjà le commissioning NFC par défaut, voir `docs/XIAO-Door-specs.md` §Priorité 3) |
+| Statut | 🔧 en cours — Étape 0 ✅, Priorité 1 ✅ (commissionnée avec succès dans Home Assistant, nœud Matter `@1:22`, fabric "Santuario", endpoint `DoorLock`), Priorité 2 🟡 en pause (code IMU/Boolean State prêt, bloqué par un bug PMIC I2C matériel/driver, voir `KNOWN-ISSUES.md`), Priorité 3 🟡 code déjà prêt côté firmware, en attente de la soudure de l'antenne NFC pour tester |
 
 ## Historique
 
