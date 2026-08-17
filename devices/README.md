@@ -14,6 +14,8 @@ Pour créer une nouvelle unité, copier `TEMPLATE.md` vers `unit-XX/unit-XX.md` 
 
 | Unité | Emplacement prévu | Firmware version | Statut | Date commissioning |
 |---|---|---|---|---|
-| [unit-01](unit-01/unit-01.md) | — (unité de dev/test) | blink (smoke test) | 🔧 en cours — Étape 0 validée | — |
+| [unit-01](unit-01/unit-01.md) | — (unité de dev/test) | `firmware/apps/lock` (P1+P2) | 🔧 Priorité 1 ✅ commissionnée, Priorité 2 🔴 IMU défectueux (matériel, isolé — voir KNOWN-ISSUES.md) | 2026-08-17 |
+| [unit-02](unit-02/unit-02.md) | — (unité de dev/test) | `firmware/apps/lock` (P1+P2) | 🔧 IMU fonctionnel (validé), non commissionnée dans HA | — |
+| [unit-03](unit-03/unit-03.md) | — (unité de dev/test) | `firmware/apps/lock` (P1+P2) | 🔧 IMU fonctionnel (validé), non commissionnée dans HA | — |
 
 _(Mettre à jour cette table à chaque nouvelle unité créée)_

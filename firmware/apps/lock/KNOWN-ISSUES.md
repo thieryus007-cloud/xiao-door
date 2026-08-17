@@ -1,12 +1,20 @@
 # Problèmes connus — Matter Door Lock sur XIAO nRF54LM20A
 
-## 🔴 NON RÉSOLU (17/08/2026) — PMIC (nPM1300) inaccessible en I2C, bloque l'IMU
+## 🟡 PMIC (nPM1300) inaccessible en I2C — bug général confirmé, mais probablement pas bloquant pour l'IMU
 
-**Statut : Priorité 2 (IMU) en pause, à reprendre plus tard.** Le code applicatif (lecture IMU, cluster
-Matter Boolean State) est écrit, compile, et est architecturalement correct — voir plus bas
-« Priorité 2 — IMU 6 axes ». Mais sur matériel réel, l'IMU ne reçoit jamais d'alimentation à cause d'un bug
-plus profond, indépendant de l'IMU lui-même : le driver du PMIC (nPM1300) échoue systématiquement à
-communiquer avec la puce en I2C.
+**Statut mis à jour (17/08/2026, test comparatif sur 3 unités)** : le bug PMIC ci-dessous est **confirmé
+général** (identique sur les 3 XIAO testés), mais contrairement à ce qu'on pensait initialement, **il
+n'empêche pas l'IMU de fonctionner sur 2 des 3 unités** (`unit-02`, `unit-03`) — seule `unit-01` a l'IMU en
+échec. Voir la section « Test comparatif sur 3 unités » plus bas pour le détail : `unit-01` a très
+probablement un **défaut matériel isolé**, distinct du bug PMIC général. La Priorité 2 (IMU) n'est donc **pas
+bloquée dans l'absolu** — juste sur `unit-01` spécifiquement. Utiliser `unit-02` ou `unit-03` pour la suite de
+la validation (commissioning + test en conditions réelles dans HA).
+
+Le code applicatif (lecture IMU, cluster Matter Boolean State) est écrit, compile, et fonctionne déjà sur
+matériel réel (`unit-02`/`unit-03`) — voir plus bas « Priorité 2 — IMU 6 axes ». Le bug PMIC lui-même
+(description ci-dessous) reste non résolu et mérite d'être compris/corrigé proprement à terme (le nPM1300 a
+d'autres usages prévus — charge batterie, cluster Power Source), mais n'est plus le facteur bloquant pour
+faire avancer la Priorité 2.
 
 ### Symptôme
 
@@ -56,22 +64,49 @@ exactement la même config `pmic_i2c` non corrigée (sans pull-up ni open-drain)
 parti — ce sous-système PMIC/charger n'a probablement jamais été testé par Seeed non plus (rien dans leurs
 exemples publics n'utilise le charger/régulateurs du PMIC, seulement les LEDs en GPIO direct).
 
+### Test comparatif sur 3 unités (17/08/2026) — résultat clé
+
+Même firmware (`/tmp/build-lock`, avec les fixes pull-up + open-drain sur `pmic_i2c`) flashé successivement
+sur les 3 XIAO disponibles, avec le même diagnostic par breakpoints matériels OpenOCD à chaque fois
+(`ImuManager::Init()` ligne 59 "not ready" vs ligne 67 "success", puis `ReadAndUpdate()` jusqu'à
+`SetStateValue()` pour confirmer une lecture complète) :
+
+| Unité | `mfd_npm13xx_init()` (`init_res`) | `imu_vdd` regulator (`init_res`) | IMU (`device_is_ready`) | Lecture + cluster Boolean State |
+|---|---|---|---|---|
+| `unit-01` | `5` (`-EIO`) | `19` (`-ENODEV`) | ❌ faux (testé après reset **et** après un vrai power-cycle USB — même résultat) | ❌ jamais atteint |
+| `unit-02` | `5` (`-EIO`) | `19` (`-ENODEV`) | ✅ vrai | ✅ confirmé (breakpoint sur `SetStateValue` atteint) |
+| `unit-03` | `5` (`-EIO`) | `19` (`-ENODEV`) | ✅ vrai | ✅ confirmé (breakpoint sur `SetStateValue` atteint) |
+
+**Conclusions** :
+
+- Le bug PMIC (`-EIO`) est **strictement identique sur les 3 unités** — confirmé général, pas un défaut de
+  soudure sur le bus `pmic_i2c` d'une unité en particulier.
+- **L'IMU n'a pourtant besoin de rien côté PMIC pour fonctionner, sur 2 unités sur 3.** Ceci contredit
+  l'hypothèse de départ (`imu_vdd`, contrôlé par le PMIC, serait indispensable à l'alimentation de l'IMU) —
+  en pratique, sur `unit-02`/`unit-03`, l'IMU répond correctement dès le boot malgré `imu_vdd` en échec
+  `-ENODEV`. Explication exacte non creusée (alimentation partagée/résiduelle suffisante malgré l'échec du
+  contrôle I2C ?), non prioritaire vu que ça fonctionne.
+- **`unit-01` a très probablement un défaut matériel isolé** (soudure ou composant sur le circuit IMU ou son
+  alimentation propre), indépendant du bug PMIC général. Score 2/3 penche fortement vers "défaut de cette
+  unité", pas "problème de design".
+
 ### À faire plus tard (reprise de l'investigation)
 
-- Vérification physique : continuité/oscilloscope sur GPIO1.15 (SDA) et GPIO1.16 (SCL) jusqu'aux pins
-  SDA/SCL du nPM1300, pour écarter un défaut de câblage/soudure propre à cette unité (`unit-01`).
-  **Idéalement à refaire sur une 2ᵉ unité neuve** avant de conclure à un bug généralisé (voir Priorité 1 :
-  finaliser un seul XIAO avant duplication — ce test PMIC est justement le genre de chose à valider avant de
-  dupliquer sur les 2 autres unités).
-- Vérifier la datasheet nPM1300 pour une éventuelle broche d'activation/reset supplémentaire non représentée
-  dans le devicetree (`host-int-gpios` existe comme option dans le driver MFD mais n'est pas utilisée ici).
-- Essayer de forcer `CONFIG_I2C_GPIO_CLOCK_STRETCHING=n` (actuellement `y` par défaut) pour écarter un
-  problème de timeout côté clock-stretching plutôt qu'un vrai NACK.
-- Si le bug est confirmé général (pas propre à cette unité) : possible remontée en tant qu'issue sur le repo
-  Seeed `nrf-seeed-boards`, personne d'autre ne semble l'avoir rencontré/documenté.
-- Une fois résolu : reprendre la Priorité 2 exactement où elle s'est arrêtée — `ImuManager` et le cluster
-  Boolean State sont déjà en place et n'auront besoin d'aucune modification, juste valider sur matériel que
-  `device_is_ready(lsm6ds3tr_c)` passe à `true` et que les valeurs accéléromètre/gyroscope remontent dans HA.
+- **`unit-01`** : investigation matérielle dédiée si on veut la récupérer (inspection visuelle/loupe des
+  soudures autour de l'IMU et de `imu_vdd`, continuité au multimètre) — non urgent, `unit-02`/`unit-03`
+  suffisent pour continuer la Priorité 2.
+- **Bug PMIC général** (toujours présent sur les 3 unités, `-EIO` sur `mfd_npm13xx_init()`) : à investiguer
+  proprement avant d'avoir besoin des autres fonctions du PMIC (charge batterie, cluster Power Source,
+  Priorité 2 §5min telemetry batterie). Pistes non essayées :
+  - Vérifier la datasheet nPM1300 pour une éventuelle broche d'activation/reset supplémentaire non
+    représentée dans le devicetree (`host-int-gpios` existe comme option dans le driver MFD mais n'est pas
+    utilisée ici).
+  - Essayer de forcer `CONFIG_I2C_GPIO_CLOCK_STRETCHING=n` (actuellement `y` par défaut) pour écarter un
+    problème de timeout côté clock-stretching plutôt qu'un vrai NACK.
+  - Remontée possible en tant qu'issue sur le repo Seeed `nrf-seeed-boards` (bug confirmé général sur 3
+    unités, personne d'autre ne semble l'avoir documenté).
+- Une fois le bug PMIC résolu : revalider que `imu_vdd`/le régulateur s'initialisent proprement (`init_res
+  == 0`) sur les 3 unités, par cohérence — même si l'IMU fonctionne déjà sans.
 
 ## ✅ RÉSOLU (17/08/2026) — Commissioning Matter de bout en bout validé via Home Assistant + iPhone
 
