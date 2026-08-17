@@ -54,8 +54,24 @@
 		compatible = "gpio-i2c";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		sda-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
-		scl-gpios = <&gpio1 16 GPIO_ACTIVE_HIGH>;
+		/* GPIO_OPEN_DRAIN + GPIO_PULL_UP indispensables (diagnostiqué le
+		 * 17/08/2026 : mfd_npm13xx_init() échouait avec -EIO de façon 100%
+		 * déterministe, y compris avec 500ms de délai de boot ajouté avant --
+		 * ce qui a écarté un problème de timing). Le driver i2c_gpio.c ne fait
+		 * que gpio_pin_set_dt(pin, state), sans jamais reconfigurer la
+		 * direction -- il attend que le pin lui-même soit en open-drain
+		 * matériel (écrire 1 = relâche/Hi-Z, écrire 0 = tire à la masse), avec
+		 * un pull-up pour remonter à l'état haut au relâchement. Documenté
+		 * explicitement dans le commentaire d'en-tête du driver ("the SDA pin
+		 * as open-collector/open-drain with a pull-up resistor") -- sans
+		 * OPEN_DRAIN, le pin pousse activement le niveau haut (push-pull),
+		 * empêchant le PMIC de tirer la ligne à la masse pour acquitter
+		 * (ACK) : toute transaction I2C échoue avec -EIO, quel que soit le
+		 * délai de boot ajouté avant. Sans PULL_UP en plus, même avec
+		 * OPEN_DRAIN, la ligne flotterait au relâchement au lieu de remonter
+		 * à l'état haut. */
+		sda-gpios = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN | GPIO_PULL_UP)>;
+		scl-gpios = <&gpio1 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN | GPIO_PULL_UP)>;
 		clock-frequency = <100000>;
 		status = "okay";
 

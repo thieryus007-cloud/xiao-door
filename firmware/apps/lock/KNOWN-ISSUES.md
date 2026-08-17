@@ -1,5 +1,78 @@
 # Problèmes connus — Matter Door Lock sur XIAO nRF54LM20A
 
+## 🔴 NON RÉSOLU (17/08/2026) — PMIC (nPM1300) inaccessible en I2C, bloque l'IMU
+
+**Statut : Priorité 2 (IMU) en pause, à reprendre plus tard.** Le code applicatif (lecture IMU, cluster
+Matter Boolean State) est écrit, compile, et est architecturalement correct — voir plus bas
+« Priorité 2 — IMU 6 axes ». Mais sur matériel réel, l'IMU ne reçoit jamais d'alimentation à cause d'un bug
+plus profond, indépendant de l'IMU lui-même : le driver du PMIC (nPM1300) échoue systématiquement à
+communiquer avec la puce en I2C.
+
+### Symptôme
+
+`ImuManager::Init()` trouve `device_is_ready(lsm6ds3tr_c) == false` en permanence → le timer de lecture IMU
+ne démarre jamais → le cluster Boolean State reste à sa valeur par défaut, jamais mis à jour, quoi qu'on
+fasse physiquement à la carte (aucun changement visible dans Home Assistant, testé en inclinant l'unité dans
+plusieurs positions).
+
+### Cause identifiée
+
+Confirmée sur matériel réel, sans console série — via lecture directe de `device_state.init_res` de chaque
+device concerné par OpenOCD/GDB (voir méthode détaillée plus haut dans ce fichier).
+
+La chaîne de dépendance est : `pmic_i2c` (bus I2C bit-bangé sur GPIO1.15/16) → driver MFD `nordic,npm1300`
+(gère l'ensemble du PMIC : charger, LEDs, régulateurs) → régulateur `imu_vdd`/LDO1 → alimentation de l'IMU.
+
+`mfd_npm13xx_init()` (priorité `MFD_NPM13XX_INIT_PRIORITY=80`) échoue avec **`-EIO` (init_res=5)** dès sa
+toute première écriture I2C vers le PMIC. Ceci se propage en cascade : le régulateur `imu_vdd` échoue
+ensuite avec `-ENODEV` (dépend du MFD), donc l'IMU n'est jamais alimenté, donc son propre driver échoue
+aussi.
+
+Bug **latent depuis le début du projet**, jamais rencontré avant l'ajout de l'IMU car rien d'autre dans
+cette app ne communique en I2C avec le PMIC (les LEDs sont câblées en GPIO direct, indépendantes du PMIC).
+
+### Trois hypothèses testées sur matériel réel, toutes écartées
+
+1. **Timing de boot** — ajout d'un délai dédié (`SYS_INIT` à la priorité juste avant le MFD) testé à 50 ms,
+   300 ms, puis 500 ms. Aucun effet à aucune valeur → ce n'est pas un problème de temps de démarrage du PMIC.
+2. **Pull-up manquant sur SDA/SCL** — `sda-gpios`/`scl-gpios` (dans
+   `firmware/boards/xiao_nrf54lm20a/xiao_nrf54lm20a_nrf54lm20a-common.dtsi`) n'avaient que `GPIO_ACTIVE_HIGH`,
+   sans `GPIO_PULL_UP`. Ajouté → aucun changement.
+3. **Open-drain manquant** — le driver `i2c_gpio.c` documente explicitement dans son en-tête que les pins
+   doivent être configurées en open-drain avec pull-up (sans quoi le pin pousse activement le niveau haut,
+   empêchant le PMIC de tirer la ligne à la masse pour acquitter). Ajout de `GPIO_OPEN_DRAIN` en plus du
+   pull-up, vérifié dans le devicetree compilé (flags `0x16`, décomposition confirmée :
+   `GPIO_SINGLE_ENDED | GPIO_LINE_OPEN_DRAIN | GPIO_PULL_UP`) et confirmé supporté par le driver GPIO nrfx
+   (`gpio_nrfx.c`) pour ce SoC. **Toujours `-EIO`.**
+
+Ces deux derniers fixes (pull-up + open-drain) sont **corrects et conservés** dans
+`xiao_nrf54lm20a_nrf54lm20a-common.dtsi` (nécessaires même s'ils ne suffisent pas seuls), mais la cause
+racine reste non identifiée.
+
+### Piste écartée mais notée : ce n'est pas spécifique à ce repo
+
+Le dépôt de référence Seeed cloné en local (`~/nrf-seeed-boards/zephyr/boards/arm/xiao_nrf54lm20a/`) contient
+exactement la même config `pmic_i2c` non corrigée (sans pull-up ni open-drain) que celle dont ce projet est
+parti — ce sous-système PMIC/charger n'a probablement jamais été testé par Seeed non plus (rien dans leurs
+exemples publics n'utilise le charger/régulateurs du PMIC, seulement les LEDs en GPIO direct).
+
+### À faire plus tard (reprise de l'investigation)
+
+- Vérification physique : continuité/oscilloscope sur GPIO1.15 (SDA) et GPIO1.16 (SCL) jusqu'aux pins
+  SDA/SCL du nPM1300, pour écarter un défaut de câblage/soudure propre à cette unité (`unit-01`).
+  **Idéalement à refaire sur une 2ᵉ unité neuve** avant de conclure à un bug généralisé (voir Priorité 1 :
+  finaliser un seul XIAO avant duplication — ce test PMIC est justement le genre de chose à valider avant de
+  dupliquer sur les 2 autres unités).
+- Vérifier la datasheet nPM1300 pour une éventuelle broche d'activation/reset supplémentaire non représentée
+  dans le devicetree (`host-int-gpios` existe comme option dans le driver MFD mais n'est pas utilisée ici).
+- Essayer de forcer `CONFIG_I2C_GPIO_CLOCK_STRETCHING=n` (actuellement `y` par défaut) pour écarter un
+  problème de timeout côté clock-stretching plutôt qu'un vrai NACK.
+- Si le bug est confirmé général (pas propre à cette unité) : possible remontée en tant qu'issue sur le repo
+  Seeed `nrf-seeed-boards`, personne d'autre ne semble l'avoir rencontré/documenté.
+- Une fois résolu : reprendre la Priorité 2 exactement où elle s'est arrêtée — `ImuManager` et le cluster
+  Boolean State sont déjà en place et n'auront besoin d'aucune modification, juste valider sur matériel que
+  `device_is_ready(lsm6ds3tr_c)` passe à `true` et que les valeurs accéléromètre/gyroscope remontent dans HA.
+
 ## ✅ RÉSOLU (17/08/2026) — Commissioning Matter de bout en bout validé via Home Assistant + iPhone
 
 Les trois causes ci-dessous (deux côté firmware, une côté commissioner) ont été corrigées et le commissioning
@@ -133,21 +206,25 @@ vraie DCL) si l'appairage doit fonctionner avec des commissioners tiers n'offran
 Home, Google Home — non testé, ces écosystèmes n'ont généralement pas d'équivalent grand public à ce
 toggle).
 
-### Validation matérielle complète (build minimal validé)
+### Validation matérielle complète (build minimal validé au 17/08/2026)
+
+> Commande telle qu'utilisée à l'époque (build direct depuis le SDK, avant le fork Priorité 2). Depuis
+> l'ajout de l'IMU, l'app est forkée dans ce repo et la commande a légèrement changé (chemin de l'app,
+> `pairing-autostart.conf` fusionné dans `prj.conf`, `sysbuild/mcuboot/boards/` renommé en
+> `mcuboot-overlay/`) — voir la commande à jour dans [README.md](README.md).
 
 ```bash
 source firmware/build-env.sh
 
 west build -p always -b xiao_nrf54lm20a/nrf54lm20a/cpuapp \
   -d /tmp/build-lock \
-  /opt/nordic/ncs/v3.2.1/nrf/samples/matter/lock \
+  firmware/apps/lock \
   -- \
   -DBOARD_ROOT=$(pwd)/firmware \
   -DEXTRA_DTC_OVERLAY_FILE=$(pwd)/firmware/apps/lock/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay \
   -DPM_STATIC_YML_FILE=$(pwd)/firmware/apps/lock/pm_static_xiao_nrf54lm20a_nrf54lm20a_cpuapp.yml \
-  -DEXTRA_CONF_FILE=$(pwd)/firmware/apps/lock/pairing-autostart.conf \
-  -Dmcuboot_EXTRA_DTC_OVERLAY_FILE=$(pwd)/firmware/apps/lock/sysbuild/mcuboot/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay \
-  -Dmcuboot_EXTRA_CONF_FILE=$(pwd)/firmware/apps/lock/sysbuild/mcuboot/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.conf
+  -Dmcuboot_EXTRA_DTC_OVERLAY_FILE=$(pwd)/firmware/apps/lock/mcuboot-overlay/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay \
+  -Dmcuboot_EXTRA_CONF_FILE=$(pwd)/firmware/apps/lock/mcuboot-overlay/xiao_nrf54lm20a_nrf54lm20a_cpuapp.conf
 
 python3 firmware/apps/lock/fix_factory_data.py /tmp/build-lock   # <-- étape supplémentaire indispensable
 
@@ -230,7 +307,8 @@ visible — voir `README.md` de ce dossier pour le bug MCUboot déjà corrigé s
 
 - `legacy-ble.conf` — force la publicité BLE classique (utile si un contrôleur a du mal avec l'extended
   advertising, non nécessaire pour le fix de base)
-- `pairing-autostart.conf` — **fix réel**, voir section "RÉSOLU"
+- `pairing-autostart.conf` — **fix réel** au moment de sa création (voir section "RÉSOLU"), depuis fusionné
+  tel quel dans `prj.conf` lors du fork Priorité 2 et supprimé comme fichier séparé
 - `fix_factory_data.py` — **fix réel**, voir section "RÉSOLU"
 - `sw-split-ble.conf` + overlay associé — bascule vers le contrôleur Bluetooth logiciel Zephyr (test négatif
   concluant à l'époque, cause écartée, gardé en référence)

@@ -14,3 +14,17 @@
 &py25q64 {
 	status = "okay";
 };
+
+/*
+ * L'IMU (lsm6ds3tr_c, voir nrf54lm20a_cpuapp_common.dtsi) est alimentée par le
+ * régulateur LDO1 du nPM1300 (imu_vdd), qui est éteint au démarrage par défaut.
+ * Nécessaire mais actuellement PAS SUFFISANT pour que l'IMU fonctionne : le
+ * driver MFD du nPM1300 lui-même échoue en amont (voir "PMIC I2C : bug non
+ * résolu" dans KNOWN-ISSUES.md) -- imu_vdd ne peut donc jamais s'activer tant
+ * que ce bug plus profond n'est pas corrigé. Cette config reste correcte et
+ * nécessaire pour le jour où le bug PMIC sera résolu.
+ */
+&imu_vdd {
+	regulator-boot-on;
+	startup-delay-us = <5000>;
+};
