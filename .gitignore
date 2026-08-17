@@ -16,6 +16,10 @@ ncs/
 # Claude Code local settings (machine-specific, not for sharing)
 .claude/
 
+# Données de commissioning Matter par unité (passcode = secret, jamais sur GitHub public)
+# voir firmware/apps/lock/generate_unit_secrets.py
+firmware/apps/lock/unit-secrets/
+
 # Editor
 .vscode/*
 !.vscode/settings.json

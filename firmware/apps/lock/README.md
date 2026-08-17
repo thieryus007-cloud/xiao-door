@@ -123,14 +123,39 @@ L'échantillon Nordic configure déjà le device en **Minimal Thread Device** av
 
 Un vrai mode ICD (Intermittently Connected Device, check-in protocol Matter) n'est pas activé par défaut — à évaluer lors de l'optimisation consommation (voir plan de développement, Phase 5).
 
-## ⚠️ Sécurité — ne jamais committer les données de commissioning
+## ⚠️ Sécurité — code de commissioning unique par unité, jamais commit
 
-Chaque build génère des **factory data** aléatoires et propres à cette compilation (`zephyr/factory_data.*` dans le dossier de build, hors du repo git car sous `/tmp`) :
+**Important** : par défaut, un build sans `-DEXTRA_CONF_FILE=unit-secrets/<unit>.conf` (voir ci-dessous)
+réutilise le passcode/discriminator d'exemple du SDK (`20202021` / `0xF00`), **identiques sur chaque
+compilation** — ce n'est pas aléatoire par défaut, contrairement à ce qu'on pourrait supposer. Sur un parc de
+plusieurs unités (jusqu'à 25 en configuration finale), partager le même code de commissioning est un vrai
+risque de sécurité : la fuite du code d'une porte compromettrait la fenêtre de commissioning de toutes les
+autres.
 
-- Setup passcode (code manuel) + discriminator → QR code de commissioning
-- Clés de Device Attestation
+**Avant de flasher une unité destinée à un usage réel** (pas juste un test de dev jetable), générer des
+secrets uniques pour elle :
 
-Ces fichiers **ne doivent jamais être commit dans ce repo** (public). Le code de commissioning d'une unité est à usage unique par device physique — le noter uniquement en local (hors git) ou physiquement sur l'unité elle-même, pas dans `devices/unit-XX.md`.
+```bash
+python3 firmware/apps/lock/generate_unit_secrets.py unit-03
+```
+
+Puis ajouter au build (voir commande complète plus haut) :
+
+```bash
+-DEXTRA_CONF_FILE=$(pwd)/firmware/apps/lock/unit-secrets/unit-03.conf
+```
+
+**Utiliser un dossier de build dédié par unité** (ex: `/tmp/build-lock-unit-03`), pas le dossier générique
+`/tmp/build-lock` utilisé pour le développement — sinon on écrase/mélange les factory data entre unités.
+
+Le fichier `unit-secrets/<unit>.conf` (contient le passcode, un vrai secret) est **gitignored** — ne jamais
+le commit, ne jamais copier ses valeurs dans un fichier suivi par git (`devices/unit-XX.md` inclus, voir son
+avertissement dédié). Le garder localement (utile pour reconstruire le même firmware plus tard pour cette
+même unité sans changer son code de pairing) ou le noter physiquement sur l'unité elle-même.
+
+Les certificats de Device Attestation (DAC/PAI), eux, restent partagés entre toutes les unités (ceux fournis
+par le SDK pour le développement) — problème distinct du passcode de commissioning, voir « Enable test-net
+DCL usage » plus haut.
 
 ## Console série / débogage
 

@@ -294,12 +294,34 @@ disponible si un contrôleur particulier a du mal avec l'extended advertising (n
   `CommissioningComplete`) — non chronométré précisément, mais rapide et sans intervention manuelle
   au-delà du scan du QR code / saisie du code.
 
-### ⚠️ Action requise avant la prochaine session — sécurité factory data
+### ✅ RÉSOLU (17/08/2026) — passcode/discriminator uniques par unité
 
-Le device de test (unit-01) porte actuellement des **factory data générées automatiquement avec des valeurs
-d'exemple publiques** (DAC/PAI de développement fournis par le SDK, passcode `20202021`, discriminator
-`0xF00`) — normal pour du dev, mais **ne pas commit ces fichiers**, et régénérer des factory data uniques par
-unité physique avant tout déploiement réel (voir avertissement sécurité dans `README.md`).
+`unit-01` avait été commissionnée avec les valeurs d'exemple par défaut du SDK (passcode `20202021`,
+discriminator `0xF00`, salt SPAKE2+ fixe — documentées comme telles dans
+`modules/lib/matter/config/zephyr/Kconfig`, jamais surchargées jusqu'ici dans ce projet). `unit-02` et
+`unit-03` ont été flashées avec le même firmware/factory data, donc les 3 unités partageaient exactement le
+même code de commissioning — risque réel dès qu'on vise un parc de plusieurs unités (jusqu'à 25 en
+configuration finale) : la fuite du code d'une porte compromet la fenêtre de commissioning de toutes les
+autres.
+
+**Fix** : `firmware/apps/lock/generate_unit_secrets.py` génère un discriminator (12 bits), un passcode
+(27 bits, respecte les plages/exclusions imposées par le SDK) et un salt SPAKE2+ aléatoires et
+cryptographiquement uniques par unité, avec vérification anti-collision contre les unités déjà générées. Le
+fichier produit (`firmware/apps/lock/unit-secrets/<unit>.conf`, contient
+`CONFIG_CHIP_DEVICE_DISCRIMINATOR`/`CONFIG_CHIP_DEVICE_SPAKE2_PASSCODE`/`CONFIG_CHIP_DEVICE_SPAKE2_SALT`) est
+**gitignored** (jamais commit — le passcode est un secret) et se passe au build via
+`-DEXTRA_CONF_FILE=firmware/apps/lock/unit-secrets/<unit>.conf`. Le SPAKE2+ verifier n'a pas besoin d'être
+calculé à la main : `CONFIG_CHIP_FACTORY_DATA_GENERATE_SPAKE2_VERIFIER=y` (actif par défaut) le régénère
+automatiquement au build à partir du passcode/salt configurés.
+
+**Chaque unité doit maintenant avoir son propre dossier de build** (ex: `/tmp/build-lock-unit-03`), pas
+partager le build générique `/tmp/build-lock` utilisé pour le développement/debug. Voir
+`firmware/apps/lock/README.md` pour la commande complète.
+
+**Reste à faire** : régénérer `unit-01`/`unit-02` avec leurs propres secrets uniques (seule `unit-03` l'a été
+au moment de la rédaction) ; les DAC/PAI de développement fournis par le SDK restent, eux, partagés entre
+toutes les unités (acceptable tant que « Enable test-net DCL usage » reste nécessaire côté Home Assistant,
+voir plus haut) — l'attestation d'appareil (DAC/PAI) est un problème distinct du passcode de commissioning.
 
 ---
 

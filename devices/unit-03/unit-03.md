@@ -5,11 +5,11 @@
 | Numéro d'unité | unit-03 |
 | Date de première mise en service | 2026-08-17 |
 | Emplacement final (porte) | — (unité de développement/test) |
-| Version firmware flashée | `firmware/apps/lock` (identique à unit-01/unit-02 au moment du flash : fork NCS v3.2.1 `samples/matter/lock` + IMU/Boolean State Priorité 2 + `fix_factory_data.py`) |
+| Version firmware flashée | `firmware/apps/lock` + `unit-secrets/unit-03.conf` (discriminator/passcode/salt uniques, générés par `generate_unit_secrets.py`) — build dédié `/tmp/build-lock-unit-03` |
 | Commit firmware (hash git) | — |
 | N° série debug probe | `C5F0E209` (CMSIS-DAP intégrée, VID:PID 0x2886:0x0068) |
-| MAC / Extended PAN ID Thread | — (non commissionnée sur le réseau Thread/Matter à ce stade, utilisée uniquement pour un test de comparaison matériel) |
-| Code de commissioning Matter (QR/PIN) | ⚠️ ne pas noter ici (repo public) — voir note ci-dessous |
+| MAC / Extended PAN ID Thread | — |
+| Code de commissioning Matter (QR/PIN) | ⚠️ ne pas noter ici (repo public) — **unique à cette unité** depuis le 17/08/2026 (voir note ci-dessous), noté en local uniquement (`firmware/apps/lock/unit-secrets/unit-03.conf`, gitignored) |
 | IMU — calibration (offsets X/Y/Z) | — |
 | Angle "ouvert" calibré | — |
 | NFC — UID tag(s) associé(s) | — |
@@ -20,6 +20,7 @@
 | Date | Action | Notes |
 |---|---|---|
 | 2026-08-17 | Premier flash + test comparatif PMIC/IMU (3ᵉ unité, tie-breaker) | Flashée avec le même firmware que `unit-01`/`unit-02`, pour trancher si le problème IMU de `unit-01` était isolé ou général (voir `firmware/apps/lock/KNOWN-ISSUES.md`). `AP lock engaged` au premier accès OpenOCD, récupéré automatiquement. Résultat : comme `unit-02`, le bug PMIC (`-EIO`) est présent mais **l'IMU fonctionne quand même** — confirmé par breakpoints matériels (lecture + mise à jour du cluster Boolean State réussies). Avec ce 3ᵉ test, le score est 2/3 unités avec IMU fonctionnel malgré le bug PMIC général → `unit-01` a très probablement un défaut matériel isolé (soudure/composant), pas un problème de design général. |
+| 2026-08-17 | Reflash avec code de commissioning unique | Constat que les 3 unités partageaient le même passcode/discriminator par défaut du SDK (`firmware/apps/lock/KNOWN-ISSUES.md`), risque de sécurité identifié comme à corriger immédiatement vu que le parc final visera jusqu'à 25 unités. Création de `firmware/apps/lock/generate_unit_secrets.py` (génère discriminator/passcode/salt SPAKE2+ aléatoires et uniques, écrit dans `unit-secrets/<unit>.conf`, jamais commit). Rebuild dédié avec `-DEXTRA_CONF_FILE=unit-secrets/unit-03.conf`, reflashé avec succès. |
 
 ## Problèmes rencontrés
 
