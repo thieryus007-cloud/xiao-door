@@ -46,7 +46,7 @@
 5. (option) aimant + support si tu veux un second point de référence
 
 ### Infrastructure (une fois pour tout le site)
-6. **ESP32-C3** (ou ESP32 DevKit) → `bluetooth_proxy` ESPHome, relais BLE vers HA
+6. **SEEED XIAO ESP32-S3** (ou ESP32 DevKit) → `bluetooth_proxy` ESPHome, relais BLE vers HA
 7. Alimentation USB 5 V secteur pour l'ESP32, placé à portée radio de la/les porte(s)
 
 ### Outillage (une fois)
@@ -548,7 +548,7 @@ west flash --runner jlink
 
 ---
 
-## 10. ESP32 bluetooth_proxy (relais BLE → HA)
+## 10. SEEED XIAO ESP32-S3 bluetooth_proxy (relais BLE → HA)
 
 Le XIAO émet en BLE ; il faut un récepteur BLE vu par HA. Le plus simple : un ESP32 sous ESPHome en mode `bluetooth_proxy`.
 
@@ -559,7 +559,7 @@ esphome:
   name: esp32-ble-proxy
 
 esp32:
-  board: esp32-c3-devkitm-1
+  board: seeed-xiao-esp32-s3
   framework:
     type: esp-idf
 
