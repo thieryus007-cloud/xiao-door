@@ -634,10 +634,56 @@ idf.py --preset board_esp32u_breadboard -p COM6 monitor
    matériel réel (bootloader UF2 probable, à confirmer)
 4. **Fin septembre 2026** : déploiement des 10 XIAO nRF54LM20A restants —
    voir « Flasher un nouveau lot » ci-dessus pour la checklist
+5. **Implémentation des fonctions actuellement envoyées à 0** (chute/choc,
+   double-tap, bouton, yaw) — prévu pour la prochaine session, préparé
+   ci-dessous. Rappel de vocabulaire (voir aussi `CLAUDE.md`) : dans les
+   quatre cas, le matériel est bien câblé — c'est le firmware qui ne
+   configure/lit/calcule pas encore la donnée, jamais "non câblé".
 
+### Préparation — chute/choc (0x2B) et double-tap (0x2C)
 
-# nouvelle journee:
-implémentation des fonctions manquantes (chute/choc, double-tap, lecture du bouton physique, calcul du yaw) — on reprendra ça à la prochaine session:
-Tamper/Chute-Choc (0x2B) et Vibration/Double-tap (0x2C) : l'IMU est bien câblée (bus I2C), et ces fonctions existent matériellement dans la puce (registres FREE_FALL, TAP_CFG). Ce qui manque, c'est la configuration logicielle de ces registres — donc "non implémenté" ou "non configuré", pas "non câblé".
-Bouton (0x3A) : j'ai vérifié le devicetree de la carte — un bouton physique existe bel et bien (button0/sw0, déjà câblé au niveau matériel). Le firmware ne le lit simplement jamais. Donc "non câblé" est carrément faux ici : c'est "non lu par le firmware" / "non implémenté".
-Yaw (0x3F #3) : l'IMU est câblée, le gyroscope est lu — c'est le calcul d'intégration dans le temps qui manque. Donc "non calculé" est le terme juste, pas "non câblé".
+Registres LSM6DS3TR-C déjà partiellement en jeu pour le réveil GPIO
+(`configure_imu_wakeup()`, `main.c`) :
+- `WAKE_UP_THS` (0x5B) bit7 `SINGLE_DOUBLE_TAP` — actuellement à 0
+  (`IMU_WAKE_UP_THS_VALUE=0x01`, bit7 non positionné) : c'est ce bit qui
+  active la détection tap/double-tap sur la puce, à mettre à 1.
+- Registres tap dédiés à configurer en plus (non touchés à ce jour) :
+  `TAP_CFG` (0x58, déjà écrit pour `INTERRUPTS_ENABLE` bit7 — les autres
+  bits de ce registre gèrent les axes tap actifs), `TAP_THS_6D` (0x59,
+  seuil), `INT_DUR2` (0x5A, durée/latence/quiet du double-tap).
+- Chute libre : registre `FREE_FALL` (0x5D, `FF_THS[2:0]`/`FF_DUR`, ce
+  dernier partagé avec `WAKE_UP_DUR` bit7 `FF_DUR5`).
+- Sources déjà présentes dans le dépôt : datasheet ST DocID030071 Rev 3
+  (`docs/LSM6DS3TR-C_datasheet_DocID030071_Rev3.pdf`) — chercher les
+  sections tap-recognition et free-fall pour la séquence d'écriture
+  exacte et l'ordre des registres.
+- Routage vers une broche INT (probablement INT1, déjà utilisée pour le
+  wake GPIO — vérifier si un second GPIO IMU est disponible ou s'il faut
+  partager/distinguer les sources d'interruption) à étudier avant de
+  coder.
+
+### Préparation — bouton physique (0x3A)
+
+Devicetree déjà vérifié : `sw0 = &button0` → `gpio0 9`
+(`GPIO_PULL_UP | GPIO_ACTIVE_LOW`), `compatible = "gpio-keys"`
+(`xiao_nrf54lm20a_nrf54lm20a-common.dtsi:43-50,105`). Lecture simple via
+`gpio_pin_get_dt()`/`gpio_pin_interrupt_configure_dt()`, même pattern que
+`imu_int1` dans `main.c`. Question de design à trancher avant de coder :
+le bouton doit-il aussi être une source de réveil System OFF (comme
+l'IMU), ou seulement lu pendant une fenêtre déjà active ?
+
+### Préparation — yaw (0x3F #3)
+
+Le gyroscope est déjà lu (`read_gyro_burst()`, trame C) mais seulement
+ponctuellement (200ms toutes les fois où une lecture est nécessaire, pas
+en continu — voir § « Autonomie » : le gyro ne doit jamais tourner en
+continu, ~0,9 mA vs ~9 µA accéléromètre). Le yaw nécessite une intégration
+temporelle (Δyaw = gz × Δt à chaque lecture), donc : garder un yaw courant
+dans `retained_state` (survit au System OFF), l'incrémenter à chaque
+`read_gyro_burst()` avec le Δt réel écoulé, et prévoir un recalage
+périodique (dérive gyroscopique inévitable sur intégration pure) —
+probablement à l'inactivité prolongée, en re-zérotant ou en utilisant
+l'accéléromètre pour une référence absolue quand c'est possible (le yaw
+n'est pas observable par l'accéléromètre seul, contrairement à
+pitch/roll — seul un recalage manuel ou une hypothèse de repos permet de
+limiter la dérive).
