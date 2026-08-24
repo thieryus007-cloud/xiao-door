@@ -317,6 +317,24 @@ concordent bit pour bit). Pin INT1 de l'IMU : `irq-gpios = <&gpio0 6
 GPIO_ACTIVE_HIGH>` sur le nœud `lsm6ds3tr_c`
 (`nrf54lm20a_cpuapp_common.dtsi:204`).
 
+**Sensibilité du réveil — deux tests réels avec valeurs d'angle précises
+(2026-08-24, unité #1)**, pour évaluer si un mouvement lent/doux déclenche
+bien le réveil GPIO (seuil `WK_THS=0x01` ≈ 31 mg, un seul échantillon,
+voir § « Séquence de transmission par phase ») :
+
+1. **Mouvement lent et continu, sans à-coup, petit angle** : réveil GPIO
+   déclenché. Pitch relevé sur toute la fenêtre active : -4,3° → 1,5° →
+   9,6° → 8,9° → 2,7° → 0,9° → -1,4° (amplitude ~13,9°, roll -96,6° à
+   -89,8°, amplitude ~6,8°, sur ~40s).
+2. **Mouvement plus court, angle différent** : réveil GPIO déclenché.
+   Roll -88,3° → -91,0° → -90,9° (amplitude ~2,7°), pitch quasi constant
+   (~-2°).
+
+Dans les deux cas, réveil confirmé (`gpio_wake=1`) et remontée correcte
+dans HA. Le seuil s'est montré sensible même à un démarrage de mouvement
+volontairement doux — pas encore trouvé la limite en dessous de laquelle
+un mouvement ne déclenche plus rien.
+
 **Réveil périodique GRTC** : le GRTC (Global RTC) du nRF54L est dans un
 domaine « always-on » qui bascule sur le quartz basse fréquence (LFXO,
 32,768 kHz) et survit au System OFF — API Zephyr
