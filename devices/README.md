@@ -12,10 +12,10 @@ Pour créer une nouvelle unité, copier `TEMPLATE.md` vers `unit-XX/unit-XX.md` 
 
 ## Registre global
 
-| Unité | Emplacement prévu | Firmware version | Statut | Date commissioning |
-|---|---|---|---|---|
-| [unit-01](unit-01/unit-01.md) | — (unité de dev/test) | `firmware/apps/lock` (P1+P2) | 🔧 Priorité 1 ✅ commissionnée, Priorité 2 🔴 IMU défectueux (matériel, isolé — voir KNOWN-ISSUES.md) | 2026-08-17 |
-| [unit-02](unit-02/unit-02.md) | — (unité de dev/test) | `firmware/apps/lock` (P1+P2) | 🔧 IMU fonctionnel (validé), non commissionnée dans HA | — |
-| [unit-03](unit-03/unit-03.md) | — (unité de dev/test) | `firmware/apps/lock` (P1+P2) | 🔧 IMU fonctionnel (validé), non commissionnée dans HA | — |
+| Unité | Adresse BLE | Firmware | Statut HA |
+|---|---|---|---|
+| [unit-01](unit-01/unit-01.md) | `D2:3A:F7:B1:E8:18` | `firmware/apps/xiao_door_sensor` | ✅ Intégré |
+| [unit-02](unit-02/unit-02.md) | `DE:F6:A3:A9:0F:0F` | `firmware/apps/xiao_door_sensor` | ✅ Intégré |
+| [unit-03](unit-03/unit-03.md) | `E6:C9:11:CE:6E:C6` | `firmware/apps/xiao_door_sensor` | ✅ Intégré |
 
 _(Mettre à jour cette table à chaque nouvelle unité créée)_

@@ -275,6 +275,30 @@ PMIC, indépendamment de l'état du SoC) pendant une « fenêtre active » :
 Voir l'en-tête de `xiao_door_sensor/src/main.c` pour le détail complet de
 l'implémentation.
 
+**Séquence de transmission par phase** (constantes de `main.c`, comportement
+confirmé par capture série + vérification des octets bruts le 2026-08-24) :
+
+| Phase | Trame(s) envoyée(s) | Cadence / délai |
+|---|---|---|
+| Boot (à froid) | Trame B immédiate, puis trame A "heartbeat" + trame C | une fois par boot à froid |
+| Réveil GPIO (mouvement) | Trame A "motion" + trame C dès le 1er échantillon | immédiat (réveil matériel déjà confirmé) |
+| — mouvement/angle soutenu | Trames A/C supplémentaires | min 4s d'écart, max 10/min |
+| — fin du mouvement | Trame A "repos" (tout à 0) | ~15-20s après l'arrêt (`REST_FRAME_DELAY_MS`=15000ms + granularité sondage 2s) |
+| Réveil GRTC (aucun mouvement) | Trame B | toutes les 15 min ± jitter 30s |
+| Réveil GRTC (aucun mouvement) | Trame A "heartbeat" + trame C | toutes les 60 min si rien d'autre |
+| Fenêtre active bornée | — (juste un `LOG_WRN`) | forcé après 30 min continu (`ACTIVE_WINDOW_MAX_ITERS`), ne devrait jamais arriver en usage normal |
+
+Outillage de diagnostic ajouté le 2026-08-24 (`main.c`) : historique persistant
+des 20 derniers cycles en RAM retenue (`diag_log_*`, survit au System OFF mais
+pas à une coupure d'alimentation complète), affiché en entier à chaque boot ;
+`log_panic()` avant `sys_poweroff()` pour garantir que les logs de fin de
+cycle ne sont pas perdus ; dump des octets bruts de la trame A avant l'envoi
+radio (`LOG_HEXDUMP_INF`).
+
+Anomalie connue, non bloquante : un second réveil GRTC (`reset_cause=0x800`)
+survient systématiquement ~2s après chaque réveil GRTC normal, sans nouvelle
+trame ni erreur — cause non identifiée, à investiguer.
+
 **Registres IMU (LSM6DS3TR-C) utilisés pour le réveil matériel** — accès
 I2C direct sur le bus `i2c30` (adresse `0x6a`), en parallèle du driver
 Zephyr `lsm6dsl` (API standard `i2c_dt_spec`, pas de conflit) :

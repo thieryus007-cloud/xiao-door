@@ -1,32 +1,33 @@
-# XIAO-Door — Capteur de Porte Intelligent Matter over Thread
+# XIAO-Door — Capteur de Porte/Fenêtre BLE (BTHome v2)
 
-Projet de capteur de porte connecté basé sur le **XIAO nRF54LM20A Sense**, intégré à Home Assistant via **Matter over Thread**. jusqu'à 25 unités à produire, flasher et déployer (maximum confirmé).
+Projet de capteur de porte/fenêtre basé sur le **XIAO nRF54LM20A Sense**, diffusant ses données IMU en BLE au format **BTHome v2**, relayées par un Bluetooth Proxy vers Home Assistant. 3 unités déployées, 10 supplémentaires attendues fin septembre 2026.
 
-Cahier des charges complet : [docs/XIAO-Door-specs.md](docs/XIAO-Door-specs.md)
+Spécification technique : [XIAO-nRF54LM20A-BTHome-HA-v5.md](XIAO-nRF54LM20A-BTHome-HA-v5.md)
+État complet du projet, procédures de build/flash/vérification : [xiao_nrf54lm20a_project_notes.md](xiao_nrf54lm20a_project_notes.md)
 
 ## Structure du dépôt
 
 | Dossier | Contenu |
 |---|---|
-| `docs/` | Cahier des charges, guides d'étapes, notes techniques |
-| `firmware/` | Projet Zephyr / nRF Connect SDK (overlays, code source, Kconfig) |
+| `docs/` | Cahier des charges, notes techniques |
+| `firmware/apps/xiao_door_sensor/` | Firmware déployé (Zephyr / nRF Connect SDK) |
+| `firmware/boards/` | Board support Seeed XIAO nRF54LM20A (vendorisé) |
+| `firmware/examples/` | Exemples de référence (Blinky) |
 | `hardware/` | Schémas, fichiers KiCad/Gerber |
-| `apps/` | Applications compagnon (mobile, scripts, outils de commissioning) |
-| `images/` | Photos, captures d'écran, schémas exportés |
+| `apps/` | Applications compagnon (mobile, scripts) |
+| `images/` | Photos, captures d'écran |
 | `devices/` | Un dossier par unité physique (voir `devices/README.md`) |
 
 ## Avancement
 
-- [x] Étape 0 — Préparation environnement
-- [x] Priorité 1 — Matter Door Lock sur réseau Thread existant — ✅ commissioning de bout en bout validé via Home Assistant + iPhone (17/08/2026) — voir [firmware/apps/lock/KNOWN-ISSUES.md](firmware/apps/lock/KNOWN-ISSUES.md)
-- [ ] Priorité 2 — IMU 6 axes + Wake-up — 🟡 code écrit et **fonctionnel sur matériel réel** (lecture IMU + cluster Matter Boolean State confirmés sur `unit-02`/`unit-03`), mais **`unit-01` a un défaut matériel isolé** empêchant l'IMU de fonctionner dessus — voir « Test comparatif sur 3 unités » dans [firmware/apps/lock/KNOWN-ISSUES.md](firmware/apps/lock/KNOWN-ISSUES.md). Reste à faire : commissioning + validation en conditions réelles dans HA sur `unit-02` ou `unit-03`.
-- [ ] Priorité 3 — NFC (commissioning) — 🟡 déjà actif sans code supplémentaire (framework Nordic partagé, `CONFIG_CHIP_NFC_ONBOARDING_PAYLOAD=y` par défaut + `&nfct` déjà activé), **bloqué uniquement par la soudure de l'antenne NFC (pads N1/N2)**, jamais confirmée faite sur aucune unité — voir `docs/XIAO-Door-specs.md` §Priorité 3
-- [ ] Option 4 — Aliro / HomeKey (reportée)
+- [x] Environnement de build/flash fonctionnel (OpenOCD, toolchain NCS v3.4.0)
+- [x] Firmware BLE BTHome v2 déployé sur 3 unités, intégré dans Home Assistant (System OFF, réveil GPIO/GRTC)
+- [ ] Mesure de consommation réelle (PPK II) — voir [PPK-Mesures-Transition.md](PPK-Mesures-Transition.md)
+- [ ] Déploiement du lot de 10 unités supplémentaires (fin septembre 2026)
+- [ ] Démarrage XIAO nRF52840 Sense — voir [capteur-angle-porte-nRF52840-BTHome.md](capteur-angle-porte-nRF52840-BTHome.md)
 
-Détail par étape : voir `docs/`. **Point de reprise pour la prochaine session : commissionner `unit-02` ou `unit-03` dans Home Assistant et valider l'IMU/Boolean State en conditions réelles** (le firmware fonctionne déjà sur ces deux unités, testé par breakpoints matériels — reste à le voir depuis HA). En parallèle, deux points annexes en attente d'intervention physique : (1) bug PMIC I2C général (nPM1300, `-EIO`, présent sur les 3 unités mais n'empêche pas l'IMU de fonctionner sur 2/3 — non bloquant dans l'immédiat, voir `firmware/apps/lock/KNOWN-ISSUES.md`) ; (2) soudure de l'antenne NFC pour tester le commissioning NFC déjà fonctionnel côté firmware. Sécuriser aussi les factory data avant de dupliquer le firmware sur le reste du parc (jusqu'à 25 unités) (voir avertissement sécurité ci-dessous). Priorité 1 (commissioning, sur `unit-01`) reste acquise : trois causes distinctes le bloquaient, toutes corrigées — deux bugs firmware (génération des factory data du SDK, Kconfig `CHIP_ENABLE_PAIRING_AUTOSTART=n` par défaut) et un réglage côté commissioner (« Enable test-net DCL usage » dans Home Assistant, nécessaire tant que le firmware utilise les certificats de développement du SDK) — voir [firmware/apps/lock/KNOWN-ISSUES.md](firmware/apps/lock/KNOWN-ISSUES.md). Depuis la Priorité 2 (IMU 6 axes), l'app Matter Door Lock est forkée directement dans `firmware/apps/lock/` (build sur ce dossier, plus sur le SDK) — voir la commande de build à jour et le détail dans [firmware/apps/lock/README.md](firmware/apps/lock/README.md). Ne pas oublier `python3 firmware/apps/lock/fix_factory_data.py <build_dir>` avant `west flash`.
+**Projet Matter over Thread (Door Lock) abandonné** au profit de cette approche BLE BTHome — conservé dans la branche `archive/matter-lock` pour référence (commissioning validé, historique de debug PMIC/IMU sur 3 unités).
 
-**✅ Passcode/discriminator uniques par unité (17/08/2026)** : `firmware/apps/lock/generate_unit_secrets.py` génère des secrets de commissioning uniques par unité (jamais commit, voir `.gitignore`) — à utiliser pour toute unité au-delà du test de dev jetable. Voir `firmware/apps/lock/README.md` §Sécurité et `firmware/apps/lock/KNOWN-ISSUES.md`. `unit-03` en bénéficie déjà ; `unit-01`/`unit-02` restent encore sur le code d'exemple partagé du SDK, à régénérer avant tout déploiement réel de ces unités-là.
+## Suivi des unités
 
-## Suivi des unités (jusqu'à 25)
-
-Chaque unité physique a sa propre fiche dans `devices/unit-XX/` : firmware flashé, calibration IMU, MAC/EUI Thread, historique de commissioning, notes. Voir [devices/README.md](devices/README.md).
+Chaque unité physique a sa propre fiche dans `devices/unit-XX/`. Voir [devices/README.md](devices/README.md).
