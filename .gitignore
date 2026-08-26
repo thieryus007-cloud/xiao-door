@@ -1,0 +1,12 @@
+build/
+*.uf2
+*.hex
+
+# Projet nRF52840 déjà versionné séparément (son propre dépôt/remote GitHub,
+# ne pas l'absorber ici pour éviter un conflit de .git imbriqué) :
+xiao_nrf52840_door_sensor/
+
+# Artefacts volumineux hors code source (installeurs, binaires J-Link, essai
+# jetable) — pas couverts par le motif build/ car pas nommés ainsi :
+_test_build_nrf52840_blinky/
+nRF52840/

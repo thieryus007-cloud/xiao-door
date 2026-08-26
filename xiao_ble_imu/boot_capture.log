@@ -1,0 +1,17 @@
+[00:15:48.775,373] [0m<inf> xiao_ble_imu: accel |a|=9.974 m/s^2  gyro |w|=2.255 deg/s[0m
+[00:15:53.776,377] [0m<inf> xiao_ble_imu: accel |a|=10.000 m/s^2  gyro |w|=2.516 deg/s[0m
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:15:55.352,224] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             [0m
+[00:15:55.353,121] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[00:15:55.353,134] [0m<inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)[0m
+[00:15:55.353,146] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768[0m
+[00:15:55.353,521] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[00:15:55.353,584] [0m<inf> bt_hci_core: Identity: CB:DC:FC:BE:F9:F1 (random)[0m
+[00:15:55.353,601] [0m<inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059[0m
+[00:15:55.353,616] [0m<inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039[0m
+[00:15:55.353,621] [0m<inf> xiao_ble_imu: Bluetooth initialized, starting BTHome broadcast[0m
+[00:15:55.354,415] [0m<inf> xiao_ble_imu: accel |a|=10.000 m/s^2  gyro |w|=2.767 deg/s[0m
+[00:16:00.355,823] [0m<inf> xiao_ble_imu: accel |a|=9.969 m/s^2  gyro |w|=2.341 deg/s[0m

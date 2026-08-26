@@ -1,0 +1,39 @@
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:00:30.986,073] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:00:30.986,897] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:00:30.986,909] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:00:30.986,920] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:00:30.987,030] <inf> bt_hci_core: HCI transport: SDC
+[00:00:30.987,092] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:00:30.987,108] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:00:30.987,123] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:00:30.987,130] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:00:30.987,617] <inf> xiao_door_sensor: trame A (angle) #15: pitch=78.8 roll=35.4 motion=0 activity=0
+[00:00:36.470,968] <inf> xiao_door_sensor: trame A (motion) #17: pitch=77.7 roll=25.5 motion=1 activity=1
+[00:00:41.954,216] <inf> xiao_door_sensor: trame A (angle) #19: pitch=77.7 roll=33.6 motion=0 activity=0
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:01:03.450,251] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:01:03.451,076] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:01:03.451,088] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:01:03.451,099] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:01:03.451,209] <inf> bt_hci_core: HCI transport: SDC
+[00:01:03.451,271] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:01:03.451,287] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:01:03.451,302] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:01:03.451,309] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:01:03.451,798] <inf> xiao_door_sensor: trame A (angle) #22: pitch=70.7 roll=25.6 motion=0 activity=0
+[00:01:08.935,127] <inf> xiao_door_sensor: trame A (angle) #24: pitch=77.2 roll=33.0 motion=0 activity=0
+[00:01:18.419,354] <inf> xiao_door_sensor: trame A (motion) #26: pitch=-5.5 roll=-78.4 motion=1 activity=1
+[00:01:23.902,606] <inf> xiao_door_sensor: trame A (motion) #28: pitch=-42.1 roll=130.6 motion=1 activity=1
+[00:01:29.385,844] <inf> xiao_door_sensor: trame A (motion) #30: pitch=12.3 roll=-72.5 motion=1 activity=1
+[00:01:34.869,083] <inf> xiao_door_sensor: trame A (motion) #32: pitch=63.5 roll=-156.1 motion=1 activity=1
+[00:01:40.352,314] <inf> xiao_door_sensor: trame A (motion) #34: pitch=48.9 roll=-127.5 motion=1 activity=1
+[00:01:45.835,527] <inf> xiao_door_sensor: trame A (motion) #36: pitch=55.4 roll=-7.0 motion=1 activity=1
+[00:01:51.318,763] <inf> xiao_door_sensor: trame A (motion) #38: pitch=10.3 roll=-81.3 motion=1 activity=1
+

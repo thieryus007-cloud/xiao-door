@@ -1,0 +1,65 @@
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:09:09.434,937] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:09:09.435,768] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:09:09.435,780] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:09:09.435,791] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:09:09.435,902] <inf> bt_hci_core: HCI transport: SDC
+[00:09:09.435,963] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:09:09.435,980] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:09:09.435,995] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:09:09.436,001] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:09:13.437,467] <inf> xiao_door_sensor: trame A (motion) #50: pitch=0.4 roll=11.7 motion=1 activity=1
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:09:39.581,857] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:09:39.582,687] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:09:39.582,700] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:09:39.582,710] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:09:39.582,821] <inf> bt_hci_core: HCI transport: SDC
+[00:09:39.582,882] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:09:39.582,899] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:09:39.582,914] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:09:39.582,920] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:09:39.583,395] <inf> xiao_door_sensor: trame A (angle) #53: pitch=-2.5 roll=12.8 motion=0 activity=0
+[00:09:49.067,688] <inf> xiao_door_sensor: trame A (angle) #55: pitch=0.0 roll=12.7 motion=0 activity=0
+[00:09:54.550,869] <inf> xiao_door_sensor: trame A (motion) #57: pitch=0.4 roll=12.3 motion=1 activity=1
+[00:10:02.034,570] <inf> xiao_door_sensor: trame A (motion) #59: pitch=0.6 roll=12.4 motion=1 activity=1
+[00:10:17.520,239] <inf> xiao_door_sensor: trame A (motion) #61: pitch=44.8 roll=-159.5 motion=1 activity=1
+[00:10:23.003,466] <inf> xiao_door_sensor: trame A (motion) #63: pitch=-10.4 roll=15.0 motion=1 activity=1
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:11:03.877,383] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:11:03.878,214] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:11:03.878,226] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:11:03.878,237] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:11:03.878,347] <inf> bt_hci_core: HCI transport: SDC
+[00:11:03.878,408] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:11:03.878,425] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:11:03.878,440] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:11:03.878,447] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:11:03.878,933] <inf> xiao_door_sensor: trame A (angle) #66: pitch=-24.5 roll=16.5 motion=0 activity=0
+[00:11:09.362,285] <inf> xiao_door_sensor: trame A (motion) #68: pitch=-47.0 roll=143.7 motion=1 activity=1
+[00:11:14.845,533] <inf> xiao_door_sensor: trame A (motion) #70: pitch=-6.0 roll=8.6 motion=1 activity=1
+[00:11:30.331,210] <inf> xiao_door_sensor: trame A (motion) #72: pitch=-4.3 roll=8.3 motion=1 activity=1
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:11:52.693,131] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:11:52.693,963] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:11:52.693,975] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:11:52.693,986] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:11:52.694,096] <inf> bt_hci_core: HCI transport: SDC
+[00:11:52.694,157] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:11:52.694,174] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:11:52.694,189] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:11:52.694,196] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:11:54.695,178] <inf> xiao_door_sensor: trame A (motion) #75: pitch=-5.1 roll=8.4 motion=1 activity=1
+

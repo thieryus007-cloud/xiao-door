@@ -1,0 +1,14 @@
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:00:52.627,668] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             [0m
+[00:00:52.628,551] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[00:00:52.628,564] [0m<inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)[0m
+[00:00:52.628,575] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768[0m
+[00:00:52.628,944] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[00:00:52.629,007] [0m<inf> bt_hci_core: Identity: CB:DC:FC:BE:F9:F1 (random)[0m
+[00:00:52.629,024] [0m<inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059[0m
+[00:00:52.629,038] [0m<inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039[0m
+[00:00:52.629,044] [0m<inf> xiao_door_sensor: Bluetooth initialized -- door sensor mode: heartbeat every 15 min, motion-triggered otherwise[0m
+[00:00:54.629,913] [0m<inf> xiao_door_sensor: report (heartbeat): accel x=3.427120 y=-7.954340 z=-4.402195 m/s^2 |a|=9.715 gyro|w|=2.417 deg/s[0m

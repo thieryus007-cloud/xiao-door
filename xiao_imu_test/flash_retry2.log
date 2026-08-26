@@ -1,0 +1,4501 @@
+=== essai 1 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 2 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 3 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 4 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 5 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 6 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 7 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 8 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 9 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 10 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 11 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 12 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 13 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 14 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 15 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 16 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 17 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 18 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 19 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 20 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 21 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 22 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 23 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 24 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 25 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 26 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 27 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 28 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 29 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 30 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 31 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 32 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 33 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 34 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 35 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 36 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 37 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 38 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 39 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 40 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 41 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 42 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 43 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 44 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 45 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 46 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 47 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 48 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 49 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 50 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 51 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 52 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 53 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 54 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 55 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 56 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 57 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 58 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 59 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 60 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 61 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 62 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 63 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 64 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 65 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 66 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 67 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 68 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 69 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 70 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 71 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 72 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 73 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 74 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 75 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 76 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 77 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 78 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 79 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 80 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 81 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 82 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 83 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 84 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 85 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 86 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 87 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 88 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 89 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 90 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 91 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 92 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 93 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 94 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 95 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 96 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 97 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 98 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 99 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== essai 100 / 100 (150 kHz) ===
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 150 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 150 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003dfc msp: 0x20002990
+** Programming Started **
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff0140
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x00ff020c
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x10000100
+Info : SWD DPIDR 0x6ba02477
+Error: Failed to read memory at 0x1000005c
+Error: Couldn't read FICR CONFIGID register
+Error: auto_probe failed
+** Programming Failed **
+shutdown command invoked
+embedded:startup.tcl:1893: Error: 
+Traceback (most recent call last):
+  File "embedded:startup.tcl", line 1961, in program
+    program_error {** Programming Failed **} 1
+  File "embedded:startup.tcl", line 1893, in program_error
+    shutdown error
+=== boucle terminee apres 100 essais ===

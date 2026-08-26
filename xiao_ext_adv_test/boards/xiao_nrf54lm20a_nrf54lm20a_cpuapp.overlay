@@ -1,0 +1,43 @@
+#include <zephyr/dt-bindings/regulator/npm13xx.h>
+
+&pmic_i2c {
+	sda-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;
+	scl-gpios = <&gpio1 17 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&pmic {
+	regulators {
+		imu_vdd: LDO1 {
+			/delete-property/ regulator-boot-on;
+			regulator-init-microvolt = <3300000>;
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-initial-mode = <NPM13XX_LDSW_MODE_LDO>;
+		};
+	};
+};
+
+&lsm6ds3tr_c {
+	zephyr,deferred-init;
+};
+
+/* Battery-powered door sensor: no status LED should ever be lit. LED0
+ * defaults to "error" mode on this board, which the PMIC drives
+ * autonomously in hardware (lights up e.g. when no battery is detected) --
+ * switch it to "host" mode (software-controlled) so it stays off, since
+ * nothing in this firmware ever turns it on.
+ */
+&pmic_leds {
+	nordic,led0-mode = "host";
+};
+
+/* Not needed for this IMU-over-UART test; nrf_usbhs_wrapper.c fails to
+ * build against this SoC/DT snapshot when the wrapper node is left enabled. */
+&usbhs {
+	status = "disabled";
+};
+
+&usbhs_wrapper {
+	status = "disabled";
+};

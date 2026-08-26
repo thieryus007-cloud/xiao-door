@@ -1,0 +1,22 @@
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:13:47.387,937] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             [0m
+[00:13:47.388,833] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[00:13:47.388,846] [0m<inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)[0m
+[00:13:47.388,858] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768[0m
+[00:13:47.388,972] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[00:13:47.389,034] [0m<inf> bt_hci_core: Identity: D2:3A:F7:B1:E8:18 (random)[0m
+[00:13:47.389,052] [0m<inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059[0m
+[00:13:47.389,066] [0m<inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039[0m
+[00:13:47.389,072] [0m<inf> xiao_door_sensor: Bluetooth initialized -- door sensor mode: heartbeat every 15 min, motion-triggered otherwise[0m
+[00:13:49.389,484] [1;31m<err> os: ***** USAGE FAULT *****[0m
+[00:13:49.389,493] [1;31m<err> os:   Attempt to execute undefined instruction[0m
+[00:13:49.389,503] [1;31m<err> os: r0/a1:  0x008000ff  r1/a2:  0x41152c6c  r2/a3:  0x00000000[0m
+[00:13:49.389,509] [1;31m<err> os: r3/a4:  0x3df00000 r12/ip:  0x000000ff r14/lr:  0x0000874f[0m
+[00:13:49.389,513] [1;31m<err> os:  xpsr:  0x29000000[0m
+[00:13:49.389,516] [1;31m<err> os: Faulting instruction address (r15/pc): 0x000079ec[0m
+[00:13:49.389,535] [1;31m<err> os: >>> ZEPHYR FATAL ERROR 36: Unknown error on CPU 0[0m
+[00:13:49.389,547] [1;31m<err> os: Current thread: 0x20001c28 (unknown)[0m
+[00:13:49.447,518] [1;31m<err> os: Halting system[0m

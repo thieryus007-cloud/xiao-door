@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+    s = serial.Serial('COM7', 115200, timeout=2)
+  File "C:\Users\thier\AppData\Roaming\Python\Python314\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\thier\AppData\Roaming\Python\Python314\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "C:\Users\thier\AppData\Roaming\Python\Python314\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM7': FileNotFoundError(2, 'Le fichier spécifié est introuvable.', None, 2)

@@ -1,0 +1,25 @@
+[00:00:47.538,073] <inf> xiao_door_sensor: trame A (motion) #16: pitch=4.7 roll=-6.0 motion=1 activity=1
+[00:00:53.021,305] <inf> xiao_door_sensor: trame A (motion) #18: pitch=16.4 roll=-95.5 motion=1 activity=1
+[00:00:58.504,552] <inf> xiao_door_sensor: trame A (motion) #20: pitch=-34.8 roll=-177.1 motion=1 activity=1
+[00:01:03.987,766] <inf> xiao_door_sensor: trame A (motion) #22: pitch=6.9 roll=-120.8 motion=1 activity=1
+[00:01:11.471,488] <inf> xiao_door_sensor: trame A (motion) #24: pitch=-20.5 roll=-9.4 motion=1 activity=1
+[00:01:16.954,710] <inf> xiao_door_sensor: trame A (motion) #26: pitch=-6.4 roll=-108.8 motion=1 activity=1
+[00:01:22.437,946] <inf> xiao_door_sensor: trame A (motion) #28: pitch=-6.8 roll=22.0 motion=1 activity=1
+[00:01:37.923,614] <inf> xiao_door_sensor: trame A (motion) #30: pitch=-6.4 roll=22.1 motion=1 activity=1
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:02:24.469,566] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:02:24.470,397] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:02:24.470,409] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:02:24.470,420] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:02:24.470,530] <inf> bt_hci_core: HCI transport: SDC
+[00:02:24.470,591] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:02:24.470,608] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:02:24.470,623] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:02:24.470,630] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:02:26.471,607] <inf> xiao_door_sensor: trame A (motion) #33: pitch=-3.8 roll=23.9 motion=1 activity=1
+[00:02:31.954,924] <inf> xiao_door_sensor: trame A (angle) #35: pitch=-6.5 roll=22.4 motion=0 activity=0
+[00:02:45.440,103] <inf> xiao_door_sensor: trame A (motion) #37: pitch=-5.4 roll=21.7 motion=1 activity=1
+

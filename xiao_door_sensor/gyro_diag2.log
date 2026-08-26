@@ -1,0 +1,54 @@
+[00:02:23.361,482] <inf> xiao_door_sensor: trame A (motion) #20: pitch=-25.3 roll=-141.9 motion=1 activity=1
+[00:02:24.143,170] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=5712
+[00:02:28.844,723] <inf> xiao_door_sensor: trame A (motion) #22: pitch=45.4 roll=41.2 motion=1 activity=1
+[00:02:29.626,412] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=19101
+[00:02:34.327,956] <inf> xiao_door_sensor: trame A (motion) #24: pitch=-47.0 roll=-161.0 motion=1 activity=1
+[00:02:35.109,645] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=14200
+[00:02:39.811,212] <inf> xiao_door_sensor: trame A (motion) #26: pitch=-50.3 roll=132.3 motion=1 activity=1
+[00:02:40.592,902] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=7337
+[00:02:45.294,471] <inf> xiao_door_sensor: trame A (motion) #28: pitch=11.0 roll=30.0 motion=1 activity=1
+[00:02:46.076,160] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=23064
+[00:02:50.777,717] <inf> xiao_door_sensor: trame A (motion) #30: pitch=17.2 roll=121.8 motion=1 activity=1
+[00:02:51.559,409] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=24147
+[00:02:56.260,993] <inf> xiao_door_sensor: trame A (motion) #32: pitch=43.3 roll=109.3 motion=1 activity=1
+[00:02:57.042,685] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=28551
+[00:03:01.744,263] <inf> xiao_door_sensor: trame A (motion) #34: pitch=-35.5 roll=28.1 motion=1 activity=1
+[00:03:02.525,954] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=27330
+[00:03:13.229,043] <inf> xiao_door_sensor: trame A (motion) #36: pitch=46.9 roll=150.0 motion=1 activity=1
+[00:03:14.010,735] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=7092
+[00:03:18.712,307] <inf> xiao_door_sensor: trame A (motion) #38: pitch=-41.2 roll=106.0 motion=1 activity=1
+[00:03:19.493,999] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=24057
+[00:03:24.195,575] <inf> xiao_door_sensor: trame A (motion) #40: pitch=52.4 roll=93.1 motion=1 activity=1
+[00:03:24.977,267] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=24695
+[00:03:29.678,838] <inf> xiao_door_sensor: trame A (angle) #42: pitch=21.0 roll=172.1 motion=0 activity=0
+[00:03:30.460,530] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=9889
+*** Booting nRF Connect SDK v3.4.0-99553055607b ***
+*** Using Zephyr OS v4.4.0-bf801e4e3d19 ***
+[00:04:07.410,584] <inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+                                            c8 da 30 98 f9 f0 34 a4  4b 6e ba d3 08 19 cc 0c |..0...4. Kn......
+                                            ea 51 da 47                                      |.Q.G             
+[00:04:07.411,398] <inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)
+[00:04:07.411,410] <inf> bt_hci_core: HW Variant: nRF54Lx (0x0005)
+[00:04:07.411,421] <inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 200.12506 Build 888207768
+[00:04:07.411,529] <inf> bt_hci_core: HCI transport: SDC
+[00:04:07.411,591] <inf> bt_hci_core: Identity: E6:C9:11:CE:6E:C6 (random)
+[00:04:07.411,607] <inf> bt_hci_core: HCI: version 6.3 (0x11) revision 0x3039, manufacturer 0x0059
+[00:04:07.411,622] <inf> bt_hci_core: LMP: version 6.3 (0x11) subver 0x3039
+[00:04:07.411,629] <inf> xiao_door_sensor: Bluetooth initialized -- door sensor, profil L (System OFF): cold_boot=0 gpio_wake=1 reset_cause=0x00000080
+[00:04:07.412,108] <inf> xiao_door_sensor: trame A (angle) #45: pitch=15.0 roll=170.3 motion=0 activity=0
+[00:04:08.193,926] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=6525
+[00:04:12.895,517] <inf> xiao_door_sensor: trame A (motion) #47: pitch=21.3 roll=48.5 motion=1 activity=1
+[00:04:13.677,208] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=28042
+[00:04:18.378,788] <inf> xiao_door_sensor: trame A (motion) #49: pitch=8.0 roll=48.9 motion=1 activity=1
+[00:04:19.160,479] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=21674
+[00:04:23.862,053] <inf> xiao_door_sensor: trame A (motion) #51: pitch=59.1 roll=61.0 motion=1 activity=1
+[00:04:24.643,744] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=22825
+[00:04:29.345,310] <inf> xiao_door_sensor: trame A (motion) #53: pitch=-60.8 roll=58.2 motion=1 activity=1
+[00:04:30.127,002] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=14703
+[00:04:34.828,570] <inf> xiao_door_sensor: trame A (motion) #55: pitch=1.0 roll=82.4 motion=1 activity=1
+[00:04:35.610,262] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=19764
+[00:04:40.311,839] <inf> xiao_door_sensor: trame A (motion) #57: pitch=-28.2 roll=113.7 motion=1 activity=1
+[00:04:41.093,531] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=10560
+[00:04:45.795,100] <inf> xiao_door_sensor: trame A (motion) #59: pitch=33.0 roll=172.9 motion=1 activity=1
+[00:04:46.576,791] <inf> xiao_door_sensor: trame C: gyro_ret=0 gx=0.004 gy=0.004 gz=0.000 gyro_mag=6 accel_mag_x1000=9932
+

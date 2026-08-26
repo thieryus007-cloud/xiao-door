@@ -1,0 +1,23 @@
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter speed: 500 kHz
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x2886:0x0068, serial=C5F0E209
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: FW Version = 2.0.0
+Info : CMSIS-DAP: Serial# = C5F0E209
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 500 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [nrf54lm20a.cpu] Cortex-M33 r1p0 processor detected
+Info : [nrf54lm20a.cpu] target has 8 breakpoints, 4 watchpoints
+Info : [nrf54lm20a.cpu] Examination succeed
+Info : [nrf54lm20a.aux] Examination succeed
+Info : [nrf54lm20a.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Info : [nrf54lm20a.aux] gdb port disabled
+[nrf54lm20a.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0xf9000000 pc: 0x00003d34 msp: 0x200026e8
