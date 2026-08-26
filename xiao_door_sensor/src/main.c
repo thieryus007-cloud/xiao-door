@@ -83,8 +83,26 @@
 #include <zephyr/bluetooth/addr.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
+#include <hal/nrf_gpio.h>
 
 LOG_MODULE_REGISTER(xiao_door_sensor, LOG_LEVEL_INF);
+
+/* DIAGNOSTIC TEMPORAIRE (2026-08-27), PAS UN BUILD DE PRODUCTION : coupe
+ * bt_enable() et tout envoi de trame pour isoler la contribution du
+ * contrôleur BLE/MPSL dans le plancher de courant élevé mesuré au PPK2
+ * (~250-300 µA, six autres pistes déjà écartées -- voir
+ * Transition-nRF54LM20A-Optimisation-Consommation.md § Objectif chiffré).
+ * Test directement inspiré de la même vérification faite sur le projet
+ * XIAO nRF52840 (CONFIG_BT=n / BT=y, pics identiques dans les deux cas
+ * chez eux). À remettre à 0 après le test, quel qu'en soit le résultat --
+ * ce mode casse la fonction réelle du capteur (aucune trame envoyée). */
+#define DIAG_NO_RADIO_TEST 1
+/* Idem, IMU cette fois (2026-08-27, sur demande explicite -- même méthode
+ * que celle qui avait exclu les capteurs comme cause sur le projet frère
+ * nRF52840) : coupe l'init/lecture/réveil matériel de l'IMU pour obtenir
+ * une carte nue (SoC + réveil GRTC seul), la comparer au budget calculé
+ * SoC seul (~1 µA), puis réintroduire IMU et BLE un par un. */
+#define DIAG_NO_IMU_TEST 1
 
 #define IMU_NODE DT_ALIAS(imu0)
 #define RAD_TO_DEG 57.29577951308232f
@@ -325,17 +343,30 @@ static int init_imu(const struct device *dev)
 	return 0;
 }
 
-/* Accéléromètre seul : ~9 µA en low-power @12,5 Hz (LA_IddLM, datasheet
- * LSM6DS3TR-C DocID030071 Rev 3, Table 4 p. 24 -- vérifié le 2026-08-23,
- * voir C:\ncs\projects\Recherche-Reveil-Materiel-XIAO.md), doit tourner
- * en continu -- que ce soit pour le sondage logiciel ou pour armer le
- * réveil matériel INT1, voir configure_imu_wakeup(). Le gyroscope N'EST
- * PAS activé ici -- voir set_gyro_power(). Le laisser actif en continu
- * (comme le faisait la version précédente, qui appelait cet attr_set
- * aussi sur SENSOR_CHAN_GYRO_XYZ) coûte ~0,9 mA en continu, soit ~100x
- * le courant accéléromètre seul : sur une batterie 1500 mAh, la
- * différence est de l'ordre de quelques années d'autonomie contre
- * quelques semaines.
+/* Accéléromètre seul, doit tourner en continu -- que ce soit pour le
+ * sondage logiciel ou pour armer le réveil matériel INT1, voir
+ * configure_imu_wakeup(). Le gyroscope N'EST PAS activé ici -- voir
+ * set_gyro_power(). Le laisser actif en continu (comme le faisait la
+ * version précédente, qui appelait cet attr_set aussi sur
+ * SENSOR_CHAN_GYRO_XYZ) coûte ~0,9 mA en continu, soit ~100x le courant
+ * accéléromètre seul : sur une batterie 1500 mAh, la différence est de
+ * l'ordre de quelques années d'autonomie contre quelques semaines.
+ *
+ * Tentative 2026-08-27 : ODR abaissé à 1,6 Hz (code ODR_XL spécial bas-
+ * power du LSM6DS3TR-C) pour réduire le poste dominant du budget (9 µA à
+ * 12,5 Hz, LA_IddLM, datasheet DocID030071 Rev 3, Table 4 p.24) -- REVENU
+ * EN ARRIÈRE le même jour : mesure PPK2 montrant un plancher élevé et
+ * soutenu (~572 µA de moyenne) au lieu d'un retour rapide au repos,
+ * flashé en même temps que la désactivation du logging (deux changements
+ * à la fois, erreur de méthode -- un seul changement à la fois désormais).
+ * Hypothèse retenue, non encore confirmée : à 625 ms entre échantillons
+ * (contre 80 ms à 12,5 Hz), le seuil de réveil matériel WAKE_UP_THS
+ * (0x01, très sensible) peut se redéclencher en boucle sur la vibration
+ * ambiante, empêchant la carte de rester en System OFF. Retour à 12,5 Hz
+ * pour isoler cette variable avant de retenter 1,6 Hz avec un seuil moins
+ * sensible ou une autre approche. Voir
+ * Transition-nRF54LM20A-Optimisation-Consommation.md § « Objectif
+ * chiffré » pour le suivi complet.
  */
 static void set_accel_sampling_freq(const struct device *dev)
 {
@@ -391,13 +422,14 @@ static const struct i2c_dt_spec imu_i2c = {
 #define LSM6DS3TR_REG_MD1_CFG      0x5E
 #define LSM6DS3TR_MASK_MD1_INT1_WU BIT(5)
 
-/* Remis aux valeurs des unités #2/#3 le 2026-08-24 (l'essai à seuil
- * relevé, 0x04/0x40, ne répondait plus à un mouvement réel -- carte ne
- * répondant plus du tout au test). Seuil de réveil : 1 LSb (voir en-tête
- * du fichier pour la justification du choix, non calibré sur matériel
- * réel). Durée : 0 (déclenchement dès le premier échantillon au-dessus du
- * seuil, comportement le plus réactif, pas de paramètre supplémentaire à
- * calibrer). */
+/* Tentative 0x01 -> 0x04 (2026-08-27) ECARTEE le même jour : mesure PPK2
+ * montrant des rafales périodiques très régulières (~3,5-4 s d'écart,
+ * export CSV `ppk-20260826T192639.csv`) au lieu d'un bruit irrégulier --
+ * incompatible avec l'hypothèse d'un redéclenchement par bruit capteur
+ * (qui serait irrégulier, pas cadencé). La cause est ailleurs. Revenu à
+ * 0x01. Durée : 0 (déclenchement dès le premier échantillon au-dessus du
+ * seuil, voir en-tête du fichier pour la justification du choix, non
+ * calibré sur matériel réel). */
 #define IMU_WAKE_UP_THS_VALUE 0x01
 #define IMU_WAKE_UP_DUR_VALUE 0x00
 
@@ -466,7 +498,28 @@ static int arm_gpio_wake(void)
 	if (ret < 0) {
 		return ret;
 	}
-	return gpio_pin_interrupt_configure_dt(&imu_int1, GPIO_INT_LEVEL_ACTIVE);
+	ret = gpio_pin_interrupt_configure_dt(&imu_int1, GPIO_INT_LEVEL_ACTIVE);
+	if (ret < 0) {
+		return ret;
+	}
+
+	/* Erratum nRF54LM20A [114] GPIO -- 2026-08-27, trouvé par recherche
+	 * dans l'errata officiel Nordic (docs.nordicsemi.com,
+	 * errata_nRF54LM20A_EngB, anomaly_20A_114) : le mode DETECT par
+	 * défaut du GPIO peut faire consommer ~300 µA de plus qu'attendu en
+	 * System ON all idle si le signal DETECT oscille rapidement (bas-
+	 * haut-bas en moins de 0,5 µs) -- exactement notre cas d'usage
+	 * (réveil sur broche, interruption de niveau actif sur INT1 IMU).
+	 * Contournement officiel : passer le port en mode DETECT latché
+	 * (LDETECT) plutôt que le mode par défaut. Corrèle avec le plancher
+	 * de courant élevé mesuré au PPK2 (~250-400 µA en excès, du bon ordre
+	 * de grandeur) -- ODR, seuil de réveil et mode régulateur déjà
+	 * écartés comme causes (voir
+	 * Transition-nRF54LM20A-Optimisation-Consommation.md § Objectif
+	 * chiffré). */
+	nrf_gpio_port_detect_latch_set(NRF_P0, true);
+
+	return 0;
 }
 
 static uint16_t clamp_u16(float scaled)
@@ -1231,6 +1284,7 @@ int main(void)
 		memset(&diag, 0, sizeof(diag));
 	}
 
+#if !DIAG_NO_IMU_TEST
 	err = init_imu(imu);
 	if (err < 0) {
 		/* 2026-08-24 : ce chemin faisait "return 0" sans jamais armer de
@@ -1261,6 +1315,7 @@ int main(void)
 				"toujours actifs via GRTC)", err);
 		}
 	}
+#endif /* !DIAG_NO_IMU_TEST */
 
 	err = set_fixed_ble_identity();
 	if (err < 0) {
@@ -1268,6 +1323,7 @@ int main(void)
 			"falling back to stack-generated address", err);
 	}
 
+#if !DIAG_NO_RADIO_TEST
 	err = bt_enable(NULL);
 	if (err) {
 		/* Même correctif que pour l'échec IMU ci-dessus : reboot au lieu
@@ -1275,6 +1331,7 @@ int main(void)
 		LOG_ERR("Bluetooth init failed (err %d), reboot", err);
 		sys_reboot(SYS_REBOOT_COLD);
 	}
+#endif
 
 	LOG_INF("Bluetooth initialized -- door sensor, profil L (System OFF): "
 		"cold_boot=%d gpio_wake=%d reset_cause=0x%08x",
@@ -1292,6 +1349,7 @@ int main(void)
 	 * trame A (heartbeat) dans les 2-4s suivantes") -- à préserver. */
 	bool heartbeat_due = fresh_session || (now_us >= retained.next_heartbeat_us);
 
+#if !DIAG_NO_RADIO_TEST
 	if (fresh_session) {
 		/* Trame B immédiate au boot, comme aujourd'hui. */
 		send_frame_b(imu);
@@ -1301,24 +1359,37 @@ int main(void)
 		send_frame_b(imu);
 		retained.next_health_us = next_health_deadline(now_us);
 	}
+#else
+	ARG_UNUSED(health_due);
+#endif
 
 	uint8_t aw_exit_reason = 0xFF; /* fenêtre active non entrée ce cycle */
 	uint32_t aw_iters = 0;
 
+#if !DIAG_NO_RADIO_TEST
 	if (gpio_wake || heartbeat_due) {
 		run_active_window(imu, heartbeat_due, gpio_wake, &aw_exit_reason, &aw_iters);
 		retained.next_heartbeat_us = next_heartbeat_deadline(z_nrf_grtc_timer_read());
 	}
+#else
+	retained.next_heartbeat_us = next_heartbeat_deadline(now_us);
+#endif
 
 	retained.bthome_pid = bthome_pid;
 	retained_save();
 
+#if !DIAG_NO_IMU_TEST
 	int ret_gpio_wake = arm_gpio_wake();
 
 	if (ret_gpio_wake < 0) {
 		LOG_ERR("arm_gpio_wake failed (%d) -- le réveil sur mouvement ne "
 			"fonctionnera pas pour ce cycle", ret_gpio_wake);
 	}
+#else
+	/* IMU non initialisée dans ce mode -- ne pas réarmer une interruption
+	 * sur une broche non alimentée/flottante (risque de réveil parasite). */
+	int ret_gpio_wake = 0;
+#endif
 
 	uint64_t deadline_us = MIN(retained.next_health_us, retained.next_heartbeat_us);
 	uint64_t now2_us = z_nrf_grtc_timer_read();
@@ -1357,6 +1428,16 @@ int main(void)
 	 * prudence avant la validation longue durée. À reprendre plus tard :
 	 * les logs de fin de cycle peuvent de nouveau être perdus (mode
 	 * différé jamais vidé avant le reset), voir "N messages dropped". */
+
+	/* Erratum nRF54LM20A [37] POWER -- 2026-08-27, errata officiel Nordic
+	 * (anomaly_20A_37) : "Current consumption might increase after pin
+	 * reset or power cycle" si le firmware entre en System OFF trop tôt
+	 * après un reset/power-cycle. Contournement officiel exact : écrire 1
+	 * dans ce registre puis exécuter au moins 40 cycles CPU avant
+	 * sys_poweroff() -- largement respecté ici vu tout le travail déjà
+	 * fait dans ce cycle (I2C, BLE, calculs) entre le boot et ce point. */
+	*(volatile uint32_t *)0x5005340CUL = 1;
+
 	sys_poweroff();
 
 	return 0;

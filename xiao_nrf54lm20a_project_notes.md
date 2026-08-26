@@ -177,6 +177,20 @@ réellement (le firmware semble redémarrer en boucle toutes les 1-2s). Un
 simple `reset`/`exit` OpenOCD ne suffit pas à en sortir, seul un cycle
 d'alimentation complet le fait.
 
+⚠️ **Cas particulier confirmé le 2026-08-27, alimentation externe (PPK2)
+branchée sur BAT+/BAT-** : le PMIC nPM1300 régule les rails du SoC à
+partir de l'entrée BAT, indépendamment de l'USB-C. Si le PPK2 (ou toute
+autre alimentation externe) reste branché sur BAT+/BAT- pendant qu'on
+débranche/rebranche seulement l'USB-C, le SoC **ne perd jamais réellement
+l'alimentation** et reste en Debug Interface mode malgré le cycle USB-C —
+symptôme observé : courant de repos mesuré anormalement élevé (plancher
+plusieurs centaines de µA au lieu de quelques µA/dizaines de µA), qui ne
+change pas d'un test à l'autre même après une modification de firmware
+censée réduire la consommation. **Il faut couper toutes les sources
+d'alimentation en même temps** (USB-C ET la sortie du PPK2/l'alimentation
+externe) pour obtenir une vraie coupure, avant de rebrancher uniquement
+la source utilisée pour la mesure.
+
 ## Identifier une carte branchée (adresse BLE et/ou numéro d'unité)
 
 Utile dès qu'on manipule plusieurs cartes dans la même session — le port
