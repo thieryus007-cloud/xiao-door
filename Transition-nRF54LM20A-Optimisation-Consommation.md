@@ -9,18 +9,47 @@ sujet, pour reprendre directement d'ici plutôt que de tout redécouvrir.
 (budget calculé, jamais mesuré : ~13,9 µA — voir
 `xiao_nrf54lm20a_project_notes.md` § Budget énergétique).
 
-**Où on en est** : le firmware complet (IMU + BLE) mesure ~250-400 µA au
-repos — 20 à 60x le budget calculé. Sept causes plausibles testées une par
-une, **toutes écartées** (tableau ci-dessous). Le dernier test (carte nue,
-IMU et BLE coupés) vient de tomber juste avant la fin de cette conversation
-et n'est **pas encore analysé en détail** — c'est le point de départ de la
-prochaine session (voir § Dernier résultat, pas encore interprété).
+**🔴 PRIORITÉ ABSOLUE, à traiter avant toute autre chose (établi le
+2026-08-27, Phase 1 du plan de test)** : sur un build **sans aucune
+source de réveil armée** (ni GPIO, ni GRTC, ni écriture d'erratum),
+`sys_poweroff()` appelé immédiatement après `leds_off()` — donc en théorie
+un seul micro-transitoire de boot puis un vrai System OFF permanent
+(plus aucune activité possible, aucune fonction du firmware n'est
+exercée) — la mesure PPK2 montre un **bruit continu en dents de scie
+(~15-28 µA, jamais de retour à zéro, période ~5 ms) qui persiste sans
+interruption sur toute la durée de la mesure** (plusieurs secondes
+observées). **Conclusion : la carte n'atteint jamais réellement le
+System OFF, quel que soit le firmware.** Ce n'est ni l'IMU, ni le BLE, ni
+le GPIO wake, ni le GRTC, ni les erratums 114/37 — aucun de ce code ne
+s'exécute dans ce build. Le problème est plus fondamental : soit
+`sys_poweroff()`/`nrf_regulators_system_off()` ne fonctionne pas
+réellement sur cette carte/ce SDK (NCS 3.4.0, snapshot très récent pour
+cette puce), soit un état persistant (Debug Interface Mode qui ne se
+dissipe jamais malgré le protocole de coupure d'alimentation déjà en
+place, ou autre) empêche le vrai System OFF.
 
-**Prochaine action immédiate** : lire le § « Dernier résultat » ci-dessous,
-l'interpréter, décider de la suite (probablement réintroduire IMU seule,
-puis BLE seul, pour savoir laquelle des deux réintroduit le plancher élevé
-— sauf si le nouveau motif de pics ~1,5 s observé même sans IMU/BLE change
-la priorité, voir hypothèse ci-dessous).
+**Prochaine action immédiate (nouvelle conversation)** : ne PAS reprendre
+le plan de phases 2-6 (IMU, BLE, GRTC, GPIO) tant que ce point n'est pas
+résolu — inutile d'étudier ce qui se passe *avant* `sys_poweroff()` si
+`sys_poweroff()` lui-même n'aboutit jamais. Pistes à explorer en premier :
+1. Vérifier si le problème est spécifique à un flash via SWD/OpenOCD
+   (Debug Interface Mode qui ne se dissipe jamais malgré coupure
+   d'alimentation ≥30s déjà testée sans effet — possible que la coupure
+   ne soit pas le bon mécanisme, ou pas assez longue, ou pas le vrai
+   problème).
+2. Rechercher un erratum/bug connu Nordic spécifique à `sys_poweroff()`
+   ne fonctionnant pas sur nRF54LM20A/NCS 3.4.0 (au-delà des erratums 37
+   et 114 déjà trouvés, qui concernent un courant élevé *pendant* un
+   System OFF qui a lieu, pas l'absence totale de System OFF).
+3. Reproduire l'exemple officiel Zephyr `samples/boards/nordic/system_off`
+   tel quel (sans aucun code applicatif) sur cette carte, pour savoir si
+   le problème est dans ce snapshot NCS/board lui-même ou introduit par
+   notre firmware.
+4. Vérifier la piste retained_mem/RAM retention : le code de
+   `z_sys_poweroff()` (`zephyr/soc/nordic/common/poweroff.c`) désactive la
+   rétention RAM puis appelle `nrf_regulators_system_off()` — vérifier
+   que cet appel est bien atteint (ex. `CODE_UNREACHABLE` juste après,
+   qui ne devrait jamais s'exécuter).
 
 ## Protocole de travail (fixé le 2026-08-27, valable jusqu'à la fin du projet)
 
@@ -164,6 +193,33 @@ aucune trame envoyée). Logging désactivé (définitif), `CONFIG_SERIAL`/
 effet négatif connu). **Remettre les deux `DIAG_*` à 0 dès que le
 diagnostic carte-nue est exploité** (réintroduire IMU seule, puis BLE
 seule, un test à la fois) pour revenir à un firmware fonctionnel.
+
+## Plan de test par phases (fourni par l'utilisateur le 2026-08-27, vérifié et en cours d'application)
+
+Un seul changement entre deux mesures, ≥2-3 min de repos stable par
+mesure, noter systématiquement moyenne/plancher/pics/build exact.
+
+| Phase | Config | Statut |
+|---|---|---|
+| 0 | `DIAG_NO_RADIO_TEST=1` + `DIAG_NO_IMU_TEST=1` (baseline carte nue) | **FAIT** — voir § Dernier résultat ci-dessus (~19 µA hors pic, pics ~17 mA/~1,4-1,5 s). Ne pas refaire. |
+| 1 | + `DIAG_PHASE1_BARE_POWEROFF=1` : aucun réveil armé (ni GPIO ni GRTC), aucune écriture d'erratum, `sys_poweroff()` juste après `leds_off()` | **FAIT (2026-08-27) — résultat majeur** : 18,67-18,79 µA de moyenne, 26-28 µA max, **bruit continu en dents de scie (période ~5 ms), jamais de retour à zéro, sans interruption sur toute la mesure**. Preuve directe que `sys_poweroff()` n'atteint jamais le vrai System OFF, indépendamment de tout le reste. **Voir § Résumé en tête de document — priorité absolue.** |
+| 2 | Retirer `DIAG_PHASE1_BARE_POWEROFF`, réarmer seulement `z_nrf_grtc_wakeup_prepare()` (délai long, ex. 60s), pas de GPIO | Pas encore fait |
+| 3A | Réarmer `arm_gpio_wake()` **sans** `nrf_gpio_port_detect_latch_set` (retirer l'appel erratum 114) | Pas encore fait |
+| 3B | Idem avec le latch erratum 114 (version actuelle) | Pas encore fait |
+| 4 | `DIAG_NO_IMU_TEST=0`, IMU réactivée seule (BLE toujours coupé), config actuelle (THS=0x01, DUR=0x00, ODR 12,5 Hz) | Pas encore fait |
+| 4.1 | + ODR → 1,6 Hz | Pas encore fait |
+| 4.2 | + THS → 0x04 ou 0x08 | Pas encore fait |
+| 4.3 | + Routage INT1 désactivé (MD1_CFG bit5=0) | Pas encore fait |
+| 5 | `DIAG_NO_RADIO_TEST=0` aussi — build de production complet | Pas encore fait |
+| 6 | Si toujours élevé : pins flottantes, régulateurs PMIC, re-vérification UART, comparaison nRF52840 même PPK2/même alim | Pas encore fait |
+
+**Note de cohérence importante (2026-08-27)** : dans le build de la Phase 0
+(déjà mesuré), `z_nrf_grtc_wakeup_prepare()` (plancher 1s) et l'écriture
+registre de l'erratum 37 tournaient **encore sans interruption** à chaque
+cycle — seul l'erratum 114 (GPIO) était déjà neutralisé de fait (il vit
+dans `arm_gpio_wake()`, sauté entièrement par `DIAG_NO_IMU_TEST`). C'est
+probablement l'explication des pics ~1,4-1,5 s déjà observés en Phase 0 —
+la Phase 1 teste directement cette hypothèse.
 
 ## Prochaines pistes à tester (par ordre de priorité suggéré)
 

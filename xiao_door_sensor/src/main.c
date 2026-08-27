@@ -103,6 +103,10 @@ LOG_MODULE_REGISTER(xiao_door_sensor, LOG_LEVEL_INF);
  * une carte nue (SoC + réveil GRTC seul), la comparer au budget calculé
  * SoC seul (~1 µA), puis réintroduire IMU et BLE un par un. */
 #define DIAG_NO_IMU_TEST 1
+/* Phase 1 du plan de test 2026-08-27 : coupe tout après leds_off() --
+ * aucun réveil (GPIO/GRTC) armé, aucune écriture d'erratum. Référence
+ * absolue SoC nu. À remettre à 0 dès la phase 1 terminée. */
+#define DIAG_PHASE1_BARE_POWEROFF 1
 
 #define IMU_NODE DT_ALIAS(imu0)
 #define RAD_TO_DEG 57.29577951308232f
@@ -1259,6 +1263,20 @@ int main(void)
 	bool gpio_wake = (reset_cause & RESET_LOW_POWER_WAKE) != 0;
 
 	leds_off();
+
+#if DIAG_PHASE1_BARE_POWEROFF
+	/* Phase 1 du plan de test 2026-08-27 (fourni par l'utilisateur,
+	 * vérifié et appliqué) : référence absolue SoC+GRTC. Aucun réveil
+	 * armé (ni GPIO ni GRTC), aucune écriture d'erratum, sys_poweroff()
+	 * immédiatement après leds_off(). La carte ne se réveillera plus du
+	 * tout après ce cycle (aucune source de réveil programmée) -- attendu
+	 * et voulu pour cette mesure : un seul transitoire de boot puis un
+	 * plancher vrai pendant toute la fenêtre de mesure. Voir
+	 * Transition-nRF54LM20A-Optimisation-Consommation.md § Plan de test
+	 * (phases). */
+	sys_poweroff();
+	return 0;
+#endif
 
 	bool have_state = retained_load();
 	bool fresh_session = cold_boot || !have_state;
