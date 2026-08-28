@@ -1,0 +1,83 @@
+/* Etape 2 (2026-08-27) -- base System OFF validee (test #13, 3,02 uA) +
+ * GRTC + RAM retenue + BLE/BTHome (trame B sante/batterie uniquement,
+ * pas de trame A/C -- necessitent des donnees IMU, reportees a l'etape
+ * IMU separee). Pas de reveil IMU/bouton dans ce test : reveil GRTC
+ * uniquement. */
+
+&power_en {
+	/delete-property/ regulator-boot-on;
+};
+
+#include <zephyr/dt-bindings/regulator/npm13xx.h>
+
+/* Test #16 (2026-08-27) -- configuration alignee sur l'exemple officiel
+ * Seeed (wiki.seeedstudio.com/xiao_nrf54lm20a_with_onboard/, imu_click) :
+ * regulator-boot-on restaure (au lieu d'un regulator_enable() manuel
+ * dans main.c) + zephyr,deferred-init sur le noeud IMU (voir plus bas)
+ * + CONFIG_LSM6DSL_TRIGGER_GLOBAL_THREAD=y (voir prj.conf) -- jamais
+ * teste ensemble jusqu'ici. */
+&pmic {
+	regulators {
+		imu_vdd: LDO1 {
+			regulator-boot-on;
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+		};
+	};
+};
+
+/* Initialisation du driver LSM6DSL differee : sans cela, le SYS_INIT
+ * automatique (priorite POST_KERNEL) tourne AVANT main() -- donc avant
+ * tout regulator_enable() explicite -- et echoue silencieusement
+ * (WHO_AM_I NACK, IMU non alimente). Avec regulator-boot-on, le
+ * regulateur EST deja actif a ce stade, mais Seeed differe quand meme
+ * l'init pour la declencher explicitement au moment choisi
+ * (device_init(), voir main.c). */
+&lsm6ds3tr_c {
+	zephyr,deferred-init;
+};
+
+/* Region RAM retenue (packet_id, echeances GRTC) -- reprise telle quelle
+ * de l'exemple officiel Zephyr system_off pour ce SoC (cpuapp_sram de
+ * base 511 KB, meme calcul que la production : 507 KB utilisables +
+ * 4 KB retenus). */
+/ {
+	cpuapp_sram@2007ec00 {
+		compatible = "zephyr,memory-region", "mmio-sram";
+		reg = <0x2007ec00 DT_SIZE_K(4)>;
+		zephyr,memory-region = "RetainedMem";
+		status = "okay";
+
+		retainedmem0: retainedmem {
+			compatible = "zephyr,retained-ram";
+			status = "okay";
+		};
+	};
+
+	aliases {
+		retainedmemdevice = &retainedmem0;
+	};
+};
+
+&cpuapp_sram {
+	reg = <0x20000000 DT_SIZE_K(507)>;
+	ranges = <0x0 0x20000000 0x7ec00>;
+};
+
+&pmic_leds {
+	status = "disabled";
+};
+
+&py25q64 {
+	status = "okay";
+};
+
+/* Meme bug de build deja rencontre dans ce projet (nrf_usbhs_wrapper.c),
+ * necessaire pour compiler quel que soit le test. */
+&usbhs {
+	status = "disabled";
+};
+
+&usbhs_wrapper {
+	status = "disabled";
+};

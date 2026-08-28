@@ -155,9 +155,42 @@ troisième essai consécutif à date.
 exit`** — le driver de flash générique qu'utilise OpenOCD pour ce chip lit
 des registres qui n'existent pas sur la nRF54LM20A et échoue toujours. La
 procédure `nrf54lm20a-load` ci-dessus (fournie par Seeed dans
-`support/openocd.cfg`) écrit directement en RRAM et fonctionne de façon
-fiable. Pas de message "Verified OK" en cas de succès — c'est normal, la
-vraie confirmation vient de l'étape suivante.
+`support/openocd.cfg`) écrit directement en RRAM. Pas de message
+"Verified OK" en cas de succès -- **ce n'est PAS une preuve de fiabilité**
+(voir avertissement ci-dessous, corrigé le 2026-08-27 : cette phrase
+affirmait à tort "c'est normal", sans jamais avoir été vérifié).
+
+🔴 **`nrf54lm20a-load` peut écrire un mot de façon incorrecte en RRAM, sans
+aucune erreur affichée (confirmé le 2026-08-27)** : une première
+vérification a montré un mot de la table de vecteurs (gestionnaire
+BusFault) erroné après un flash sans message d'erreur ; un reflash du
+*même* fichier a corrigé le mot -- pas systématique, mais réel et
+invisible sans vérification explicite. **Vérifier après chaque flash
+dont le résultat compte** (pas nécessaire pour de la simple itération
+rapide non critique) :
+
+```bash
+openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
+  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "adapter serial <numero-serie>" -c "adapter speed 500" \
+  -c "init" -c "reset halt" \
+  -c "verify_image \"$HEX\"" \
+  -c "reset" -c "exit"
+```
+
+Si `verify_image` signale une erreur, reflasher (même fichier) et
+revérifier avant de continuer -- ne jamais mesurer/valider un
+comportement sur un flash non vérifié.
+
+⚠️ **Ne PAS vérifier par `dump_image` + `cmp` contre le `.bin` compilé**
+(méthode tentée puis abandonnée le 2026-08-27) : la RRAM ne s'efface pas
+avant écriture (contrairement au NOR flash), donc toute adresse non
+explicitement écrite par le `.hex` courant garde le contenu laissé par
+un flash précédent différent -- alors que `objcopy` remplit ces trous à
+`0xFF` dans le `.bin`. Résultat : `cmp` signale de fausses corruptions
+sur des zones de padding jamais exécutées (repéré via `nm -n` : trou
+entre deux symboles de section vide). `verify_image` avec le `.hex`
+évite ce piège car il ne compare que les adresses réellement
+programmées par le fichier.
 
 `vid_pid 0x2886 0x0068` est nécessaire (VID Seeed absent de la liste par
 défaut d'OpenOCD).
