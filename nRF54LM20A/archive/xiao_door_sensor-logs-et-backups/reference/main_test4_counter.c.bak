@@ -1,0 +1,49 @@
+/*
+ * ÉTAPE 0 -- test minimal (2026-08-27), demandé explicitement par
+ * l'utilisateur : repartir de zéro avec le code le plus simple possible
+ * qui compile, mesurer au PPK2, puis réintroduire une seule chose à la
+ * fois. Sauvegarde du firmware complet avant ce test :
+ * src/main_full_2026-08-27.c.bak, prj_full_2026-08-27.conf.bak.
+ * Voir Transition-nRF54LM20A-Optimisation-Consommation.md § Plan de test
+ * minimal pas-à-pas.
+ *
+ * Test #4 (2026-08-27) : un seul ajout par rapport à l'Étape 0 nue --
+ * compteur de cycles en RAM retenue (CRC-validé), pour distinguer par
+ * une lecture SWD ponctuelle après une mesure PPK2 de durée connue :
+ * - compteur ~= 1 : le SoC reste bloqué dans une seule boucle WFE
+ *   (System OFF simulé), jamais de redémarrage réel.
+ * - compteur >> 1 (proportionnel à durée/période observée ~5-8 ms) :
+ *   redémarrage en boucle réel.
+ * Toujours pas d'IMU, BLE, écriture d'erratum, ni LED.
+ */
+#include <zephyr/kernel.h>
+#include <zephyr/sys/poweroff.h>
+#include <zephyr/drivers/retained_mem.h>
+#include <zephyr/sys/crc.h>
+
+struct retained_counter {
+	uint32_t boot_count;
+	uint32_t crc;
+};
+
+#define RETAINED_CRC_OFFSET offsetof(struct retained_counter, crc)
+
+static const struct device *const retained_dev =
+	DEVICE_DT_GET(DT_ALIAS(retainedmemdevice));
+
+int main(void)
+{
+	struct retained_counter rc;
+
+	if (retained_mem_read(retained_dev, 0, (uint8_t *)&rc, sizeof(rc)) != 0 ||
+	    crc32_ieee((const uint8_t *)&rc, RETAINED_CRC_OFFSET) != rc.crc) {
+		rc.boot_count = 0;
+	}
+
+	rc.boot_count++;
+	rc.crc = crc32_ieee((const uint8_t *)&rc, RETAINED_CRC_OFFSET);
+	retained_mem_write(retained_dev, 0, (uint8_t *)&rc, sizeof(rc));
+
+	sys_poweroff();
+	return 0;
+}

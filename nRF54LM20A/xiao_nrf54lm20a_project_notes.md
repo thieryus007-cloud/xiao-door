@@ -182,28 +182,29 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
 
 ## Prochaines étapes
 
-1. Implémenter la détection de mouvement (trames A/C : mouvement,
-   chute/choc, double-tap, bouton, pitch/roll/yaw) sur l'architecture
-   System ON IDLE actuelle — voir
-   `Configuration-nRF54LM20A-System-ON-IDLE.md` § 5 (écart fonctionnel
-   connu). L'ancienne implémentation de ces fonctions (registres IMU,
-   logique de déclenchement, résultats de test) est conservée dans
-   `archive/docs-historique/xiao_nrf54lm20a_project_notes-ARCHIVE-2026-08-29.md`
-   pour référence — la logique reste valable, à réadapter à la nouvelle
-   architecture (plus de réveil par interruption matérielle, sondage
-   périodique uniquement).
-2. Reprendre les tests fonctionnels complets dans Home Assistant pour
-   les unités #01/#02 (nouvelle architecture) — intégrées mais pas
-   encore vérifiées en profondeur au-delà de la trame santé.
-3. Résoudre ou contourner le point bloquant nPM1300 `imu_vdd`/LDO1
+1. **Fait le 2026-08-29** : détection de mouvement portée (trames A/C :
+   mouvement, orientation pitch/roll/yaw, bouton, tamper=0, vibration=0)
+   sur l'architecture System ON IDLE — voir
+   `Configuration-nRF54LM20A-System-ON-IDLE.md` § 3.3/§ 5. Unité #01
+   flashée et en cours de vérification fonctionnelle dans HA. Chute/choc
+   et double-tap restent non implémentés (comme en production, le driver
+   LSM6DSL n'expose pas ces événements matériels).
+2. Porter le même firmware complet (A/B/C) sur l'unité #02 (encore sur le
+   build santé-seule).
+3. Re-mesurer la consommation PPK2 avec trafic événementiel réel (le
+   repos seul devrait rester proche de ~20-22 µA).
+4. Reprendre les tests fonctionnels complets dans Home Assistant pour
+   les unités #01/#02 (nouvelle architecture) — au-delà de la simple
+   présence des entités (mouvement réel, angle, bouton, IMU brut).
+5. Résoudre ou contourner le point bloquant nPM1300 `imu_vdd`/LDO1
    (~250-300 µA, question posée à Nordic) — voir
    `Nordic-Support-Report-XIAO-nRF54LM20A.md`.
-4. Déploiement des ~17 XIAO nRF54LM20A restants — en attente que
-   l'architecture couvre la détection de mouvement (étape 1) avant tout
-   flash de lot.
-5. Remplacer le proxy BLE ESPHome temporaire par les ESP32-S3 dédiés une
+6. Déploiement des ~17 XIAO nRF54LM20A restants — en attente de la
+   re-mesure de consommation avec trafic événementiel (étape 3) avant
+   tout flash de lot.
+7. Remplacer le proxy BLE ESPHome temporaire par les ESP32-S3 dédiés une
    fois reçus, puis décommissionner `ble-proxy-temp`.
-6. Démarrage nRF52840 — voir `Transition-nRF52840-Sense-Demarrage.md`
+8. Démarrage nRF52840 — voir `Transition-nRF52840-Sense-Demarrage.md`
    (projet frère, dépôt séparé).
 
 ## Référence BTHome v2 — Object IDs (générique, réutilisable quelle que soit la version du firmware)
@@ -246,8 +247,12 @@ Toute l'implémentation détaillée de l'ancienne architecture (System OFF +
 réveil IMU par interruption matérielle, trames A/B/C complètes,
 chute/choc, double-tap, bouton, yaw, budget énergétique désormais
 invalide) est conservée dans
-`archive/docs-historique/xiao_nrf54lm20a_project_notes-ARCHIVE-2026-08-29.md`
-— utile pour réadapter cette logique à la nouvelle architecture (étape 1
-ci-dessus), mais ne décrit plus le firmware actuellement flashé sur
-#01/#02. Le reste de l'historique de tests (tests #1-39) est dans
+`archive/docs-historique/xiao_nrf54lm20a_project_notes-ARCHIVE-2026-08-29.md`.
+Cette logique a servi de référence directe pour le portage des trames
+A/C sur l'architecture System ON IDLE (étape 1 ci-dessus, fait le
+2026-08-29) — le fichier de code source lui-même (`main_full_2026-08-27.c.bak`)
+est conservé dans
+`archive/xiao_door_sensor-logs-et-backups/reference/`. Ce document
+d'historique ne décrit plus le firmware actuellement flashé sur #01/#02.
+Le reste de l'historique de tests (tests #1-39) est dans
 `archive/docs-historique/XIAO-nRF54LM20A-Solution-System-OFF.md`.

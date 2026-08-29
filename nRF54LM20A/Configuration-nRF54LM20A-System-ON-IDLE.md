@@ -19,14 +19,20 @@ la question ouverte auprès de Nordic, voir
 - **Consommation mesurée** : **~20-22 µA** en moyenne au repos (unité
   #01 et #02, PPK2, fenêtre 60 s) — contre 70-144 µA pour l'ancienne
   architecture (System OFF + redémarrage complet par cycle).
-- **Fonctionnalités actives** : trame BTHome v2 santé (batterie %,
-  tension) toutes les 15 min, sondage accéléromètre toutes les 1 s
-  (aucune trame de mouvement envoyée pour l'instant — voir § 5, écart
-  fonctionnel connu).
-- **Unités déployées avec cette architecture** : #01 et #02, intégrées
-  dans Home Assistant (découverte BTHome), tests fonctionnels HA complets
-  à reprendre séparément. #03 tourne toujours l'ancienne architecture,
-  aucun flash de la nouvelle prévu pour l'instant — voir § 6.
+- **Fonctionnalités actives (parité de production atteinte le 2026-08-29)** :
+  trame BTHome v2 santé (batterie %, tension, température die) toutes les
+  15 min ; trame mouvement/orientation (pitch/roll/yaw, activité,
+  bouton, tamper=0, vibration=0) sur événement + heartbeat 60 min ; trame
+  IMU brut (magnitudes + accélération signée par axe) envoyée avec chaque
+  trame mouvement. Sondage accéléromètre toutes les 1 s, gyroscope lu
+  uniquement en rafale au moment d'un événement (jamais en continu). Voir
+  § 3.3 pour le détail.
+- **Unités déployées avec cette architecture** : #01 (firmware complet
+  A/B/C, flashé le 2026-08-29) et #02 (encore sur le build santé-seule
+  précédent, à mettre à jour). Intégrées dans Home Assistant (découverte
+  BTHome), tests fonctionnels HA complets à reprendre séparément. #03
+  tourne toujours l'ancienne architecture (déjà toutes les trames), aucun
+  flash de la nouvelle architecture prévu pour l'instant — voir § 6.
 
 **Objectif final non atteint à ce jour** : 5-6 µA (référence : projet
 frère XIAO nRF52840 Sense, ~10 µA avec détection de mouvement complète).
@@ -48,10 +54,16 @@ ouverte auprès du support Nordic (§ 7).
   non résolue, voir § 7) — d'où la nécessité de le couper entre chaque
   lecture plutôt que de le laisser actif pour un réveil par interruption
   matérielle.
-- RAM inutilisée (au-delà de l'image liée, ~23,5 Ko sur 507 Ko retenus)
+- RAM inutilisée (au-delà de l'image liée, ~23,7 Ko sur 507 Ko retenus)
   coupée via la bibliothèque officielle NCS `RAM_POWER_DOWN_LIBRARY`.
-- Trame santé BTHome envoyée seulement quand due (toutes les 15 min),
-  jamais à chaque cycle.
+- Trame santé envoyée seulement quand due (15 min) ; trame
+  mouvement/orientation envoyée seulement sur événement réel (delta
+  d'accélération, franchissement d'angle) ou heartbeat (60 min) — jamais
+  à chaque cycle de sondage.
+- Gyroscope activé uniquement en rafale (ODR 12,5 Hz, ~200 ms de marge de
+  démarrage) au moment précis d'envoyer un événement, dans la même
+  fenêtre `imu_vdd` que l'accéléromètre — jamais laissé actif en continu
+  (coûterait ~0,9 mA contre ~9 µA pour l'accéléromètre seul).
 
 ### Détail technique important : ré-initialisation IMU par cycle
 
@@ -100,11 +112,10 @@ CONFIG_SENSOR=y
 CONFIG_NPM13XX_CHARGER=y
 CONFIG_MFD=y
 
-CONFIG_REGULATOR=y
-
-CONFIG_I2C=y
 CONFIG_LSM6DSL=y
-CONFIG_LSM6DSL_TRIGGER_GLOBAL_THREAD=y
+CONFIG_LSM6DSL_ENABLE_TEMP=y
+
+CONFIG_REGULATOR=y
 
 CONFIG_MAIN_STACK_SIZE=4096
 CONFIG_SYSTEM_WORKQUEUE_STACK_SIZE=2048
@@ -117,6 +128,15 @@ suspendu à l'exécution. Un bug driver UARTE documenté (fuite de
 référence PM runtime) fait échouer la suspension à l'exécution dès
 qu'un autre périphérique (BLE, régulateur+IMU) tourne en même temps —
 le serial reste actif en idle, ~260-470 µA au lieu de quelques µA.
+
+**`CONFIG_LSM6DSL_ENABLE_TEMP=y` requis (ajouté le 2026-08-29)** : sans
+cette ligne, tout le code de lecture `SENSOR_CHAN_DIE_TEMP` du driver
+LSM6DSL est compilé hors du binaire (`#if defined(CONFIG_LSM6DSL_ENABLE_TEMP)`
+dans `lsm6dsl.c`) — la température de la trame B resterait silencieusement
+figée à 0 sans erreur de build. `CONFIG_I2C` et `CONFIG_LSM6DSL_TRIGGER_*`
+n'ont pas besoin de ligne explicite : auto-sélectionnés par le Kconfig du
+driver capteur (`CONFIG_LSM6DSL_TRIGGER_NONE=y` de fait — aucun thread de
+trigger, la détection de mouvement reste un sondage logiciel).
 
 ### 3.2 `xiao_door_sensor/boards/xiao_nrf54lm20a_nrf54lm20a_cpuapp.overlay`
 
@@ -198,18 +218,51 @@ isolée proprement depuis.
 ### 3.3 `xiao_door_sensor/src/main.c` — structure
 
 - `sample_motion()` : active `imu_vdd`, réécrit `CTRL3_C`/`CTRL6_C` par
-  I2C direct, ODR accéléromètre = **208 Hz**, attente de règlage
-  6 ms (période réelle ODR ~4,8 ms), lit X/Y/Z en une seule transaction
-  I2C groupée, désactive `imu_vdd`.
-- `main()` : init une seule fois (LED déconnectées, broches SPI externe
-  forcées à un niveau bas défini, identité BLE fixe dérivée du hardware
-  ID, `bt_enable()`, `power_down_unused_ram()`), puis boucle infinie :
-  `sample_motion()` → trame BTHome santé si échéance 15 min dépassée →
-  `k_sleep(K_MSEC(1000))`.
+  I2C direct, ODR accéléromètre = **208 Hz**, attente de réglage 6 ms
+  (période réelle ODR ~4,8 ms), lit X/Y/Z (via `sensor_value_to_float()`,
+  pas de troncature entière), calcule pitch/roll et détection de
+  mouvement/hystérésis d'angle, lit la température die si une trame santé
+  est due, lit le gyroscope en rafale (et intègre le yaw) **seulement**
+  si un événement va effectivement être envoyé — tout cela avant de
+  désactiver `imu_vdd`, jamais après (l'advertising BLE qui suit peut
+  bloquer jusqu'à ~700 ms–10 s, hors de question de garder le rail actif
+  pendant ce temps).
+- Boucle principale (`main()`, après l'init unique) : calcule
+  `health_due`/`heartbeat_due` (échéances GRTC) → `sample_motion()` →
+  envoie trame A + trame C si événement détecté et non plafonné par
+  l'anti-rafale → machine à états mouvement/repos (trame repos répétée
+  3× si retour au calme) → trame B si santé due → `retained_save()` →
+  `k_sleep(K_MSEC(1000))`. Logique événementielle (seuils, anti-rafale,
+  hystérésis, repos) reprise à l'identique de l'ancien firmware de
+  référence (`archive/xiao_door_sensor-logs-et-backups/reference/
+  main_full_2026-08-27.c.bak`), simplement remise à plat dans la boucle
+  unique (plus de fenêtre active bornée séparée : la boucle tourne déjà
+  en continu).
 - `MOTION_POLL_INTERVAL_MS` = **1000** (aligné sur la réactivité ~1 s de
   la référence nRF52840 Sense — un test à 1500 ms a mesuré 15,87 µA
   contre 21,52 µA à 1000 ms, gain refusé au profit de la réactivité).
-- Aucun `sys_poweroff()` / `z_nrf_grtc_wakeup_prepare()` nulle part.
+- Aucun `sys_poweroff()` / `z_nrf_grtc_wakeup_prepare()` nulle part. Aucun
+  réveil GPIO/interruption matérielle — la boucle sonde déjà en logiciel.
+- **Bouton** (`sw0`/`button0`) lu à chaque trame A, y compris son bug
+  connu non résolu (toujours 0 en test réel) — repris tel quel de la
+  production, pas corrigé dans ce portage.
+- **Tamper (chute) et vibration (double-tap)** : toujours envoyés à 0,
+  comme en production — le driver LSM6DSL n'expose pas ces événements
+  matériels via l'API `sensor_trigger` standard.
+
+#### État retenu et correctif GRTC (2026-08-29)
+
+`struct retained_state` porte désormais aussi `last_sent_pitch_dd`,
+`last_sent_roll_dd`, `yaw_dd` (intégration gyroscopique cumulée, aucun
+recalage anti-dérive) et `next_heartbeat_us`, en plus de `bthome_pid` et
+`next_health_us`. Cette RAM retenue est de la **SRAM ordinaire, pas de la
+RRAM** : elle peut survivre à un reset/reflash (CRC valide) alors que le
+compteur GRTC, lui, repart de zéro — une échéance absolue chargée d'une
+session précédente pourrait alors devenir inatteignable pendant une durée
+indéterminée (symptôme observé le 2026-08-29 sur l'unité #01 : aucune
+trame santé 18 min après un reflash). Au boot, les deux échéances
+(`next_health_us`, `next_heartbeat_us`) sont désormais bornées à au plus
+un intervalle complet après CE boot, jamais plus loin.
 
 Code source complet dans `xiao_door_sensor/src/main.c` (ce fichier ne
 duplique que la structure, pas le code entier).
@@ -259,12 +312,20 @@ fixe par carte (comparer au tableau § 6).
 
 ## 5. Écart fonctionnel connu
 
-Cette architecture ne rejoue **pas encore** les fonctions de détection
-de mouvement de l'ancienne (trames A/C : mouvement, chute/choc,
-double-tap, bouton, pitch/roll/yaw) — seule la trame B (santé/batterie)
-est implémentée. Le sondage accéléromètre (§ 2) lit un échantillon à
-chaque cycle mais n'envoie aucune trame dessus pour l'instant. À faire
-avant un déploiement en remplacement complet de l'ancienne architecture.
+**Résolu le 2026-08-29** : les trames A (mouvement/orientation/bouton) et
+C (IMU brut) sont désormais portées sur cette architecture (§ 3.3),
+parité fonctionnelle atteinte avec l'ancien firmware de production (#03).
+Écarts volontaires, identiques à la production : tamper et vibration
+toujours à 0 (non implémentés côté driver), bouton physique toujours à 0
+(bug connu non résolu).
+
+**Reste à faire** : re-mesure PPK2 avec trafic événementiel réel (le
+repos seul devrait rester proche de ~20-22 µA, le coût supplémentaire
+n'intervenant que sur événement — gyroscope en rafale + trames A/C
+supplémentaires) ; portage de ce même firmware sur l'unité #02 (encore
+sur le build santé-seule) ; tests fonctionnels HA complets (mouvement,
+angle, bouton, IMU brut) au-delà de la simple vérification de présence
+des entités.
 
 ---
 
@@ -272,9 +333,9 @@ avant un déploiement en remplacement complet de l'ancienne architecture.
 
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
-| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE** (~20-22 µA mesuré) | Intégrée dans HA ; tests fonctionnels HA complets à reprendre |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE** (~20-22 µA mesuré) | Intégrée dans HA ; tests fonctionnels HA complets à reprendre |
-| 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; aucun flash de la nouvelle architecture prévu pour l'instant |
+| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** (~20-22 µA au repos mesuré avant ce portage, re-mesure événementielle à faire) | Intégrée dans HA ; vérification fonctionnelle des trames A/C en cours |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, build santé-seule** (~20-22 µA mesuré) | Intégrée dans HA ; à mettre à jour vers le firmware complet A/B/C |
+| 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
 Détail complet de l'ancienne architecture (#03) : voir
 `archive/docs-historique/` (document `xiao_nrf54lm20a_project_notes`

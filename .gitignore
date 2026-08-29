@@ -4,6 +4,14 @@ build_*/
 *.hex
 *.bak
 
+# Exception au motif *.bak ci-dessus : dossier de reference dedie aux
+# anciennes versions de code conservees deliberement pour la reprise du
+# travail (regle explicite de l'utilisateur, 2026-08-29 : archiver,
+# jamais supprimer). Sans cette exception, ces fichiers deplaces vers
+# archive/ deviendraient invisibles sur GitHub (disparaitraient du suivi
+# git au lieu de rester consultables) :
+!nRF54LM20A/archive/xiao_door_sensor-logs-et-backups/reference/*.bak
+
 # Projet nRF52840 déjà versionné séparément (son propre dépôt/remote GitHub,
 # ne pas l'absorber ici pour éviter un conflit de .git imbriqué) :
 nRF52840/xiao_nrf52840_door_sensor/
