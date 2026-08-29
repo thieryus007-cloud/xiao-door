@@ -19,9 +19,10 @@ la question ouverte auprès de Nordic, voir
 - **Consommation mesurée** : **~20-22 µA** en moyenne au repos (unité
   #01, PPK2, fenêtre 60 s — référence vérifiée) — contre 70-144 µA pour
   l'ancienne architecture (System OFF + redémarrage complet par cycle).
-  #02 montre une anomalie (~80-200+ µA) avec des builds issus de
-  rebuilds successifs, en cours de correction par clonage direct de
-  l'image d'or de #01 (§ 4) plutôt que par un nouveau rebuild.
+  #02 a été corrigée le 2026-08-30 par clonage direct de l'image d'or de
+  #01 (voir `Procédure-Clonage-XIAO-nRF54LM20A.md`), suite à une anomalie
+  (~80-200+ µA) causée par deux rebuilds successifs — consommation à
+  reconfirmer par PPK2.
 - **Fonctionnalités actives (parité de production atteinte le 2026-08-29)** :
   trame BTHome v2 santé (batterie %, tension, température die) toutes les
   15 min ; trame mouvement/orientation (pitch/roll/yaw, activité,
@@ -274,8 +275,11 @@ présenter cette anomalie.
 **Décision prise suite à cet échec de correction par rebuild successifs**
 : cesser de rebuilder/deviner depuis les sources pour corriger #02, et
 à la place **cloner octet pour octet la mémoire flash de #01** (l'image
-qui fonctionne, vérifiée physiquement) directement sur #02 — voir § 4
-pour la procédure complète. Ceci élimine le risque qu'un rebuild
+qui fonctionne, vérifiée physiquement) directement sur #02 — voir
+`Procédure-Clonage-XIAO-nRF54LM20A.md` pour la procédure complète. Ceci
+fait, `verify_image` a confirmé 117396 octets identiques entre #01 et
+#02 (2026-08-30) ; consommation PPK2 à reconfirmer. Ceci élimine le
+risque qu'un rebuild
 introduise un nouveau bug non détecté avant flash réel, quelle que soit
 la qualité apparente du raisonnement de code. La cause exacte de
 l'écart de comportement entre #01 et #02 avec un firmware nominalement
@@ -308,95 +312,15 @@ duplique que la structure, pas le code entier).
 
 ---
 
-## 4. Déployer une unité — méthode recommandée : cloner une unité qui fonctionne
+## 4. Déployer une unité
 
-**Depuis le 2026-08-30, ne plus rebuilder depuis les sources pour
-dupliquer sur une nouvelle unité.** Un rebuild a déjà introduit un bug
-réel non détecté avant flash (réglage de stabilisation accéléromètre,
-voir § « Correctif stabilisation accéléromètre » plus bas) — flashé sur
-une unité en production sans avoir été validé physiquement au préalable.
-**La méthode fiable est de cloner, octet pour octet, la mémoire flash
-d'une unité déjà vérifiée en fonctionnement réel (mesure PPK2 conforme),
-jamais de repartir des sources pour une unité supplémentaire.**
-
-### Pourquoi c'est sûr : chaque unité garde sa propre identité
-
-Cloner le contenu exact de la flash d'une unité vers une autre **ne crée
-aucune collision d'adresse BLE ni de numéro de série**, par construction
-du firmware :
-- L'adresse BLE fixe n'est **pas stockée dans le fichier flashé** :
-  `set_fixed_ble_identity()` (`main.c`) appelle `hwinfo_get_device_id()`
-  à chaque démarrage, qui lit l'identifiant unique gravé en usine dans le
-  silicium du SoC — donc le même contenu de flash, exécuté sur deux puces
-  physiquement différentes, dérive automatiquement deux adresses BLE
-  différentes.
-- Le numéro de série du pont USB↔SWD (SAMD11) est une puce séparée,
-  indépendante du SoC principal et de son contenu flash.
-
-### Image d'or (golden image) actuelle
-
-| Fichier | Origine | Statut |
-|---|---|---|
-| `xiao_door_sensor/golden-image/unit01-verified-2026-08-30.bin` / `.hex` | Dump physique de l'unité #01 (lecture seule, `serial=C5F0E209`) | **Vérifiée en fonctionnement réel (~20 µA moyenne mesurée au PPK2)** — image de référence actuelle |
-
-Ce fichier `.hex` doit rester suivi sur GitHub (exception dédiée dans
-`.gitignore` au motif générique `*.hex`) — c'est la seule référence dont
-la validité a été confirmée par une mesure physique, pas seulement par
-une relecture de code.
-
-### Étape 1 — Dump en lecture seule de l'unité source (celle qui fonctionne)
-
-**Aucune écriture, aucun effacement.** Halte le CPU brièvement (requis
-par SWD pour lire la mémoire), lit, puis relance l'exécution normale.
-
-```bash
-export PATH="/c/ncs/tools/xpack-openocd-0.12.0-7/bin:$PATH"
-BOARD_DIR="C:/ncs/vendor/platform-seeedboards/zephyr/boards/arm/xiao_nrf54lm20a"
-DUMP="C:/ncs/projects/nRF54LM20A/xiao_door_sensor/golden-image/<nom>.bin"
-
-openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
-  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" \
-  -c "init" -c "reset halt" \
-  -c "dump_image \"$DUMP\" 0x0 117396" \
-  -c "reset" -c "exit"
-```
-
-`117396` = taille en octets de l'image actuelle (confirmée par
-`verify_image` au dernier flash connu — ajuster si l'image d'or change).
-
-**Obligatoire après ce dump : débrancher puis rebrancher complètement le
-câble USB-C de l'unité source.** Une session SWD, même en lecture seule,
-peut laisser le SoC en « Debug Interface mode » (émule le System OFF au
-lieu de l'appliquer réellement) tant que le cycle d'alimentation complet
-n'a pas eu lieu — sans ça, l'unité source pourrait sembler se comporter
-différemment alors que son firmware n'a pas changé.
-
-### Étape 2 — Convertir en `.hex` (une fois, pas à chaque clonage)
-
-```bash
-export PATH="/c/ncs/toolchains/dcbdc366a1/opt/zephyr-sdk/gnu/arm-zephyr-eabi/bin:$PATH"
-arm-zephyr-eabi-objcopy -I binary -O ihex --change-address 0x0 \
-  "<dump>.bin" "<dump>.hex"
-```
-
-### Étape 3 — Flasher l'unité cible avec ce fichier
-
-Même procédure que pour un flash normal (§ 5), en remplaçant `$HEX` par
-le chemin du `.hex` cloné :
-
-```bash
-openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
-  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" \
-  -c "init" -c "reset halt" \
-  -c "nrf54lm20a-load \"<dump>.hex\"" \
-  -c "reset halt" \
-  -c "verify_image \"<dump>.hex\"" \
-  -c "reset" -c "exit"
-```
-
-`verify_image` doit confirmer exactement la même taille que le dump
-d'origine — c'est la garantie que la cible est désormais byte-for-byte
-identique à la source vérifiée.
+**Voir le document dédié `Procédure-Clonage-XIAO-nRF54LM20A.md`** —
+procédure complète (dump, conversion, flash, vérification), image d'or
+actuelle, historique des clonages, et notes de connexion SWD. Depuis le
+2026-08-30, une unité supplémentaire se déploie **par clonage d'une
+unité déjà vérifiée en fonctionnement réel**, jamais par rebuild depuis
+les sources (un rebuild a déjà introduit un bug de consommation réel non
+détecté avant flash — voir ce même document dédié pour le détail).
 
 ---
 
@@ -473,15 +397,17 @@ parité fonctionnelle atteinte avec l'ancien firmware de production (#03).
 toujours à 0 (non implémentés côté driver), bouton physique toujours à 0
 (bug connu non résolu).
 
-**Reste à faire** : cloner l'image d'or vérifiée de #01 sur #02 (§ 4,
-en cours) — le rebuild du 2026-08-29/30 depuis les sources a introduit un
-bug réel (delta accéléromètre bruité, ~80-200+ µA mesuré sur #02 selon
-la version) qui n'a jamais été observé sur #01 ; tant que la cause exacte
-de cet écart entre les deux unités n'est pas comprise avec certitude,
-l'image d'or physiquement vérifiée sur #01 (~20 µA) est la seule source
-de confiance pour déployer #02 et les unités suivantes — voir § 4 et
-§ 5. Tests fonctionnels HA complets (mouvement, angle, bouton, IMU brut)
-à reprendre sur #01 et #02 au-delà de la simple présence des entités.
+**Reste à faire** : confirmer par PPK2 que #02, clonée depuis l'image
+d'or de #01 le 2026-08-30 (`Procédure-Clonage-XIAO-nRF54LM20A.md`),
+revient bien à ~20 µA — le rebuild du 2026-08-29/30 depuis les sources
+avait introduit un bug réel (delta accéléromètre bruité, ~80-200+ µA
+mesuré sur #02 selon la version) qui n'a jamais été observé sur #01 ;
+tant que la cause exacte de cet écart entre les deux unités n'est pas
+comprise avec certitude, l'image d'or physiquement vérifiée sur #01
+(~20 µA) reste la seule source de confiance pour déployer #02 et les
+unités suivantes. Tests fonctionnels HA complets (mouvement, angle,
+bouton, IMU brut) à reprendre sur #01 et #02 au-delà de la simple
+présence des entités.
 
 ---
 
@@ -498,8 +424,8 @@ Détail complet de l'ancienne architecture (#03) : voir
 archivé) si besoin de la reprendre en main.
 
 **~17 unités supplémentaires attendues** — à déployer par clonage de
-l'image d'or (§ 4) une fois #02 confirmée elle aussi à ~20 µA, jamais par
-rebuild individuel.
+l'image d'or (`Procédure-Clonage-XIAO-nRF54LM20A.md`) une fois #02
+confirmée elle aussi à ~20 µA, jamais par rebuild individuel.
 
 ---
 

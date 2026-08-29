@@ -44,16 +44,18 @@ La carte XIAO nRF54LM20A n'est pas incluse nativement dans ce checkout NCS
 ## Compiler / flasher / vérifier
 
 **Pour déployer une unité supplémentaire, ne pas rebuilder depuis les
-sources — cloner l'image d'or déjà vérifiée physiquement** (procédure et
-raison complètes dans `Configuration-nRF54LM20A-System-ON-IDLE.md` § 4 :
-un rebuild a introduit un bug de consommation réel, non détecté avant
+sources — cloner l'image d'or déjà vérifiée physiquement**, procédure
+complète (dump, conversion, flash, vérification, notes de connexion
+SWD) dans le document dédié `Procédure-Clonage-XIAO-nRF54LM20A.md` (un
+rebuild a introduit un bug de consommation réel, non détecté avant
 flash, sur l'unité #02 le 2026-08-30). Rebuild depuis les sources
 uniquement pour régénérer l'image d'or après une vraie modification de
-code (§ 5 du même document), jamais pour un déploiement de routine.
+code (`Configuration-nRF54LM20A-System-ON-IDLE.md` § 5), jamais pour un
+déploiement de routine.
 
-Commandes exactes à jour dans `Configuration-nRF54LM20A-System-ON-IDLE.md`
-§ 4 (clonage, méthode recommandée) et § 5 (rebuild depuis les sources).
-Rappels valables quelle que soit la version du firmware :
+Commandes de build exactes à jour dans
+`Configuration-nRF54LM20A-System-ON-IDLE.md` § 5. Rappels valables
+quelle que soit la version du firmware :
 
 - Toujours vérifier avec `verify_image` (jamais `dump_image`+`cmp` : la
   RRAM ne s'efface pas avant écriture, ce qui produit de fausses
@@ -207,26 +209,24 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
    `Configuration-nRF54LM20A-System-ON-IDLE.md` § 3.3/§ 6. Chute/choc et
    double-tap restent non implémentés (comme en production, le driver
    LSM6DSL n'expose pas ces événements matériels). **Unité #01 vérifiée
-   à ~20 µA (image d'or de référence) ; #02 montre une anomalie
-   ~80-200+ µA non résolue par rebuild, en cours de correction par
-   clonage direct depuis #01 (§ 4) — voir § « Anomalie de consommation
-   sur #02 » dans le même document.**
-2. Porter le même firmware complet (A/B/C) sur l'unité #02 (encore sur le
-   build santé-seule).
-3. Re-mesurer la consommation PPK2 avec trafic événementiel réel (le
-   repos seul devrait rester proche de ~20-22 µA).
-4. Reprendre les tests fonctionnels complets dans Home Assistant pour
+   à ~20 µA (image d'or de référence) ; #02 a montré une anomalie
+   ~80-200+ µA non résolue par deux rebuilds, corrigée le 2026-08-30 par
+   clonage direct depuis #01 (`Procédure-Clonage-XIAO-nRF54LM20A.md`,
+   `verify_image` OK) — consommation PPK2 de #02 à reconfirmer.**
+2. Confirmer par PPK2 que #02, clonée, revient bien à ~20-22 µA (le
+   rebuild avait fait monter la consommation jusqu'à ~200+ µA).
+3. Reprendre les tests fonctionnels complets dans Home Assistant pour
    les unités #01/#02 (nouvelle architecture) — au-delà de la simple
    présence des entités (mouvement réel, angle, bouton, IMU brut).
-5. Résoudre ou contourner le point bloquant nPM1300 `imu_vdd`/LDO1
+4. Résoudre ou contourner le point bloquant nPM1300 `imu_vdd`/LDO1
    (~250-300 µA, question posée à Nordic) — voir
    `Nordic-Support-Report-XIAO-nRF54LM20A.md`.
-6. Déploiement des ~17 XIAO nRF54LM20A restants — en attente de la
-   re-mesure de consommation avec trafic événementiel (étape 3) avant
-   tout flash de lot.
-7. Remplacer le proxy BLE ESPHome temporaire par les ESP32-S3 dédiés une
+5. Déploiement des ~17 XIAO nRF54LM20A restants par clonage de l'image
+   d'or (`Procédure-Clonage-XIAO-nRF54LM20A.md`) — en attente de la
+   confirmation PPK2 de #02 (étape 2) avant tout flash de lot.
+6. Remplacer le proxy BLE ESPHome temporaire par les ESP32-S3 dédiés une
    fois reçus, puis décommissionner `ble-proxy-temp`.
-8. Démarrage nRF52840 — voir `Transition-nRF52840-Sense-Demarrage.md`
+7. Démarrage nRF52840 — voir `Transition-nRF52840-Sense-Demarrage.md`
    (projet frère, dépôt séparé).
 
 ## Référence BTHome v2 — Object IDs (générique, réutilisable quelle que soit la version du firmware)
