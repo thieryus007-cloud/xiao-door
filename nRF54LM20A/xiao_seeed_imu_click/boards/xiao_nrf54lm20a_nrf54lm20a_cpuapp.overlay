@@ -1,0 +1,40 @@
+/* Reproduction stricte de l'exemple officiel Seeed (imu_click),
+ * wiki.seeedstudio.com/xiao_nrf54lm20a_with_onboard/ -- overlay copie
+ * verbatim depuis la page (2026-08-27). */
+
+&pmic_i2c {
+	sda-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;
+	scl-gpios = <&gpio1 17 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&pmic {
+	regulators {
+		imu_vdd: LDO1 {
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-boot-on;
+		};
+	};
+};
+
+&i2c30 {
+	lsm6ds3tr_c: lsm6ds3tr-c@6a {
+		compatible = "st,lsm6dsl";
+		reg = <0x6a>;
+		irq-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+		zephyr,deferred-init;
+	};
+};
+
+/* Meme bug de build deja rencontre dans xiao_door_sensor
+ * (nrf_usbhs_wrapper.c), necessaire pour compiler -- absent du
+ * fragment publie par Seeed mais requis sur cette carte/toolchain. */
+&usbhs {
+	status = "disabled";
+};
+
+&usbhs_wrapper {
+	status = "disabled";
+};

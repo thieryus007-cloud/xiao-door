@@ -5,27 +5,56 @@ données IMU en BLE (format BTHome v2). Des proxys BLE (ESPHome, un par étage)
 relaient les annonces vers Home Assistant, qui tourne dans une VM VMware
 Fusion (192.168.1.10) sur le Mac Mini, via passthrough Bluetooth du Mac.
 
-**État : 3 XIAO déployés, intégrés dans Home Assistant**, firmware
-`xiao_door_sensor` — profil L (trames A/B/C BTHome v2, angles pitch/roll,
-événements IMU, batterie), adresse BLE fixe dérivée du hardware ID de
-chaque puce (aucune modification de code entre exemplaires). Le SoC
-fonctionne en **System OFF** entre les événements (réveil matériel sur
-mouvement via l'IMU, réveil périodique GRTC pour la trame santé) — voir
-§ « Firmware déployé » pour l'architecture complète. Consommation réelle
-non mesurée à ce jour (mesure PPK II prévue, voir
-`PPK-Mesures-Transition.md`). **Environ 17 unités supplémentaires
-attendues** (même firmware, mêmes fonctionnalités que les 3 actuelles ;
-chiffre mis à jour le 2026-08-24, remplace l'estimation précédente de 10
-pour fin septembre 2026) — ce document est la référence pour reproduire le
-flash sur ce lot (§ « Flasher un nouveau lot »).
+**État (mis à jour 2026-08-28) : 2 XIAO déployés et fonctionnels dans
+Home Assistant (#02, #03), 1 hors service temporairement (#01)**,
+firmware `xiao_door_sensor` — profil L (trames A/B/C BTHome v2, angles
+pitch/roll, événements IMU, batterie), adresse BLE fixe dérivée du
+hardware ID de chaque puce (aucune modification de code entre
+exemplaires). L'architecture décrite dans ce document (§ « Firmware
+déployé », System OFF + réveil IMU par interruption matérielle) est
+celle que #02 et #03 exécutent encore telle quelle depuis le 2026-08-25.
+
+**🔴 Le budget énergétique de cette architecture (§ « Budget énergétique »
+plus bas) est maintenant connu comme invalide.** Une investigation dédiée
+(voir `XIAO-nRF54LM20A-Solution-System-OFF.md`) a mesuré que maintenir
+`imu_vdd`/LDO1 actif en continu — nécessaire pour que l'interruption IMU
+puisse réveiller le SoC, exactement le mécanisme utilisé par #02/#03 —
+coûte réellement **~250-300 µA en continu**, pas les ~9 µA (datasheet IMU
+seul) supposés dans le budget ci-dessous. Cause non résolue à ce jour
+(isolée au bloc régulateur LOADSW/LDO du PMIC nPM1300 lui-même, hors
+IMU/I2C/mode bas-consommation — voir le document cité). **#02 et #03 sont
+donc probablement bien plus proches de quelques mois d'autonomie que des
+~4-5 ans initialement calculés.** Pas de mesure directe sur #02/#03
+eux-mêmes (mesure faite sur #01 et sur l'exemple de référence Seeed, même
+architecture) — à faire si l'autonomie réelle doit être confirmée avant
+la prochaine étape.
+
+**Unité #01** (`D2:3A:F7:B1:E8:18`) sert actuellement de banc de test pour
+cette investigation et pour la refonte d'architecture qui en découle —
+elle ne fait plus office de capteur de porte fonctionnel dans HA depuis
+le début de cette investigation (firmware expérimental sans trames A/C
+mouvement). Une nouvelle architecture (System ON IDLE + réveil par
+comparaison GRTC, sans redémarrage complet par cycle — voir
+`XIAO-nRF54LM20A-Solution-System-OFF.md` § « Pivot d'architecture ») est
+en cours d'implémentation sur cette unité pour remplacer celle décrite
+dans ce document, avant tout nouveau déploiement. **Ne pas reproduire
+l'architecture ci-dessous (§ « Firmware déployé ») sur de nouvelles
+unités tant que cette refonte n'est pas terminée et mesurée.**
+
+**Environ 17 unités supplémentaires attendues** (chiffre du 2026-08-24,
+fin septembre 2026) — **en attente de la nouvelle architecture avant tout
+flash de lot**, § « Flasher un nouveau lot » ci-dessous décrit la
+procédure mécanique (compiler/flasher/vérifier), toujours valable, mais
+avec le firmware qui sortira de la refonte en cours, pas celui documenté
+plus bas.
 
 ## Unités déployées
 
 | # | Adresse BLE (fixe) | N° série pont USB↔SWD | Statut HA |
 |---|---|---|---|
-| 1 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | ✅ Intégré, à jour |
-| 2 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | ✅ Intégré, à jour |
-| 3 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | ✅ Intégré, à jour |
+| 1 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | 🔧 Hors service temporaire — banc de test refonte architecture (2026-08-28), firmware expérimental sans trames mouvement |
+| 2 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | ✅ Intégré, firmware 2026-08-25 (architecture à budget invalide, voir note en tête de document) |
+| 3 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | ✅ Intégré, firmware 2026-08-25 (architecture à budget invalide, voir note en tête de document) |
 
 **Les trois unités tournent la même version du firmware depuis le
 2026-08-25** (correctifs #1-7 de la session du 24, fix `packet_id`/RAM
@@ -610,13 +639,25 @@ fonction d'envoi (trame A, B, C) doit incrémenter le compteur partagé
 elle-même ; ne jamais réutiliser le `packet_id` d'une trame précédente pour
 une trame de contenu différent.
 
-### Budget énergétique (calculé, non mesuré)
+### Budget énergétique (calculé, non mesuré) — 🔴 SUPERSEDED, voir note ci-dessous
 
-Consommation réelle jamais mesurée sur silicium (PPK II à venir, voir
-`PPK-Mesures-Transition.md`) — ce qui suit est un budget calculé à partir
-de datasheets et du comportement du firmware. Chaque ligne est marquée
-**VÉRIFIÉ** (chiffre de datasheet lu directement) ou **ESTIMÉ** (calcul,
-non mesuré) :
+**🔴 Ce budget est maintenant connu comme invalide pour la ligne PMIC.**
+Il a été calculé à partir du seul datasheet IMU (~9 µA), sans mesure
+réelle du bloc régulateur LOADSW/LDO du nPM1300 sous charge — la ligne
+PMIC ci-dessous était déjà marquée « VÉRIFIÉ comme plancher, incomplet »
+à l'époque. La mesure réelle (voir `XIAO-nRF54LM20A-Solution-System-OFF.md`)
+a depuis montré que ce même bloc, dans la configuration qu'utilise cette
+architecture (`imu_vdd`/LDO1 actif en continu pour permettre le réveil
+IMU par interruption), consomme réellement **~250-300 µA**, pas le
+plancher ≥0,8 µA utilisé ici. Le total « ~10,9 à 16,9 µA » et
+l'autonomie « ~3,9 à 6,4 ans » plus bas sont donc à ignorer pour cette
+architecture — conservés ci-dessous uniquement comme trace du
+raisonnement initial, pas comme référence valide.
+
+Ce qui suit est le budget calculé à partir de datasheets et du
+comportement du firmware, tel qu'établi avant la mesure réelle. Chaque
+ligne est marquée **VÉRIFIÉ** (chiffre de datasheet lu directement) ou
+**ESTIMÉ** (calcul, non mesuré) :
 
 | Poste | Système actif (repos) | Statut | Source |
 |---|---|---|---|
@@ -901,18 +942,17 @@ idf.py --preset board_esp32u_breadboard -p COM6 monitor
 
 ## Prochaines étapes
 
-1. Mesure d'énergie réelle (PPK II, à recevoir — un nRF54LM20-DK également
-   prévu, utile comme point de mesure dédié et comme sonde SWD externe plus
-   fiable que le pont SAMD11 intermittent des XIAO) pour remplacer
-   l'estimation théorique par une mesure sur silicium — voir
-   `PPK-Mesures-Transition.md`. **Décision (2026-08-24) : reportée à un
-   projet séparé**, une fois le PPK II reçu ET la configuration cible
-   (firmware, fonctions bouton/yaw/chute/tap) définitivement finalisée —
-   pas de mesure sur une config encore mouvante. Objectif associé : passer
-   à une batterie 400-600 mAh (au lieu de 1500 mAh) pour 3-4+ ans
-   d'autonomie, décision à prendre une fois la mesure disponible (budget
-   calculé, pas mesuré, § « Budget énergétique (calculé, non mesuré) »
-   plus haut).
+1. **Fait (2026-08-27/28)** : mesure d'énergie réelle au PPK II, sur
+   `xiao_door_sensor` (unité #01, repurposée en banc de test) — a révélé
+   que l'architecture décrite dans ce document (réveil IMU par
+   interruption, `imu_vdd` actif en continu) coûte ~250-300 µA, pas les
+   quelques µA calculés (§ « Budget énergétique », maintenant SUPERSEDED).
+   Investigation complète et refonte d'architecture en cours — voir
+   `XIAO-nRF54LM20A-Solution-System-OFF.md` (document de reprise à jour,
+   § « Pivot d'architecture »). Objectif batterie 400-600 mAh / 3-4+ ans
+   toujours valable, mais dépend maintenant de la nouvelle architecture
+   (System ON IDLE + réveil GRTC, plancher datasheet 4,3 µA) atteignant
+   l'objectif 5-6 µA — pas encore mesuré sur cette nouvelle architecture.
 2. Remplacer le proxy BLE ESPHome temporaire par les ESP32 dédiés une fois
    reçus (un par étage), puis décommissionner `ble-proxy-temp`
 3. Démarrage nRF52840 — **document de transition dédié préparé le

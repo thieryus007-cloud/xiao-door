@@ -1,22 +1,39 @@
 /*
- * Etape 2 (2026-08-27) -- base System OFF validee (test #13, 3,02 uA) +
- * GRTC + RAM retenue + BLE/BTHome (trame B sante/batterie uniquement).
- * Pas d'IMU dans ce test (mis de cote separement, voir
- * XIAO-nRF54LM20A-Solution-System-OFF.md) -- ni trame A (mouvement/
- * pitch/roll/yaw) ni trame C (accel/gyro brut), qui dependent toutes les
- * deux de donnees IMU.
+ * Pivot d'architecture (2026-08-28) -- System ON IDLE + GRTC, plus de
+ * reboot par cycle. Voir XIAO-nRF54LM20A-Solution-System-OFF.md,
+ * § "Pivot d'architecture" : le plancher mesure de l'ancienne strategie
+ * (System OFF + redemarrage complet a chaque sondage, tests #22-31)
+ * etait ~70-144 uA, structurellement incompressible (reinit MFD/
+ * regulateur/BLE a chaque reboot). Remplacee par une boucle main()
+ * infinie (CONFIG_PM=y, k_sleep() entre cycles) : le SoC ne redemarre
+ * plus jamais tant que l'appareil reste alimente -- plancher datasheet
+ * documente 4,3 uA (System ON IDLE + GRTC XOSC + 512 KB RAM retenue,
+ * page 1 du datasheet Nordic), architecture identique au projet frere
+ * nRF52840 (~10 uA mesures, reveil IMU inclus).
  *
- * Intervalle trame B : 15 min (valeur de production, §4.3 -- remis en
- * place le 2026-08-27 apres validation du cycle GRTC->BLE->re-endormissement
- * a 60 s lors du test precedent).
+ * Consequence directe pour l'IMU (sample_motion()) : imu_vdd/LDO1 est
+ * toujours coupe/rallume a chaque cycle (son cout ~250-300 uA en continu
+ * reste confirme, voir meme document), mais le SoC ne reinitialise plus
+ * son etat RAM entre deux cycles. device_init(imu_dev) ne se
+ * re-execute donc plus qu'une seule fois (kernel/device.c:
+ * z_impl_device_init() renvoie -EALREADY sans rappeler dev->ops.init()
+ * si dev->state->initialized est deja vrai) alors que la puce physique,
+ * elle, perd son etat de configuration a chaque coupure de imu_vdd.
+ * sample_motion() reecrit donc explicitement par I2C, a CHAQUE cycle,
+ * les deux registres que lsm6dsl_init_chip() ne configure qu'au tout
+ * premier appel (CTRL3_C: BDU+IF_INC : lsm6dsl.c:778-785 ; CTRL6_C:
+ * XL_HM_MODE bas-consommation : lsm6dsl.c:788-793) -- sans quoi les
+ * lectures X/Y/Z deviendraient incoherentes en silence a partir du 2e
+ * cycle.
  *
- * Elements System OFF repris a l'identique du test #13 (3,02 uA) :
- * LED deconnectees, flash SPI externe suspendu (driver + bus + broches
- * GPIO brutes), regulateurs power_en/LDO1 sans regulator-boot-on.
- * Console DESACTIVEE EN DUR (CONFIG_SERIAL=n) plutot que suspendue a
- * l'execution -- la suspension a l'execution (fonctionnelle en test #13
- * sans BLE) echoue systematiquement des que BLE est actif (bug driver
- * UARTE documente, voir prj.conf).
+ * Elements System OFF conserves tels quels (n'ont rien a voir avec le
+ * mode d'alimentation du SoC) : LED deconnectees, flash SPI externe
+ * suspendu (driver + bus + broches GPIO brutes), regulateurs
+ * power_en/LDO1 sans regulator-boot-on (sauf imu_vdd, voir overlay).
+ * Console DESACTIVEE EN DUR (CONFIG_SERIAL=n), jamais suspendue a
+ * l'execution (bug driver UARTE documente, voir prj.conf).
+ *
+ * Intervalle trame B : 15 min (valeur de production).
  *
  * Copyright (c) 2019 Nordic Semiconductor ASA
  * SPDX-License-Identifier: Apache-2.0
@@ -27,20 +44,42 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/hwinfo.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/regulator.h>
 #include <zephyr/drivers/retained_mem.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/timer/nrf_grtc_timer.h>
 #include <zephyr/kernel.h>
+#include <ram_pwrdn.h>
 #include <zephyr/pm/device.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/crc.h>
-#include <zephyr/sys/poweroff.h>
 #include <zephyr/sys/reboot.h>
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/bluetooth/addr.h>
 
 #define FRAME_B_INTERVAL_MS (15 * 60 * 1000)
 #define ADV_BURST_MS         700
+
+/* Sondage IMU a faible rapport cyclique (introduit test #22, conserve
+ * dans le pivot System ON IDLE) : imu_vdd/LDO1 est allume brievement a
+ * CHAQUE cycle de la boucle main(), le temps de lire un echantillon
+ * accelerometre, puis eteint avant le k_sleep() suivant. Strategie
+ * validee sur le projet frere nRF52840 Sense (sondage periodique, pas
+ * d'interruption asynchrone) -- voir
+ * XIAO-nRF54LM20A-Solution-System-OFF.md. imu_vdd/LDO1 confirme couter
+ * ~250-300 uA en continu quel que soit le firmware (y compris le code
+ * de reference Seeed) ; l'objectif est de ne payer ce cout que pendant
+ * une courte fenetre par cycle plutot qu'en continu.
+ *
+ * Test #39 (2026-08-28) -- 1000 -> 1500 ms teste puis retire. Resultat
+ * (fenetre PPK2 60 s, unite #01) : 15,87 uA / 951,92 uC a 1500 ms contre
+ * 21,52 uA / 1,29 mC a 1000 ms -- confirme le modele "cout quasi fixe
+ * par salve" (-26% de consommation pour -33% de frequence de sondage).
+ * Revenu a 1000 ms sur decision explicite : reference nRF52840 Sense
+ * (~10 uA, reactivite ~1 s) prioritaire sur le gain de consommation --
+ * voir XIAO-nRF54LM20A-Solution-System-OFF.md. */
+#define MOTION_POLL_INTERVAL_MS 1000
 
 #define BTHOME_UUID_LO      0xD2
 #define BTHOME_UUID_HI      0xFC
@@ -62,18 +101,139 @@ static const struct device *const flash_bus = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(
 #endif
 
 static const struct device *const charger_dev = DEVICE_DT_GET(DT_NODELABEL(pmic_charger));
+static const struct device *const imu_vdd_dev = DEVICE_DT_GET(DT_NODELABEL(imu_vdd));
+static const struct device *const imu_dev = DEVICE_DT_GET(DT_ALIAS(imu0));
 
-/* Test #16 (2026-08-27) -- configuration alignee sur l'exemple officiel
- * Seeed (wiki.seeedstudio.com/xiao_nrf54lm20a_with_onboard/, imu_click) :
- * imu_vdd/LDO1 alimente via regulator-boot-on (overlay) au lieu d'un
- * regulator_enable() manuel, et le driver LSM6DSL (zephyr,deferred-init
- * dans l'overlay) est initialise explicitement ici, une fois l'IMU sous
- * tension -- sans ca, son SYS_INIT automatique tourne avant main() (donc
- * avant toute alimentation), echoue silencieusement, et rien de ce que
- * fait le driver ensuite (bas niveau, interruption) ne s'applique
- * reellement. WK_THS/WAKE_UP_THS n'est modifie nulle part (consigne
- * explicite du projet). */
-static const struct device *const lsm6dsl_dev = DEVICE_DT_GET(DT_NODELABEL(lsm6ds3tr_c));
+/* Acces I2C direct au LSM6DS3TR-C, independant du driver Zephyr --
+ * necessaire pour reecrire CTRL3_C/CTRL6_C a chaque cycle (voir
+ * commentaire d'en-tete de fichier). Registres pris dans
+ * zephyr/drivers/sensor/st/lsm6dsl/lsm6dsl.h (prive au driver, non
+ * inclus ici -- valeurs recopiees). */
+static const struct i2c_dt_spec imu_i2c = I2C_DT_SPEC_GET(DT_ALIAS(imu0));
+
+/* Test #37 (2026-08-28) -- TENTE puis ECARTE PAR LA MESURE : lecture
+ * LDSWSTATUS supplementaire sur le nPM1300 (bus i2c22, separe du bus
+ * IMU i2c30) juste avant de couper imu_vdd, hypothese d'un rafraichissement
+ * TWI periodique necessaire (errata BUCK [31] analogue, "prompt read or
+ * write over TWI"). Resultat PPK2 : charge de la salve AUGMENTEE
+ * (18,40 -> 20,64 uC), pas reduite -- le courant ~250-300 uA de LDO1 ne
+ * depend pas d'un rafraichissement TWI repete. Code retire, hypothese
+ * fermee -- voir XIAO-nRF54LM20A-Solution-System-OFF.md. */
+
+#define LSM6DSL_REG_CTRL3_C        0x12
+#define LSM6DSL_CTRL3_C_BDU        BIT(6)
+#define LSM6DSL_CTRL3_C_IF_INC     BIT(2)
+#define LSM6DSL_REG_CTRL6_C        0x15
+#define LSM6DSL_CTRL6_C_XL_HM_MODE BIT(4)
+
+/* Allume imu_vdd, reecrit CTRL3_C/CTRL6_C (voir commentaire d'en-tete de
+ * fichier -- necessaire a CHAQUE cycle : imu_vdd est coupe puis rallume
+ * a chaque appel, ce qui remet la puce a son etat de reset materiel,
+ * mais device_init() ne re-executera plus jamais lsm6dsl_init_chip()
+ * une fois le driver marque initialise), initialise le driver LSM6DSL
+ * une seule fois (deferred-init, voir overlay), lit un echantillon
+ * accelerometre, puis eteint imu_vdd. Ne modifie jamais WK_THS/
+ * WAKE_UP_THS (consigne explicite du projet) -- lecture directe des
+ * axes via l'API sensor standard, aucune configuration d'interruption
+ * materielle. */
+static int sample_motion(int16_t *out_x, int16_t *out_y, int16_t *out_z)
+{
+	int rc;
+	struct sensor_value x, y, z;
+
+	rc = regulator_enable(imu_vdd_dev);
+	if (rc < 0) {
+		printf("Warning: imu_vdd regulator_enable failed (%d)\n", rc);
+		return rc;
+	}
+
+	/* Test #32 (2026-08-28) -- reduit de 20 a 5 ms. Poste dominant
+	 * identifie au PPK2 (~24 uC sur ~31 uC/cycle mesures en System ON
+	 * IDLE, salve imu_vdd). 20 ms n'avait jamais ete justifie par un
+	 * spec (valeur copiee de xiao_seeed_imu_click) -- le seul chiffre
+	 * documente pour ce projet est le soft-start LDO du nPM1300
+	 * (datasheet nPM1300 Table 24 : 1,8 ms typique, voir
+	 * XIAO-nRF54LM20A-Solution-System-OFF.md). 5 ms garde une marge
+	 * ~2,8x au-dessus de ce typique. */
+	k_msleep(5);
+
+	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL3_C,
+				    LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_IF_INC);
+	if (rc < 0) {
+		printf("Warning: IMU CTRL3_C rewrite failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	rc = i2c_reg_update_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL6_C,
+				     LSM6DSL_CTRL6_C_XL_HM_MODE, LSM6DSL_CTRL6_C_XL_HM_MODE);
+	if (rc < 0) {
+		printf("Warning: IMU CTRL6_C rewrite failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+
+	if (!device_is_ready(imu_dev)) {
+		rc = device_init(imu_dev);
+		if (rc < 0 && rc != -EALREADY) {
+			printf("Warning: IMU device_init failed (%d)\n", rc);
+			regulator_disable(imu_vdd_dev);
+			return rc;
+		}
+	}
+
+	/* Test #36 (2026-08-28) -- ODR doublee 104->208 Hz, valeur standard
+	 * documentee du LSM6DSL en mode bas-consommation (XL_HM_MODE reste
+	 * pose, voir CTRL6_C plus haut). But : reduire l'attente d'une
+	 * periode d'echantillonnage complete (necessaire pour une lecture
+	 * fraiche), pas la frequence d'usage reelle -- une seule lecture est
+	 * prise puis imu_vdd est coupe. Le cout dominant de la salve est le
+	 * regulateur imu_vdd (~250-300 uA independamment de l'activite du
+	 * capteur, voir § Resultat de l'investigation IMU) : raccourcir la
+	 * duree totale d'activation reduit directement ce cout, quel que
+	 * soit le supplement de courant du capteur lui-meme a 208 Hz. */
+	struct sensor_value odr_attr = { .val1 = 208, .val2 = 0 };
+
+	rc = sensor_attr_set(imu_dev, SENSOR_CHAN_ACCEL_XYZ,
+			      SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr);
+	if (rc < 0) {
+		printf("Warning: IMU set ODR failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	/* Periode reelle a 208 Hz = ~4,8 ms -- 6 ms garde une marge
+	 * ~1,2 ms au-dessus (meme logique de marge que le test #33 a
+	 * 104 Hz). */
+	k_msleep(6);
+
+	rc = sensor_sample_fetch_chan(imu_dev, SENSOR_CHAN_ACCEL_XYZ);
+	if (rc < 0) {
+		printf("Warning: IMU sample fetch failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_X, &x);
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Y, &y);
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Z, &z);
+
+	*out_x = (int16_t)x.val1;
+	*out_y = (int16_t)y.val1;
+	*out_z = (int16_t)z.val1;
+
+	regulator_disable(imu_vdd_dev);
+
+	/* Audit broches (2026-08-28) -- pull-down sur INT1 (gpio0.6) TENTE
+	 * puis RETIRE D'URGENCE : mesure PPK2 a montre un pic ~200 mA,
+	 * jamais observe avant sur ce projet (pire pic precedent ~87 mA,
+	 * salve BLE). Cause probable : contention electrique entre le
+	 * pull-down interne et la sortie INT1 potentiellement encore pilotee
+	 * par le LSM6DS3TR-C (decharge lente de imu_vdd apres
+	 * regulator_disable(), cf. decouplage lent observe sur un fil
+	 * DevZone nPM1300 similaire). Code retire par securite -- voir
+	 * XIAO-nRF54LM20A-Solution-System-OFF.md, ne pas retenter sans
+	 * comprendre le mecanisme exact. */
+
+	return 0;
+}
 
 static void print_reset_cause(uint32_t reset_cause)
 {
@@ -110,6 +270,15 @@ static void release_led_gpios(void)
 	release_led(&led_blue, "blue LED");
 	release_led(&led_green, "green LED");
 }
+
+/* Audit broches (2026-08-28) -- deconnexion NFC (P1.01/P1.02) RETIREE
+ * D'URGENCE en meme temps que le pull-down INT1 (voir sample_motion()) :
+ * les deux changements ont ete mesures ENSEMBLE (pas en variable unique)
+ * et ont produit un pic ~200 mA jamais observe avant. Le pull-down INT1
+ * est le suspect le plus probable (broche reellement pilotee par un
+ * composant externe, contrairement aux broches NFC jamais routees), mais
+ * tant que les deux n'ont pas ete re-testes separement, aucun des deux
+ * n'est reintroduit -- voir XIAO-nRF54LM20A-Solution-System-OFF.md. */
 
 /*
  * Put the external flash pins into deterministic, low-leakage states before
@@ -286,6 +455,17 @@ static int read_battery(uint8_t *out_pct, uint16_t *out_mv)
 	struct sensor_value v;
 	int ret;
 
+	/* Test #29 (2026-08-28) -- init differee (voir overlay) : le driver
+	 * chargeur n'ecrit ses ~12-15 transactions I2C de configuration que
+	 * lorsqu'une lecture batterie est reellement demandee (health_due),
+	 * plus a chaque demarrage. */
+	if (!device_is_ready(charger_dev)) {
+		ret = device_init(charger_dev);
+		if (ret < 0 && ret != -EALREADY) {
+			printf("Warning: charger device_init failed (%d)\n", ret);
+			return ret;
+		}
+	}
 	if (!device_is_ready(charger_dev)) {
 		return -ENODEV;
 	}
@@ -409,8 +589,7 @@ int main(void)
 	int rc;
 	uint32_t reset_cause = 0U;
 
-	printf("\n=== %s ultra-low-power system off demo (etape 2 : GRTC+RAM+BLE) ===\n",
-	       CONFIG_BOARD);
+	printf("\n=== %s ultra-low-power system-on-idle (GRTC+RAM+BLE+IMU) ===\n", CONFIG_BOARD);
 
 	rc = hwinfo_get_reset_cause(&reset_cause);
 	if (rc == 0) {
@@ -418,26 +597,33 @@ int main(void)
 	} else {
 		printf("Warning: could not read reset cause (%d)\n", rc);
 	}
+	hwinfo_clear_reset_cause();
 
-	bool cold_boot = (reset_cause &
-			   (RESET_PIN | RESET_SOFTWARE | RESET_POR | RESET_DEBUG)) != 0;
-	bool have_state = retained_load();
-	bool fresh_session = cold_boot || !have_state;
-
-	if (!have_state) {
+	/* Plus de reboot periodique (voir commentaire d'en-tete de fichier) --
+	 * retained_load() ne sert plus qu'a survivre a un reset inattendu
+	 * (watchdog, brownout), pas au fonctionnement normal. */
+	if (!retained_load()) {
 		memset(&retained, 0, sizeof(retained));
 	}
 
 	release_led_gpios();
 
-	/* Test #16 (2026-08-27) -- imu_vdd/LDO1 alimente via regulator-boot-on
-	 * (overlay, deja actif a ce stade) -- plus de regulator_enable()
-	 * manuel. Initialisation differee du driver LSM6DSL declenchee
-	 * explicitement maintenant que l'alimentation est stable. */
-	rc = device_init(lsm6dsl_dev);
+	/* Configuration une seule fois au vrai demarrage : les broches SPI
+	 * externes et l'identite/pile BLE n'ont plus besoin d'etre
+	 * reconfigurees a chaque cycle puisque le SoC ne redemarre plus. */
+	rc = configure_spi_pins_for_system_off();
 	if (rc < 0) {
-		printf("Warning: lsm6dsl device_init failed (%d)\n", rc);
+		printf("Warning: could not configure flash SPI pins (%d)\n", rc);
 	}
+
+	/* Audit broches (2026-08-28) -- appel a configure_pdm_pins_for_system_off()
+	 * RETIRE D'URGENCE en meme temps que le pull-down INT1 et la
+	 * deconnexion NFC : les trois changements ont ete mesures ENSEMBLE
+	 * et ont produit un pic ~200 mA inedit. PDM est probablement
+	 * innocent (deja teste seul sans effet en test #12), mais tant que
+	 * ce n'est pas reconfirme isolement sur l'architecture actuelle,
+	 * l'appel reste retire par precaution -- voir
+	 * XIAO-nRF54LM20A-Solution-System-OFF.md. */
 
 	rc = set_fixed_ble_identity();
 	if (rc < 0) {
@@ -450,51 +636,36 @@ int main(void)
 		sys_reboot(SYS_REBOOT_COLD);
 	}
 
-	printf("Bluetooth initialized -- etape 2 (GRTC+RAM+BLE, pas d'IMU): "
-	       "fresh_session=%d reset_cause=0x%08x\n", fresh_session, reset_cause);
+	printf("Bluetooth initialized once -- reset_cause=0x%08x\n", reset_cause);
 
-	uint64_t now_us = z_nrf_grtc_timer_read();
-	bool health_due = fresh_session || (now_us >= retained.next_health_us);
-
-	if (health_due) {
-		send_frame_b();
-		retained.next_health_us = next_health_deadline(z_nrf_grtc_timer_read());
-	}
-
-	rc = suspend_external_flash();
-	if (rc < 0) {
-		printf("Warning: flash low-power preparation incomplete (%d)\n", rc);
-	}
-
-	k_msleep(20);
-
-	retained_save();
-
-	uint64_t now2_us = z_nrf_grtc_timer_read();
-	uint64_t wake_in_us = (retained.next_health_us > now2_us) ?
-			       (retained.next_health_us - now2_us) : 0;
-
-	if (wake_in_us < 1000000) {
-		wake_in_us = 1000000; /* plancher 1s, z_nrf_grtc_wakeup_prepare
-					* refuse une valeur trop basse */
-	}
-
-	rc = z_nrf_grtc_wakeup_prepare(wake_in_us);
-	if (rc < 0) {
-		printf("Warning: z_nrf_grtc_wakeup_prepare failed (%d) -- pas de reveil "
-		       "periodique programme pour ce cycle\n", rc);
-	}
-
-	printf("Entering system off; next GRTC wake in %llu ms\n", wake_in_us / 1000);
-
-	rc = hwinfo_clear_reset_cause();
-	if (rc < 0) {
-		printf("Warning: could not clear reset cause (%d)\n", rc);
-	}
-
-	sys_poweroff();
+	/* Etude datasheet Nordic (2026-08-28) -- coupe les sections RAM
+	 * inutilisees (au-dela de la fin reelle de l'image liee) pendant le
+	 * System ON IDLE. Appele une seule fois, apres toute l'init qui
+	 * pourrait avoir besoin de RAM (BLE/MPSL inclus) -- rien dans ce
+	 * firmware n'alloue dynamiquement au-dela de ce point. */
+	power_down_unused_ram();
 
 	while (1) {
-		k_sleep(K_FOREVER);
+		int16_t accel_x = 0, accel_y = 0, accel_z = 0;
+
+		rc = sample_motion(&accel_x, &accel_y, &accel_z);
+		if (rc < 0) {
+			printf("Warning: sample_motion failed (%d)\n", rc);
+		} else {
+			printf("accel x=%d y=%d z=%d\n", accel_x, accel_y, accel_z);
+		}
+
+		uint64_t now_us = z_nrf_grtc_timer_read();
+		bool health_due = now_us >= retained.next_health_us;
+
+		if (health_due) {
+			send_frame_b();
+			retained.next_health_us = next_health_deadline(z_nrf_grtc_timer_read());
+			retained_save();
+		}
+
+		k_sleep(K_MSEC(MOTION_POLL_INTERVAL_MS));
 	}
+
+	return 0;
 }

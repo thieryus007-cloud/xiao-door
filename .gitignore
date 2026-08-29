@@ -20,3 +20,7 @@ nRF52840/nRF52840_DK_User_Guide_v3.0.3.pdf
 nRF52840/nrfconnect-setup-5.3.2-x64.exe
 nRF52840/nRF52840 DK Peripheral UART demo/
 nRF52840/nrf52840-development-kit---hardware-files-3_0_3/
+
+# Traces PPK2 brutes (export CSV, souvent >100 Mo -- limite dure GitHub,
+# et pas du code/doc source de toute facon) :
+nRF54LM20A/*.csv
