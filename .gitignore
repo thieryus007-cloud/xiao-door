@@ -22,5 +22,6 @@ nRF52840/nRF52840 DK Peripheral UART demo/
 nRF52840/nrf52840-development-kit---hardware-files-3_0_3/
 
 # Traces PPK2 brutes (export CSV, souvent >100 Mo -- limite dure GitHub,
-# et pas du code/doc source de toute facon) :
-nRF54LM20A/*.csv
+# et pas du code/doc source de toute facon) -- motif recursif, quel que
+# soit le sous-dossier (y compris archive/) :
+nRF54LM20A/**/*.csv
