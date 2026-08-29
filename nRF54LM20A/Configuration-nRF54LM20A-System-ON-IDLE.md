@@ -300,7 +300,32 @@ openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
 ```
 
 Toujours vérifier avec `verify_image` (jamais `dump_image`+`cmp`, faux
-positifs sur les trous RRAM). Identifier la carte branchée :
+positifs sur les trous RRAM).
+
+**Correctif connexion SWD (2026-08-29, unité #02)** : le pont SAMD11 peut
+s'énumérer (visible dans Windows, serial lu par OpenOCD) mais échouer sur
+**chaque** transaction (`error submitting USB read/write: Entity not
+found`, `could not claim interface: Operation not supported`) via le
+backend WinUSB v2 par défaut — persistant après redémarrage des process
+`nrfutil`, reset PnP, cycle d'alimentation complet et changement de
+vitesse d'horloge. **Solution qui a fonctionné** : forcer le backend HID
+(v1) au lieu du WinUSB bulk (v2), en ajoutant
+`-c "cmsis-dap backend hid"` juste après `-c "cmsis-dap vid_pid ..."`
+dans la commande OpenOCD. À essayer en premier si ce symptôme
+(énumération OK, transactions en échec) réapparaît sur une future unité,
+avant tout autre diagnostic. Commande complète :
+
+```bash
+openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
+  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" \
+  -c "init" -c "reset halt" \
+  -c "nrf54lm20a-load \"$HEX\"" \
+  -c "reset halt" \
+  -c "verify_image \"$HEX\"" \
+  -c "reset" -c "exit"
+```
+
+Identifier la carte branchée :
 
 ```powershell
 Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -like "*VID_2886*" } | Select-Object FriendlyName, InstanceId, Status
@@ -322,10 +347,10 @@ toujours à 0 (non implémentés côté driver), bouton physique toujours à 0
 **Reste à faire** : re-mesure PPK2 avec trafic événementiel réel (le
 repos seul devrait rester proche de ~20-22 µA, le coût supplémentaire
 n'intervenant que sur événement — gyroscope en rafale + trames A/C
-supplémentaires) ; portage de ce même firmware sur l'unité #02 (encore
-sur le build santé-seule) ; tests fonctionnels HA complets (mouvement,
-angle, bouton, IMU brut) au-delà de la simple vérification de présence
-des entités.
+supplémentaires) ; tests fonctionnels HA complets (mouvement, angle,
+bouton, IMU brut) sur #01 et #02, au-delà de la simple vérification de
+présence des entités. #01 et #02 tournent maintenant toutes les deux le
+firmware complet A/B/C (2026-08-29).
 
 ---
 
@@ -333,8 +358,8 @@ des entités.
 
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
-| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** (~20-22 µA au repos mesuré avant ce portage, re-mesure événementielle à faire) | Intégrée dans HA ; vérification fonctionnelle des trames A/C en cours |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, build santé-seule** (~20-22 µA mesuré) | Intégrée dans HA ; à mettre à jour vers le firmware complet A/B/C |
+| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** (~20-22 µA au repos mesuré avant ce portage, re-mesure événementielle à faire) | Intégrée dans HA ; vérification fonctionnelle des trames A/C OK |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C** (flashé le 2026-08-29, voir correctif backend HID § 4) | Intégrée dans HA ; vérification fonctionnelle des trames A/C à faire |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
 Détail complet de l'ancienne architecture (#03) : voir
