@@ -12,6 +12,15 @@ build_*/
 # git au lieu de rester consultables) :
 !nRF54LM20A/archive/xiao_door_sensor-logs-et-backups/reference/*.bak
 
+# Exception au motif *.hex ci-dessus : image d'or (golden image) --
+# dump physique verifie d'une unite qui fonctionne, clonee telle quelle
+# sur les autres unites plutot que rebuild depuis les sources (regle du
+# 2026-08-30 : un rebuild depuis les sources a deja introduit un bug
+# reel -- reglage Ton accelerometre -- non detecte avant flash reel ;
+# cloner un binaire physiquement verifie est plus fiable). Sans cette
+# exception, ce fichier deviendrait invisible sur GitHub :
+!nRF54LM20A/xiao_door_sensor/golden-image/*.hex
+
 # Projet nRF52840 déjà versionné séparément (son propre dépôt/remote GitHub,
 # ne pas l'absorber ici pour éviter un conflit de .git imbriqué) :
 nRF52840/xiao_nrf52840_door_sensor/

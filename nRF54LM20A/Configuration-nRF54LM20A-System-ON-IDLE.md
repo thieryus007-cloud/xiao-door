@@ -17,8 +17,11 @@ la question ouverte auprès de Nordic, voir
   (le SoC ne redémarre jamais en fonctionnement normal ; `CONFIG_PM=y`
   assure un vrai sommeil CPU tickless entre les cycles de sondage).
 - **Consommation mesurée** : **~20-22 µA** en moyenne au repos (unité
-  #01 et #02, PPK2, fenêtre 60 s) — contre 70-144 µA pour l'ancienne
-  architecture (System OFF + redémarrage complet par cycle).
+  #01, PPK2, fenêtre 60 s — référence vérifiée) — contre 70-144 µA pour
+  l'ancienne architecture (System OFF + redémarrage complet par cycle).
+  #02 montre une anomalie (~80-200+ µA) avec des builds issus de
+  rebuilds successifs, en cours de correction par clonage direct de
+  l'image d'or de #01 (§ 4) plutôt que par un nouveau rebuild.
 - **Fonctionnalités actives (parité de production atteinte le 2026-08-29)** :
   trame BTHome v2 santé (batterie %, tension, température die) toutes les
   15 min ; trame mouvement/orientation (pitch/roll/yaw, activité,
@@ -28,16 +31,17 @@ la question ouverte auprès de Nordic, voir
   uniquement en rafale au moment d'un événement (jamais en continu). Voir
   § 3.3 pour le détail.
 - **Unités déployées avec cette architecture** : #01 (firmware complet
-  A/B/C, flashé le 2026-08-29) et #02 (encore sur le build santé-seule
-  précédent, à mettre à jour). Intégrées dans Home Assistant (découverte
-  BTHome), tests fonctionnels HA complets à reprendre séparément. #03
-  tourne toujours l'ancienne architecture (déjà toutes les trames), aucun
-  flash de la nouvelle architecture prévu pour l'instant — voir § 6.
+  A/B/C, référence/image d'or vérifiée) et #02 (même firmware visé, en
+  cours de reclonage depuis l'image d'or de #01 suite à l'anomalie de
+  consommation). Intégrées dans Home Assistant (découverte BTHome),
+  tests fonctionnels HA complets à reprendre séparément. #03 tourne
+  toujours l'ancienne architecture (déjà toutes les trames), aucun flash
+  de la nouvelle architecture prévu pour l'instant — voir § 7.
 
 **Objectif final non atteint à ce jour** : 5-6 µA (référence : projet
 frère XIAO nRF52840 Sense, ~10 µA avec détection de mouvement complète).
 Le principal poste restant est documenté et fait l'objet d'une question
-ouverte auprès du support Nordic (§ 7).
+ouverte auprès du support Nordic (§ 8).
 
 ---
 
@@ -51,7 +55,7 @@ ouverte auprès du support Nordic (§ 7).
   temps **coupée** — allumée brièvement (~15-20 ms) à chaque cycle d'1 s
   pour lire un échantillon, puis éteinte. Ce rail coûte
   ~250-300 µA tant qu'il est actif, indépendamment de la charge (cause
-  non résolue, voir § 7) — d'où la nécessité de le couper entre chaque
+  non résolue, voir § 8) — d'où la nécessité de le couper entre chaque
   lecture plutôt que de le laisser actif pour un réveil par interruption
   matérielle.
 - RAM inutilisée (au-delà de l'image liée, ~23,7 Ko sur 507 Ko retenus)
@@ -250,6 +254,41 @@ isolée proprement depuis.
   comme en production — le driver LSM6DSL n'expose pas ces événements
   matériels via l'API `sensor_trigger` standard.
 
+#### Anomalie de consommation sur #02 et changement de méthode de déploiement (2026-08-30)
+
+**Constat non résolu par simple relecture/correction de code — statut
+factuel, pas une conclusion fermée** : le build initial du portage
+trames A/C (2026-08-29) mesurait ~80 µA de moyenne sur l'unité #02
+(contre ~20-22 µA attendu). Une première hypothèse — délai de
+stabilisation accéléromètre insuffisant avant lecture (`sample_motion()`
+n'attendait que 11 ms contre un Ton datasheet de 35 ms typique, ST
+DocID030071 Rev 3 Table 4 p.24 — déjà correctement appliqué au gyroscope
+via `GYRO_STARTUP_MS` mais oublié pour l'accéléromètre, lu lui à chaque
+cycle) — a été corrigée dans le code (délai porté à 40 ms) puis reflashée
+sur #02, mais la consommation mesurée est alors montée à ~200+ µA, donc
+**cette hypothèse ne suffit pas à expliquer/corriger l'anomalie** et n'a
+pas été validée par la mesure. Pendant ce temps, **l'unité #01 (même
+génération de firmware A/B/C) est restée mesurée à ~20 µA**, sans jamais
+présenter cette anomalie.
+
+**Décision prise suite à cet échec de correction par rebuild successifs**
+: cesser de rebuilder/deviner depuis les sources pour corriger #02, et
+à la place **cloner octet pour octet la mémoire flash de #01** (l'image
+qui fonctionne, vérifiée physiquement) directement sur #02 — voir § 4
+pour la procédure complète. Ceci élimine le risque qu'un rebuild
+introduise un nouveau bug non détecté avant flash réel, quelle que soit
+la qualité apparente du raisonnement de code. La cause exacte de
+l'écart de comportement entre #01 et #02 avec un firmware nominalement
+identique reste **non comprise à ce jour** — ne pas la considérer
+résolue tant qu'une mesure PPK2 sur #02 après clonage ne confirme pas
+~20 µA.
+
+| # | Statut (2026-08-30) |
+|---|---|
+| 01 | **Image d'or de référence** — jamais rebuildée depuis, ~20 µA confirmé |
+| 02 | Anomalie ~80-200+ µA avec deux rebuilds successifs — en cours de reclonage depuis l'image d'or de #01 (§ 4), résultat à confirmer par PPK2 |
+| 03 | Non concernée — ancienne architecture, code différent |
+
 #### État retenu et correctif GRTC (2026-08-29)
 
 `struct retained_state` porte désormais aussi `last_sent_pitch_dd`,
@@ -269,7 +308,107 @@ duplique que la structure, pas le code entier).
 
 ---
 
-## 4. Compiler, flasher, vérifier
+## 4. Déployer une unité — méthode recommandée : cloner une unité qui fonctionne
+
+**Depuis le 2026-08-30, ne plus rebuilder depuis les sources pour
+dupliquer sur une nouvelle unité.** Un rebuild a déjà introduit un bug
+réel non détecté avant flash (réglage de stabilisation accéléromètre,
+voir § « Correctif stabilisation accéléromètre » plus bas) — flashé sur
+une unité en production sans avoir été validé physiquement au préalable.
+**La méthode fiable est de cloner, octet pour octet, la mémoire flash
+d'une unité déjà vérifiée en fonctionnement réel (mesure PPK2 conforme),
+jamais de repartir des sources pour une unité supplémentaire.**
+
+### Pourquoi c'est sûr : chaque unité garde sa propre identité
+
+Cloner le contenu exact de la flash d'une unité vers une autre **ne crée
+aucune collision d'adresse BLE ni de numéro de série**, par construction
+du firmware :
+- L'adresse BLE fixe n'est **pas stockée dans le fichier flashé** :
+  `set_fixed_ble_identity()` (`main.c`) appelle `hwinfo_get_device_id()`
+  à chaque démarrage, qui lit l'identifiant unique gravé en usine dans le
+  silicium du SoC — donc le même contenu de flash, exécuté sur deux puces
+  physiquement différentes, dérive automatiquement deux adresses BLE
+  différentes.
+- Le numéro de série du pont USB↔SWD (SAMD11) est une puce séparée,
+  indépendante du SoC principal et de son contenu flash.
+
+### Image d'or (golden image) actuelle
+
+| Fichier | Origine | Statut |
+|---|---|---|
+| `xiao_door_sensor/golden-image/unit01-verified-2026-08-30.bin` / `.hex` | Dump physique de l'unité #01 (lecture seule, `serial=C5F0E209`) | **Vérifiée en fonctionnement réel (~20 µA moyenne mesurée au PPK2)** — image de référence actuelle |
+
+Ce fichier `.hex` doit rester suivi sur GitHub (exception dédiée dans
+`.gitignore` au motif générique `*.hex`) — c'est la seule référence dont
+la validité a été confirmée par une mesure physique, pas seulement par
+une relecture de code.
+
+### Étape 1 — Dump en lecture seule de l'unité source (celle qui fonctionne)
+
+**Aucune écriture, aucun effacement.** Halte le CPU brièvement (requis
+par SWD pour lire la mémoire), lit, puis relance l'exécution normale.
+
+```bash
+export PATH="/c/ncs/tools/xpack-openocd-0.12.0-7/bin:$PATH"
+BOARD_DIR="C:/ncs/vendor/platform-seeedboards/zephyr/boards/arm/xiao_nrf54lm20a"
+DUMP="C:/ncs/projects/nRF54LM20A/xiao_door_sensor/golden-image/<nom>.bin"
+
+openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
+  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" \
+  -c "init" -c "reset halt" \
+  -c "dump_image \"$DUMP\" 0x0 117396" \
+  -c "reset" -c "exit"
+```
+
+`117396` = taille en octets de l'image actuelle (confirmée par
+`verify_image` au dernier flash connu — ajuster si l'image d'or change).
+
+**Obligatoire après ce dump : débrancher puis rebrancher complètement le
+câble USB-C de l'unité source.** Une session SWD, même en lecture seule,
+peut laisser le SoC en « Debug Interface mode » (émule le System OFF au
+lieu de l'appliquer réellement) tant que le cycle d'alimentation complet
+n'a pas eu lieu — sans ça, l'unité source pourrait sembler se comporter
+différemment alors que son firmware n'a pas changé.
+
+### Étape 2 — Convertir en `.hex` (une fois, pas à chaque clonage)
+
+```bash
+export PATH="/c/ncs/toolchains/dcbdc366a1/opt/zephyr-sdk/gnu/arm-zephyr-eabi/bin:$PATH"
+arm-zephyr-eabi-objcopy -I binary -O ihex --change-address 0x0 \
+  "<dump>.bin" "<dump>.hex"
+```
+
+### Étape 3 — Flasher l'unité cible avec ce fichier
+
+Même procédure que pour un flash normal (§ 5), en remplaçant `$HEX` par
+le chemin du `.hex` cloné :
+
+```bash
+openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
+  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" \
+  -c "init" -c "reset halt" \
+  -c "nrf54lm20a-load \"<dump>.hex\"" \
+  -c "reset halt" \
+  -c "verify_image \"<dump>.hex\"" \
+  -c "reset" -c "exit"
+```
+
+`verify_image` doit confirmer exactement la même taille que le dump
+d'origine — c'est la garantie que la cible est désormais byte-for-byte
+identique à la source vérifiée.
+
+---
+
+## 5. Régénérer l'image d'or depuis les sources (seulement après une vraie modification de code)
+
+**Ne sert plus à déployer une unité supplémentaire (§ 4 ci-dessus) — sert
+uniquement à produire une nouvelle version quand le firmware doit
+réellement changer.** Toute nouvelle image issue d'un rebuild doit être
+physiquement vérifiée en fonctionnement réel (mesure PPK2 conforme aux
+attentes) **avant** de remplacer l'image d'or et d'être clonée sur
+d'autres unités — ne jamais sauter cette vérification, quelle que soit la
+confiance dans le changement de code.
 
 ```bash
 export TCROOT="/c/ncs/toolchains/dcbdc366a1"
@@ -321,11 +460,11 @@ Identifier la carte branchée :
 Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -like "*VID_2886*" } | Select-Object FriendlyName, InstanceId, Status
 ```
 → ligne `Périphérique USB composite` = numéro de série du pont USB↔SWD,
-fixe par carte (comparer au tableau § 6).
+fixe par carte (comparer au tableau § 7).
 
 ---
 
-## 5. Écart fonctionnel connu
+## 6. Écart fonctionnel connu
 
 **Résolu le 2026-08-29** : les trames A (mouvement/orientation/bouton) et
 C (IMU brut) sont désormais portées sur cette architecture (§ 3.3),
@@ -334,35 +473,37 @@ parité fonctionnelle atteinte avec l'ancien firmware de production (#03).
 toujours à 0 (non implémentés côté driver), bouton physique toujours à 0
 (bug connu non résolu).
 
-**Reste à faire** : re-mesure PPK2 avec trafic événementiel réel (le
-repos seul devrait rester proche de ~20-22 µA, le coût supplémentaire
-n'intervenant que sur événement — gyroscope en rafale + trames A/C
-supplémentaires) ; tests fonctionnels HA complets (mouvement, angle,
-bouton, IMU brut) sur #01 et #02, au-delà de la simple vérification de
-présence des entités. #01 et #02 tournent maintenant toutes les deux le
-firmware complet A/B/C (2026-08-29).
+**Reste à faire** : cloner l'image d'or vérifiée de #01 sur #02 (§ 4,
+en cours) — le rebuild du 2026-08-29/30 depuis les sources a introduit un
+bug réel (delta accéléromètre bruité, ~80-200+ µA mesuré sur #02 selon
+la version) qui n'a jamais été observé sur #01 ; tant que la cause exacte
+de cet écart entre les deux unités n'est pas comprise avec certitude,
+l'image d'or physiquement vérifiée sur #01 (~20 µA) est la seule source
+de confiance pour déployer #02 et les unités suivantes — voir § 4 et
+§ 5. Tests fonctionnels HA complets (mouvement, angle, bouton, IMU brut)
+à reprendre sur #01 et #02 au-delà de la simple présence des entités.
 
 ---
 
-## 6. Déploiement actuel (2026-08-29)
+## 7. Déploiement actuel (2026-08-30)
 
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
-| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** (~20-22 µA au repos mesuré avant ce portage, re-mesure événementielle à faire) | Intégrée dans HA ; vérification fonctionnelle des trames A/C OK |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C** (flashé le 2026-08-29, voir correctif backend HID § 4) | Intégrée dans HA ; vérification fonctionnelle des trames A/C à faire |
+| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C — image d'or de référence** | Intégrée dans HA ; **~20 µA moyenne confirmée au PPK2** ; ne jamais reflasher depuis un rebuild sans re-vérification physique |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C** | Intégrée dans HA ; consommation anormale mesurée (~80-200+ µA) avec deux builds issus de rebuilds successifs — en cours de reclonage depuis l'image d'or de #01 (§ 4) |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
 Détail complet de l'ancienne architecture (#03) : voir
 `archive/docs-historique/` (document `xiao_nrf54lm20a_project_notes`
 archivé) si besoin de la reprendre en main.
 
-**~17 unités supplémentaires attendues** — en attente que cette
-architecture couvre aussi la détection de mouvement (§ 5) avant tout
-flash de lot.
+**~17 unités supplémentaires attendues** — à déployer par clonage de
+l'image d'or (§ 4) une fois #02 confirmée elle aussi à ~20 µA, jamais par
+rebuild individuel.
 
 ---
 
-## 7. Point bloquant principal — question ouverte auprès de Nordic
+## 8. Point bloquant principal — question ouverte auprès de Nordic
 
 Le rail `imu_vdd`/LDO1 (nPM1300, LOADSW1/LDO1) consomme ~250-300 µA dès
 qu'il est activé, **quelle que soit la charge** (même sans IMU, sans
@@ -375,13 +516,13 @@ question posée au support Nordic — voir
 
 ---
 
-## 8. Historique complet
+## 9. Historique complet
 
 Tout le raisonnement, les tests intermédiaires, les hypothèses écartées
 et les incidents (dont le pic ~200 mA de l'audit broches) sont
 conservés dans `archive/docs-historique/` — notamment
 `XIAO-nRF54LM20A-Solution-System-OFF.md` (tests #1 à #39) et
 `Transition-nRF54LM20A-Optimisation-Consommation.md`. Ce document-ci
-(§ 1-7) est la seule référence nécessaire pour reprendre le travail sans
+(§ 1-8) est la seule référence nécessaire pour reprendre le travail sans
 avoir à rouvrir l'historique, sauf besoin spécifique de retrouver le
 raisonnement détaillé derrière une décision.

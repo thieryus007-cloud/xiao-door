@@ -43,8 +43,17 @@ La carte XIAO nRF54LM20A n'est pas incluse nativement dans ce checkout NCS
 
 ## Compiler / flasher / vérifier
 
+**Pour déployer une unité supplémentaire, ne pas rebuilder depuis les
+sources — cloner l'image d'or déjà vérifiée physiquement** (procédure et
+raison complètes dans `Configuration-nRF54LM20A-System-ON-IDLE.md` § 4 :
+un rebuild a introduit un bug de consommation réel, non détecté avant
+flash, sur l'unité #02 le 2026-08-30). Rebuild depuis les sources
+uniquement pour régénérer l'image d'or après une vraie modification de
+code (§ 5 du même document), jamais pour un déploiement de routine.
+
 Commandes exactes à jour dans `Configuration-nRF54LM20A-System-ON-IDLE.md`
-§ 4. Rappels valables quelle que soit la version du firmware :
+§ 4 (clonage, méthode recommandée) et § 5 (rebuild depuis les sources).
+Rappels valables quelle que soit la version du firmware :
 
 - Toujours vérifier avec `verify_image` (jamais `dump_image`+`cmp` : la
   RRAM ne s'efface pas avant écriture, ce qui produit de fausses
@@ -195,10 +204,13 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
 1. **Fait le 2026-08-29** : détection de mouvement portée (trames A/C :
    mouvement, orientation pitch/roll/yaw, bouton, tamper=0, vibration=0)
    sur l'architecture System ON IDLE — voir
-   `Configuration-nRF54LM20A-System-ON-IDLE.md` § 3.3/§ 5. Unité #01
-   flashée et en cours de vérification fonctionnelle dans HA. Chute/choc
-   et double-tap restent non implémentés (comme en production, le driver
-   LSM6DSL n'expose pas ces événements matériels).
+   `Configuration-nRF54LM20A-System-ON-IDLE.md` § 3.3/§ 6. Chute/choc et
+   double-tap restent non implémentés (comme en production, le driver
+   LSM6DSL n'expose pas ces événements matériels). **Unité #01 vérifiée
+   à ~20 µA (image d'or de référence) ; #02 montre une anomalie
+   ~80-200+ µA non résolue par rebuild, en cours de correction par
+   clonage direct depuis #01 (§ 4) — voir § « Anomalie de consommation
+   sur #02 » dans le même document.**
 2. Porter le même firmware complet (A/B/C) sur l'unité #02 (encore sur le
    build santé-seule).
 3. Re-mesurer la consommation PPK2 avec trafic événementiel réel (le

@@ -932,8 +932,21 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		regulator_disable(imu_vdd_dev);
 		return rc;
 	}
-	/* Periode reelle a 208 Hz = ~4,8 ms -- 6 ms garde une marge ~1,2 ms. */
-	k_msleep(6);
+	/* Correctif 2026-08-30 (mesure PPK2 : ~80 uA moyenne au lieu de
+	 * ~20-22 uA attendus apres le portage des trames A/C) -- ce delai
+	 * ne couvrait que la periode ODR (~4,8 ms a 208 Hz), pas le temps de
+	 * demarrage reel de la puce. Ton (temps de demarrage) = 35 ms
+	 * (datasheet ST DocID030071 Rev 3, Table 4 p.24 -- meme parametre
+	 * deja utilise pour GYRO_STARTUP_MS ci-dessus, mais jamais applique
+	 * ici a l'accelerometre). Sans cette marge, l'echantillon lu a
+	 * chaque cycle etait pris ~24 ms trop tot (5 ms regulateur + 6 ms
+	 * ODR = 11 ms contre 35 ms minimum), donc bruite/transitoire --
+	 * chaque cycle produisait un delta artificiel superieur au seuil de
+	 * mouvement (MOTION_THRESHOLD_MS2), declenchant une fausse detection
+	 * quasi permanente (plafonnee a FRAME_A_MAX_PER_MIN=10/min par
+	 * l'anti-rafale, mais suffisante pour multiplier la consommation
+	 * moyenne par ~4). 40 ms = 35 ms Ton + ~5 ms marge periode ODR. */
+	k_msleep(40);
 
 	rc = sensor_sample_fetch_chan(imu_dev, SENSOR_CHAN_ACCEL_XYZ);
 	if (rc < 0) {
