@@ -286,7 +286,7 @@ résolue tant qu'une mesure PPK2 sur #02 après clonage ne confirme pas
 | # | Statut (2026-08-30) |
 |---|---|
 | 01 | **Image d'or de référence** — jamais rebuildée depuis, ~20 µA confirmé |
-| 02 | Anomalie ~80-200+ µA avec deux rebuilds successifs — en cours de reclonage depuis l'image d'or de #01 (§ 4), résultat à confirmer par PPK2 |
+| 02 | **Clonée depuis l'image d'or de #01 le 2026-08-30** (`verify_image` : 117396 octets identiques) — consommation à reconfirmer par PPK2 |
 | 03 | Non concernée — ancienne architecture, code différent |
 
 #### État retenu et correctif GRTC (2026-08-29)
@@ -490,7 +490,7 @@ de confiance pour déployer #02 et les unités suivantes — voir § 4 et
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
 | 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C — image d'or de référence** | Intégrée dans HA ; **~20 µA moyenne confirmée au PPK2** ; ne jamais reflasher depuis un rebuild sans re-vérification physique |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C** | Intégrée dans HA ; consommation anormale mesurée (~80-200+ µA) avec deux builds issus de rebuilds successifs — en cours de reclonage depuis l'image d'or de #01 (§ 4) |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C — clonée depuis l'image d'or de #01 le 2026-08-30** | Intégrée dans HA ; `verify_image` OK (117396 octets identiques à #01) ; consommation à reconfirmer par PPK2 |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
 Détail complet de l'ancienne architecture (#03) : voir
