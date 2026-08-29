@@ -52,9 +52,19 @@ Commandes exactes à jour dans `Configuration-nRF54LM20A-System-ON-IDLE.md`
   courant).
 - `vid_pid 0x2886 0x0068` nécessaire (VID Seeed absent de la liste par
   défaut d'OpenOCD).
+- **`-c "cmsis-dap backend hid" fait partie de la commande standard depuis
+  le 2026-08-29 — ne jamais l'omettre.** Sans elle, le backend WinUSB v2
+  par défaut peut énumérer correctement (serial lu par OpenOCD) tout en
+  échouant sur chaque transaction réelle (`Entity not found`,
+  `could not claim interface`) — constaté sur l'unité #02, résistant à
+  tout le reste (nrfutil, reset PnP, cycle d'alimentation, vitesse
+  d'horloge). Seul le backend HID a résolu ce cas précis. Si ce symptôme
+  réapparaît malgré cette ligne, c'est une cause différente.
 - Pont CMSIS-DAP (SAMD11) parfois intermittent (`unable to find a
   matching CMSIS-DAP device`) — relancer la même commande suffit
   systématiquement, jusqu'à 5 essais, pas besoin de débrancher/rebrancher.
+  Symptôme différent de celui ci-dessus : ici la commande échoue
+  immédiatement, sans jamais lire le serial ni entamer de transaction.
 - **Après un flash, débrancher puis rebrancher complètement l'USB-C**
   avant de tester le comportement réel — tant qu'une session OpenOCD a
   touché la carte, le SoC reste en « Debug Interface mode » (datasheet

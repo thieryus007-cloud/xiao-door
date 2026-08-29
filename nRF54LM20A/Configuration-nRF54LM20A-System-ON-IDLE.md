@@ -291,32 +291,6 @@ BOARD_DIR="C:/ncs/vendor/platform-seeedboards/zephyr/boards/arm/xiao_nrf54lm20a"
 HEX="C:/ncs/projects/nRF54LM20A/xiao_door_sensor/build/xiao_door_sensor/zephyr/zephyr.hex"
 
 openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
-  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "adapter serial <numero-serie-pont>" -c "adapter speed 500" \
-  -c "init" -c "reset halt" \
-  -c "nrf54lm20a-load \"$HEX\"" \
-  -c "reset halt" \
-  -c "verify_image \"$HEX\"" \
-  -c "reset" -c "exit"
-```
-
-Toujours vérifier avec `verify_image` (jamais `dump_image`+`cmp`, faux
-positifs sur les trous RRAM).
-
-**Correctif connexion SWD (2026-08-29, unité #02)** : le pont SAMD11 peut
-s'énumérer (visible dans Windows, serial lu par OpenOCD) mais échouer sur
-**chaque** transaction (`error submitting USB read/write: Entity not
-found`, `could not claim interface: Operation not supported`) via le
-backend WinUSB v2 par défaut — persistant après redémarrage des process
-`nrfutil`, reset PnP, cycle d'alimentation complet et changement de
-vitesse d'horloge. **Solution qui a fonctionné** : forcer le backend HID
-(v1) au lieu du WinUSB bulk (v2), en ajoutant
-`-c "cmsis-dap backend hid"` juste après `-c "cmsis-dap vid_pid ..."`
-dans la commande OpenOCD. À essayer en premier si ce symptôme
-(énumération OK, transactions en échec) réapparaît sur une future unité,
-avant tout autre diagnostic. Commande complète :
-
-```bash
-openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
   -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" \
   -c "init" -c "reset halt" \
   -c "nrf54lm20a-load \"$HEX\"" \
@@ -324,6 +298,22 @@ openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
   -c "verify_image \"$HEX\"" \
   -c "reset" -c "exit"
 ```
+
+**`-c "cmsis-dap backend hid"` fait partie intégrante de la commande
+standard depuis le 2026-08-29 — ne pas l'omettre.** Sans cette ligne, le
+pont SAMD11 utilise par défaut le backend WinUSB v2, qui peut s'énumérer
+correctement (visible dans Windows, serial lu par OpenOCD) tout en
+échouant sur **chaque** transaction réelle (`error submitting USB
+read/write: Entity not found`, `could not claim interface: Operation not
+supported`) — constaté sur l'unité #02, persistant après redémarrage des
+process `nrfutil`, reset PnP, cycle d'alimentation complet et changement
+de vitesse d'horloge ; seul le passage au backend HID (v1) a résolu le
+problème. Si ce symptôme précis réapparaît malgré cette ligne déjà
+présente, ce n'est pas la même cause — ne pas re-diagnostiquer depuis
+zéro, relire d'abord ce paragraphe.
+
+Toujours vérifier avec `verify_image` (jamais `dump_image`+`cmp`, faux
+positifs sur les trous RRAM).
 
 Identifier la carte branchée :
 
