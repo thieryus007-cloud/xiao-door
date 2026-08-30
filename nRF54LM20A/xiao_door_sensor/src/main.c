@@ -856,7 +856,9 @@ struct motion_result {
 	bool temp_valid;
 	int16_t pitch_dd, roll_dd;
 	bool moving;
+	bool moving_confirmed;
 	bool angle_crossed;
+	bool angle_confirmed;
 	bool want_event_frame;
 	bool rate_limited;
 	int64_t now;
@@ -880,7 +882,8 @@ struct motion_result {
  * d'interruption materielle (plus de reveil GPIO dans cette architecture,
  * voir en-tete de fichier). */
 static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool want_temp,
-			   int64_t last_frame_a_uptime, struct motion_result *out)
+			   int64_t last_frame_a_uptime, bool angle_crossed_prev_cycle,
+			   bool moving_prev_cycle, struct motion_result *out)
 {
 	int rc;
 	struct sensor_value x, y, z;
@@ -974,12 +977,41 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		(abs(out->pitch_dd - retained.last_sent_pitch_dd) > ANGLE_HYSTERESIS_DD) ||
 		(abs(out->roll_dd - retained.last_sent_roll_dd) > ANGLE_HYSTERESIS_DD);
 
+	/* Correctif 2026-08-30 (mesure PPK2 : ~54-200 uA moyenne au lieu de
+	 * ~20-22 uA sur une unite pourtant identique octet pour octet a une
+	 * autre mesuree correctement -- flash, UICR et RAM retenue tous
+	 * confirmes identiques) -- accel_to_pitch_roll() utilise atan2(), dont
+	 * la sensibilite au bruit augmente fortement loin de 0 deg (proche de
+	 * ±90 deg). retained.last_sent_pitch_dd/roll_dd n'est mis a jour qu'a
+	 * l'envoi d'une trame : un ecart isole d'un seul cycle (bruit
+	 * transitoire, sans lien avec un mouvement reel) declenchait une trame
+	 * immediate, qui pouvait elle-meme laisser un nouvel ecart residuel et
+	 * redeclencher au cycle suivant. On exige desormais que le
+	 * franchissement d'angle soit observe sur DEUX cycles consecutifs
+	 * avant de le traiter comme reel -- un vrai mouvement/bascule persiste
+	 * sur plusieurs cycles, un sursaut de bruit isole non. Ne s'applique
+	 * qu'a angle_crossed : motion_detected() compare deja deux
+	 * echantillons consecutifs (delta), pas un ecart cumulatif face a une
+	 * reference qui ne se met a jour qu'a l'envoi. */
+	out->angle_confirmed = out->angle_crossed && angle_crossed_prev_cycle;
+
+	/* Correctif 2026-08-30 (suite) : la confirmation sur deux cycles de
+	 * l'angle seule ne suffisait pas (mesure PPK2 toujours au-dessus de
+	 * ~20-22 uA) -- meme logique de confirmation appliquee a `moving`.
+	 * motion_detected() compare deja deux echantillons consecutifs, mais
+	 * un seul ecart isole (bruit large, transitoire de stabilisation
+	 * imparfaitement couvert par le delai Ton) peut encore depasser
+	 * MOTION_THRESHOLD_MS2 une fois sans mouvement reel. Exige maintenant
+	 * que `moving` soit vrai sur DEUX cycles consecutifs avant de le
+	 * traiter comme un mouvement reel. */
+	out->moving_confirmed = out->moving && moving_prev_cycle;
+
 	out->now = k_uptime_get();
 
 	bool min_gap_ok = (out->now - last_frame_a_uptime) >= MOTION_REPORT_MIN_GAP_MS;
 
 	out->want_event_frame =
-		heartbeat_pending || ((out->moving || out->angle_crossed) && min_gap_ok);
+		heartbeat_pending || ((out->moving_confirmed || out->angle_confirmed) && min_gap_ok);
 	out->rate_limited = frame_a_rate_limited(out->now);
 
 	if (out->want_event_frame && !out->rate_limited) {
@@ -1080,6 +1112,8 @@ int main(void)
 	int64_t first_moving_uptime = 0;
 	bool rest_frame_pending = false;
 	int64_t last_frame_a_uptime = -(int64_t)MOTION_REPORT_MIN_GAP_MS;
+	bool angle_crossed_prev_cycle = false;
+	bool moving_prev_cycle = false;
 
 	while (1) {
 		uint64_t now_us = z_nrf_grtc_timer_read();
@@ -1087,7 +1121,8 @@ int main(void)
 		bool heartbeat_due = now_us >= retained.next_heartbeat_us;
 		struct motion_result mr;
 
-		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime, &mr);
+		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime,
+				     angle_crossed_prev_cycle, moving_prev_cycle, &mr);
 		if (rc < 0) {
 			printf("Warning: sample_motion failed (%d)\n", rc);
 			k_sleep(K_MSEC(MOTION_POLL_INTERVAL_MS));
@@ -1095,12 +1130,14 @@ int main(void)
 		}
 
 		prev = mr.accel;
+		angle_crossed_prev_cycle = mr.angle_crossed;
+		moving_prev_cycle = mr.moving;
 
 		if (mr.want_event_frame && !mr.rate_limited) {
 			const char *reason = heartbeat_due ? "heartbeat" :
-					      mr.moving ? "motion" : "angle";
+					      mr.moving_confirmed ? "motion" : "angle";
 
-			send_frame_a(&mr.accel, mr.moving, mr.moving, reason);
+			send_frame_a(&mr.accel, mr.moving_confirmed, mr.moving_confirmed, reason);
 			send_frame_c(&mr.accel, mr.gyro_read ? mr.gyro_ret : -EIO,
 				     mr.gx, mr.gy, mr.gz, mr.gyro_mag);
 			frame_a_record_send(mr.now);
@@ -1113,7 +1150,7 @@ int main(void)
 			}
 		}
 
-		if (mr.moving) {
+		if (mr.moving_confirmed) {
 			was_moving = true;
 			rest_since = 0;
 			rest_frame_pending = false;

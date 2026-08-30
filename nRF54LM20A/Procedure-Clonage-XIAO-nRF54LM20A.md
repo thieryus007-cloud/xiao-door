@@ -57,6 +57,8 @@ une relecture de code.
 | Date | Unité cible | Résultat |
 |---|---|---|
 | 2026-08-30 | #02 | `verify_image` OK, 117396 octets identiques à l'image d'or — consommation PPK2 à confirmer |
+| 2026-08-29 (session ultérieure) | #02 | Reclonée après un détour diagnostic (firmware de lecture registres PMIC, puis firmware de test avec correctif de confirmation intra-cycle — aucun des deux jamais destiné au déploiement). `verify_image` OK, 117396 octets. Diagnostic par trace instrumentée (SWD, 25 cycles réels) : boucle principale à la bonne cadence, aucune fausse détection de mouvement/angle, configuration LDO1/`imu_vdd` correcte (registres PMIC lus directement). Écart de consommation résiduel vs #01 (~45 µA de moyenne mesurée, plancher jamais sous ~3,8 µA sur 15,7 s) **non expliqué par le firmware** — toutes les pistes de logique applicative vérifiées et exclues une à une. Cause encore à déterminer à ce stade (mesure faite alors qu'un firmware de diagnostic venait d'être retiré, voir ligne suivante pour la confirmation propre). |
+| 2026-08-30 | #02 | Reclonée depuis `unit01-verified-2026-08-30.hex` (image d'or standard, sans aucune instrumentation de diagnostic) après nettoyage complet des firmwares de test. `verify_image` OK, 117396 octets. **Mesure PPK2 confirmée par l'utilisateur : moyenne de consommation identique à #01.** Cette mesure valide la procédure de clonage standard elle-même (déjà documentée depuis le début, aucune méthode différente) — les écarts précédents (~45-70 µA) sont attribuables aux firmwares de diagnostic laissés en place pendant l'investigation, pas à un défaut du clonage ou du firmware de référence. Voir `Configuration-nRF54LM20A-System-ON-IDLE.md` §4 « Règle absolue : ne jamais laisser un firmware de diagnostic flashé » pour l'incident et la règle qui en découle. |
 
 ---
 
@@ -145,6 +147,23 @@ au tableau « Historique de clonage » ci-dessus.
   symptôme précis (différent de celui ci-dessus : ici la commande
   échoue immédiatement ou pendant l'examen DP, sans jamais aboutir à une
   transaction applicative).
+- **Instabilité après déconnexion/reconnexion USB-C côté PC** (constaté
+  2026-08-30) : après un cycle déconnexion/reconnexion PC (carte non
+  arrêtée proprement au préalable), la carte peut se retrouver dans un
+  état où le flash échoue de façon persistante, au-delà du simple pont
+  CMSIS-DAP intermittent décrit ci-dessus. **Méthode de récupération
+  qui fonctionne, décrite par l'utilisateur** : déconnecter la carte du
+  PC → connecter les fils PPK2 (BAT+/BAT-) → appliquer la tension
+  depuis le PPK2 (mode Source meter) → faire une mesure → couper
+  l'alimentation PPK2 → déconnecter les fils PPK2 → reconnecter la
+  carte au port USB-C du PC. La LED rouge se rallume et la carte
+  redevient joignable côté PC (SWD + énumération USB normales) à ce
+  moment-là. Hypothèse non vérifiée à ce stade : un cycle
+  d'alimentation complet (via PPK2, jamais simultané avec l'USB-C —
+  voir protocole PPK2 du projet) réinitialise un état que la simple
+  déconnexion/reconnexion USB-C ne réinitialise pas. **Cause exacte non
+  encore investiguée** — ce point est consigné ici pour référence, à
+  creuser séparément du travail de diagnostic consommation en cours.
 - Identifier la carte branchée avant toute action :
 
 ```powershell

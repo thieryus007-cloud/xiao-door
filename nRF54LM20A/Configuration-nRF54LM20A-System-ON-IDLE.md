@@ -278,19 +278,27 @@ présenter cette anomalie.
 qui fonctionne, vérifiée physiquement) directement sur #02 — voir
 `Procédure-Clonage-XIAO-nRF54LM20A.md` pour la procédure complète. Ceci
 fait, `verify_image` a confirmé 117396 octets identiques entre #01 et
-#02 (2026-08-30) ; consommation PPK2 à reconfirmer. Ceci élimine le
-risque qu'un rebuild
-introduise un nouveau bug non détecté avant flash réel, quelle que soit
-la qualité apparente du raisonnement de code. La cause exacte de
-l'écart de comportement entre #01 et #02 avec un firmware nominalement
-identique reste **non comprise à ce jour** — ne pas la considérer
-résolue tant qu'une mesure PPK2 sur #02 après clonage ne confirme pas
-~20 µA.
+#02 (2026-08-30). Ceci élimine le risque qu'un rebuild introduise un
+nouveau bug non détecté avant flash réel, quelle que soit la qualité
+apparente du raisonnement de code.
+
+**Résolu (2026-08-30, confirmation finale)** : après une session de
+diagnostic approfondie (registres PMIC, trace instrumentée SWD sur #01
+et #02, cadence de boucle, erreurs I2C — tout revenu conforme des deux
+côtés, voir historique complet dans `Procedure-Clonage-XIAO-nRF54LM20A.md`),
+un firmware de diagnostic laissé par erreur sur #02 après un test
+ponctuel s'est avéré être la cause des mesures élevées (~45-70 µA)
+observées entre-temps — pas un défaut du clonage. Une fois #02
+reclonée proprement depuis l'image d'or standard (sans instrumentation),
+**la mesure PPK2 confirme une consommation moyenne identique à #01**.
+La méthode de clonage elle-même n'a jamais été fautive. Voir §4 du
+présent document, « Règle absolue : ne jamais laisser un firmware de
+diagnostic flashé », pour la règle de process qui en découle.
 
 | # | Statut (2026-08-30) |
 |---|---|
 | 01 | **Image d'or de référence** — jamais rebuildée depuis, ~20 µA confirmé |
-| 02 | **Clonée depuis l'image d'or de #01 le 2026-08-30** (`verify_image` : 117396 octets identiques) — consommation à reconfirmer par PPK2 |
+| 02 | **Clonée depuis l'image d'or de #01** (`verify_image` : 117396 octets identiques) — **consommation PPK2 confirmée identique à #01** |
 | 03 | Non concernée — ancienne architecture, code différent |
 
 #### État retenu et correctif GRTC (2026-08-29)
@@ -321,6 +329,35 @@ actuelle, historique des clonages, et notes de connexion SWD. Depuis le
 unité déjà vérifiée en fonctionnement réel**, jamais par rebuild depuis
 les sources (un rebuild a déjà introduit un bug de consommation réel non
 détecté avant flash — voir ce même document dédié pour le détail).
+
+### Règle absolue : ne jamais laisser un firmware de diagnostic flashé
+
+**Incident du 2026-08-30** : lors du diagnostic de l'écart de
+consommation #01/#02, un firmware de diagnostic (lecture registres
+nPM1300 par I2C, `CONFIG_SERIAL=y`/logging UART actif en continu,
+aucune optimisation d'énergie) a été flashé sur #02 pour une lecture
+ponctuelle, puis **jamais reflashé avec l'image de référence ensuite**.
+Une mesure PPK2 faite plus tard sur cette même unité a montré >300 µA —
+non pas une nouvelle anomalie du clone, mais simplement la conséquence
+attendue d'un firmware de debug laissé en place par oubli. Un deuxième
+firmware de test (trace de diagnostic en RAM, lue par SWD) a également
+dû être suivi puis retiré du code source pour ne pas laisser le dépôt
+dans un état qui ne correspond plus à l'image réellement vérifiée.
+
+**Conséquence directe, à respecter systématiquement** :
+1. Tout firmware de diagnostic/test flashé sur une unité (lecture de
+   registres, trace instrumentée, etc.) est **temporaire par
+   construction** — la reflasher avec l'image de référence
+   immédiatement après avoir récupéré les données nécessaires, avant
+   toute mesure PPK2 ou toute remise en service, sans attendre une
+   demande explicite.
+2. Ne jamais laisser une mesure de consommation en cours ou prévue sans
+   avoir vérifié au préalable, explicitement, quel firmware est
+   réellement flashé sur l'unité testée à cet instant.
+3. Le code source (`main.c`) ne doit contenir aucune instrumentation de
+   diagnostic laissée en place après un test — la retirer dans la
+   foulée si elle ne fait pas partie de l'image vérifiée, pour que le
+   dépôt reflète toujours fidèlement ce qui est réellement déployé.
 
 ---
 

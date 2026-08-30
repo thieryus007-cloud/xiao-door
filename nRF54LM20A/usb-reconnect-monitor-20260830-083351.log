@@ -1,0 +1,362 @@
+﻿=== Surveillance demarree 08/30/2026 08:33:51 ===
+
+[08/30/2026 08:33:51] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName               InstanceId                                    Status
+------------               ----------                                    ------
+Périphérique d’entrée USB  USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK    
+Périphérique USB composite USB\VID_2886&PID_0068\9C4A557D                OK    
+CMSIS-DAP v2 Adapter       USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK    
+USB Serial Device (COM4)   USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK    
+
+
+
+
+[08/30/2026 08:33:53] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:34:01] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:34:03] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:34:06] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:34:16] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:34:18] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:34:27] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName               InstanceId                                    Status
+------------               ----------                                    ------
+Périphérique d’entrée USB  USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK    
+Périphérique USB composite USB\VID_2886&PID_0068\9C4A557D                OK    
+CMSIS-DAP v2 Adapter       USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK    
+
+
+
+
+[08/30/2026 08:34:29] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:34:33] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:34:35] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:34:40] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:34:42] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:34:44] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:35:20] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName              InstanceId                                    Status
+------------              ----------                                    ------
+Périphérique d’entrée USB USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK    
+
+
+
+
+[08/30/2026 08:35:22] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:35:26] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:35:29] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:35:33] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:35:37] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName               InstanceId                                    Status
+------------               ----------                                    ------
+Périphérique d’entrée USB  USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK    
+Périphérique USB composite USB\VID_2886&PID_0068\9C4A557D                OK    
+CMSIS-DAP v2 Adapter       USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK    
+
+
+
+
+[08/30/2026 08:35:39] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:35:41] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:36:15] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:36:17] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:36:26] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName               InstanceId                                    Status
+------------               ----------                                    ------
+Périphérique d’entrée USB  USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK    
+Périphérique USB composite USB\VID_2886&PID_0068\9C4A557D                OK    
+CMSIS-DAP v2 Adapter       USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK    
+
+
+
+
+[08/30/2026 08:36:28] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:36:30] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:36:49] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName               InstanceId                                    Status
+------------               ----------                                    ------
+Périphérique d’entrée USB  USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK    
+Périphérique USB composite USB\VID_2886&PID_0068\9C4A557D                OK    
+CMSIS-DAP v2 Adapter       USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK    
+USB Serial Device (COM4)   USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK    
+
+
+
+
+[08/30/2026 08:36:50] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:36:52] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:36:58] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:37:02] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:37:07] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:37:11] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:37:16] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:37:24] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+
+
+[08/30/2026 08:39:59] CHANGEMENT ETAT PERIPHERIQUES:
+  (aucun peripherique VID_2886 present)
+
+[08/30/2026 08:45:15] CHANGEMENT ETAT PERIPHERIQUES:
+
+FriendlyName                                                          InstanceId                                    Sta
+                                                                                                                    tus
+------------                                                          ----------                                    ---
+Périphérique d’entrée USB                                             USB\VID_2886&PID_0068&MI_00\8&2598CF2B&0&0000 OK 
+Périphérique USB composite                                            USB\VID_2886&PID_0068\9C4A557D                OK 
+CMSIS-DAP v2 Adapter                                                  USB\VID_2886&PID_0068&MI_01\8&2598CF2B&0&0001 OK 
+USB Serial Device (COM4)                                              USB\VID_2886&PID_0068&MI_02\8&2598CF2B&0&0002 OK 
+Périphérique conforme aux Périphériques d'interface utilisateur (HID) HID\VID_2886&PID_0068&MI_00\9&176D1CA3&0&0000 OK 
+
+
+

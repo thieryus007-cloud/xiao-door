@@ -42,3 +42,10 @@ nRF52840/nrf52840-development-kit---hardware-files-3_0_3/
 # et pas du code/doc source de toute facon) -- motif recursif, quel que
 # soit le sous-dossier (y compris archive/) :
 nRF54LM20A/**/*.csv
+
+# Sauvegarde complete RRAM (2 Mo, dump binaire brut) d'une unite avant
+# essais -- filet de securite local pour restauration, pas du code/doc
+# source ; le .hex correspondant est deja exclu par le motif *.hex
+# general ci-dessus (pas d'exception ajoutee, contrairement a l'image
+# d'or, qui reste la seule reference physiquement verifiee suivie ici) :
+nRF54LM20A/unit01-backup-2026-08-30/*.bin
