@@ -1,27 +1,4 @@
 /*
- * ATTENTION (2026-09-01) -- NE PAS RECOMPILER CE FICHIER POUR PRODUIRE
- * UNE IMAGE DE DEPLOIEMENT tant que ceci n'est pas resolu. `west build`
- * sur ce fichier (source identique au binaire d'or a un bit pres --
- * H_LACTIVE, voir plus bas) produit actuellement un binaire qui MESURE
- * ~33 uA au repos au lieu de ~22 uA -- 64159 octets de difference avec
- * l'image d'or sur 117396 (plus de la moitie), CONFIG_PM absent du
- * .config genere (HAS_PM jamais selectionne pour la famille nRF54L,
- * confirme deja vrai au moment de l'image d'or du 2026-08-30 -- donc
- * PAS la cause, piste fermee). Cause exacte encore inconnue.
- *
- * L'image actuellement deployee (`golden-image/unit02-verified-2026-09-
- * 01-H_LACTIVE.bin/.hex`) N'A PAS ete produite en recompilant ce
- * fichier -- elle a ete obtenue en patchant un seul octet directement
- * dans le binaire d'or precedent (unit01-verified-2026-08-30.bin,
- * offset 46096 : 0x44 -> 0x46, encodage exact de l'ajout du bit
- * H_LACTIVE dans l'instruction movw qui charge {registre CTRL3_C,
- * valeur} avant l'appel i2c_reg_write_byte_dt -- verifie par diff
- * binaire, un seul octet different, mesure PPK2 conforme, ~22-23 uA).
- * Voir Procedure-Clonage-XIAO-nRF54LM20A.md pour la methode de patch.
- * Ce fichier source reste la reference LISIBLE du correctif applique,
- * mais pas le moyen de le reproduire tant que l'ecart de reconstruction
- * n'est pas compris.
- *
  * Pivot d'architecture (2026-08-28) -- System ON IDLE + GRTC, plus de
  * reboot par cycle. Voir XIAO-nRF54LM20A-Solution-System-OFF.md, § "Pivot
  * d'architecture" : le plancher mesure de l'ancienne strategie (System OFF

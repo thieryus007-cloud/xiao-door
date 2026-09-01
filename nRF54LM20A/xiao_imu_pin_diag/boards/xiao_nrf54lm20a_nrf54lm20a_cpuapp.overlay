@@ -1,0 +1,35 @@
+/* Firmware de diagnostic en lecture seule -- etat electrique des broches
+ * IMU (SDA/SCL/INT1 = gpio0.8/gpio0.7/gpio0.6) pendant que imu_vdd/LDO1
+ * est maintenu ETEINT. But : repondre a la question de Nordic ("are all
+ * IMU pins set to high-Z, they have external pull resistors") en
+ * verifiant si un pull-up externe branche sur un AUTRE rail que imu_vdd
+ * polarise ces broches malgre imu_vdd=0V (courant de fuite possible via
+ * les diodes de protection ESD de l'IMU non alimente). Pas un firmware
+ * de production, jamais destine au deploiement. Aucune ecriture I2C vers
+ * l'IMU (jamais alimente dans ce test). */
+
+&usbhs { status = "disabled"; };
+&usbhs_wrapper { status = "disabled"; };
+
+/* Meme init differee que la production (voir xiao_door_sensor/boards/...)
+ * -- sans elle, le SYS_INIT automatique du driver LSM6DSL tente une
+ * transaction I2C AVANT que main() ait jamais alimente imu_vdd, echoue
+ * (puce non alimentee), et bloque le bus pour toutes les transactions
+ * suivantes meme une fois imu_vdd alimente (ETIMEDOUT systematique
+ * observe -- diagnostique par ce fichier lui-meme, cause identifiee ici
+ * apres plusieurs iterations). */
+&lsm6ds3tr_c {
+	zephyr,deferred-init;
+};
+
+/* Ajout 2026-09-01, suite au schema fourni par Nordic : IMU_CS (broche 12
+ * du LSM6DS3TR-C) est cablee sur P3.12 avec un pull-up 100K vers
+ * IMU_VDD (R37) -- jamais identifiee ni testee avant dans ce projet
+ * (aucun code ne reference IMU_CS/P3.12, l'IMU est utilise en I2C pur).
+ * gpio3 est "disabled" par defaut (voir nrf54lm20_a_b.dtsi) et n'est
+ * active nulle part dans l'overlay de production -- P3.12 n'a donc
+ * jamais ete gere, dans un etat electrique jamais verifie. Active ici
+ * uniquement pour le lire en lecture seule. */
+&gpio3 {
+	status = "okay";
+};

@@ -1,0 +1,17 @@
+/* Firmware de diagnostic -- test isole de l'hypothese H_LACTIVE (voir
+ * commentaire main.c). Reproduit exactement la methodologie du test
+ * "LDO1 seul, 253-254 uA" deja dans Nordic-Support-Report-XIAO-
+ * nRF54LM20A.md §8.1 : imu_vdd allume UNE FOIS et laisse actif
+ * indefiniment, comparaison directe possible. Pas un firmware de
+ * production, jamais destine au deploiement. */
+
+&usbhs { status = "disabled"; };
+&usbhs_wrapper { status = "disabled"; };
+
+/* Obligatoire -- sans elle, le SYS_INIT automatique du driver LSM6DSL
+ * tente une transaction I2C avant que main() ait alimente imu_vdd,
+ * echoue, et bloque le bus en permanence (cause identifiee dans
+ * xiao_imu_pin_diag, meme session). */
+&lsm6ds3tr_c {
+	zephyr,deferred-init;
+};

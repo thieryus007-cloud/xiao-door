@@ -448,13 +448,19 @@ présence des entités.
 
 ---
 
-## 7. Déploiement actuel (2026-08-30)
+## 7. Déploiement actuel (2026-09-01)
 
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
-| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C — image d'or de référence** | Intégrée dans HA ; **~20 µA moyenne confirmée au PPK2** ; ne jamais reflasher depuis un rebuild sans re-vérification physique |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C — clonée depuis l'image d'or de #01 le 2026-08-30** | Intégrée dans HA ; `verify_image` OK (117396 octets identiques à #01) ; consommation à reconfirmer par PPK2 |
+| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** — `unit01-verified-2026-08-30.bin` (sans le correctif `H_LACTIVE`) | Intégrée dans HA ; **~20-22 µA moyenne confirmée au PPK2** ; **jamais retouchée** (contrainte du projet) — ne reflète donc plus le tout dernier correctif, voir #02 |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C** — `unit02-verified-2026-09-01-H_LACTIVE.bin`, **image d'or actuelle** (correctif `H_LACTIVE` IMU en plus, un seul octet patché sur l'image d'or précédente, voir `Procedure-Clonage-XIAO-nRF54LM20A.md`) | Intégrée dans HA ; `verify_image` OK (117396 octets) ; **consommation PPK2 confirmée ~22-23 µA** (hors transitoire de démarrage) |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
+
+**#01 et #02 tournent désormais des binaires légèrement différents** (un
+bit, `H_LACTIVE`) — situation nouvelle, jamais le cas avant le
+2026-09-01. Sans conséquence fonctionnelle connue (correctif isolé à un
+registre IMU), mais à garder en tête si un écart de comportement entre
+les deux est observé.
 
 Détail complet de l'ancienne architecture (#03) : voir
 `archive/docs-historique/` (document `xiao_nrf54lm20a_project_notes`
@@ -479,13 +485,61 @@ question posée au support Nordic — voir
 
 ---
 
-## 9. Historique complet
+## 9. Étude alimentation par pile non rechargeable
+
+**Contexte** : étude de la possibilité d'alimenter le XIAO par une pile
+non rechargeable (au lieu du LiPo actuel), ce qui impose de désactiver
+la fonctionnalité de charge du nPM1300 (charger une pile non
+rechargeable est à proscrire).
+
+**Test effectué (2026-08-30, exclusif #02, jamais sur #01)** : firmware
+de test dans un dossier séparé (`xiao_no_charge_test/`), overlay
+identique à `xiao_door_sensor` avec un seul changement :
+`/delete-property/ charging-enable;` sur `&pmic_charger`. Mécanisme
+exact (vérifié dans le driver,
+`zephyr/drivers/sensor/nordic/npm13xx_charger/npm13xx_charger.c:668-674`) :
+sans cette propriété, le driver n'écrit jamais le bit
+`CHGR_BASE`/`CHGR_OFFSET_EN_SET` qui active la machine à états de charge
+du nPM1300 — la lecture tension/courant batterie (jauge, trame B)
+n'est pas affectée, seule la charge active est coupée.
+
+**Résultat mesuré (PPK2)** : **~32 µA de moyenne — plus élevé que les
+~20-22 µA confirmés avec la charge activée (image d'or standard).**
+Désactiver la charge n'a donc **pas** réduit la consommation dans ce
+test ; au contraire, elle est remontée à un niveau proche des mesures
+dégradées observées avant la confirmation propre de #02 (§7).
+
+**Observation corrélée** : LED0 (nPM1300, mode `error` — indicateur
+autonome piloté directement par le PMIC, pas par le firmware, voir
+`nordic,npm1300-led.yaml:8` : « chaque LED peut afficher automatiquement
+le statut erreur ou charge ») trouvée éteinte pendant ce test, alors
+qu'elle est normalement allumée au repos sur ce projet (observé sur #01
+et sur #02 en fonctionnement normal). Cohérent avec un changement d'état
+du même bloc chargeur que celui modifié par le test — pas confirmé par
+lecture directe de registre à ce stade, à vérifier si le sujet est
+repris.
+
+**Conclusion à ce stade** : ne pas désactiver `charging-enable` comme
+méthode de réduction de consommation — l'hypothèse est infirmée par la
+mesure. Si l'alimentation par pile non rechargeable est retenue, la
+désactivation de la charge resterait nécessaire pour la sécurité
+(éviter de tenter de charger une pile non rechargeable), mais il
+faudra accepter/expliquer le surcoût de consommation mesuré, ou
+investiguer plus avant pourquoi la désactivation l'augmente au lieu de
+la réduire.
+
+#02 reflashée avec l'image d'or immédiatement après cette mesure —
+firmware de test jamais laissé en place (voir §4, règle absolue).
+
+---
+
+## 10. Historique complet
 
 Tout le raisonnement, les tests intermédiaires, les hypothèses écartées
 et les incidents (dont le pic ~200 mA de l'audit broches) sont
 conservés dans `archive/docs-historique/` — notamment
 `XIAO-nRF54LM20A-Solution-System-OFF.md` (tests #1 à #39) et
 `Transition-nRF54LM20A-Optimisation-Consommation.md`. Ce document-ci
-(§ 1-8) est la seule référence nécessaire pour reprendre le travail sans
+(§ 1-9) est la seule référence nécessaire pour reprendre le travail sans
 avoir à rouvrir l'historique, sauf besoin spécifique de retrouver le
 raisonnement détaillé derrière une décision.

@@ -348,6 +348,155 @@ almost exactly — independent reproduction on the same unit, different
 firmware build, same result. Raw CSV export of the full 60 s capture
 kept alongside this report (`nRF54LM20A/` project folder) for reference.
 
+## 8.2 Pin-configuration questions, tested (2026-08-31)
+
+Nordic's reply also asked two specific questions: (1) are all pins going
+to the IMU/microphone configured correctly — specifically all IMU pins
+high-Z (they have external pull resistors), and the microphone clock/data
+driven low; (2) can we confirm the IMU is in an initial low-power state.
+Both were tested directly on hardware (unit #02, dedicated read-only
+diagnostic build, SWD/debug-trace readback — no UART/console involved,
+so the measurement environment is unaffected), not just re-derived from
+the datasheet.
+
+**Microphone clock/data (shared `imu_vdd`/`dmic_vdd` rail):** already
+covered in §8 above — driving the floating `PDM_CLK`/`PDM_DIN` pins to a
+defined low level was tested twice (test #12, and again in the dedicated
+trace behind §8.1's table) with **no change (253 µA)** both times. Not
+re-tested a third time; the result already stands.
+
+**IMU pins (SDA/SCL/INT1) high-Z while `imu_vdd` is off:** not previously
+tested — every prior test measured current, none had read the actual
+logic level on these pins with `imu_vdd` confirmed at 0 V. New test:
+`imu_vdd` held off from boot (confirmed via `regulator_is_enabled()`),
+SDA (gpio0.8)/SCL (gpio0.7)/INT1 (gpio0.6) configured as plain floating
+inputs (no SoC-side pull), sampled every 100 ms —
+
+| Phase | `imu_vdd` | INT1 | SCL | SDA |
+|---|---|---|---|---|
+| Never enabled since boot (3 s) | confirmed off | stable 0 | stable 0 | stable 0 |
+| Enabled (3 s) | confirmed on | stable 0 | stable 1 from sample 0 | stable 1 from sample 0 |
+| Disabled again (3 s) | confirmed off | stable 0 | 1 for one 100 ms sample, then stable 0 | same |
+
+SDA/SCL only go high **after** `imu_vdd` turns on, and decay back to low
+within ~100 ms of it turning off. If an external pull-up on a rail other
+than `imu_vdd` were biasing these pins, they would have already read high
+in the first phase, before `imu_vdd` was ever touched — they did not.
+This rules out leakage through the (unpowered) IMU's ESD/protection
+diodes from an externally-still-powered pull-up. The pull-up on SDA/SCL
+is on `imu_vdd` itself; INT1 shows no pull at all in any phase. Not the
+cause of the §8 anomaly, and nothing to fix.
+
+**IMU initial low-power state:** `CTRL1_XL`/`CTRL2_G` (accelerometer/
+gyroscope ODR control) datasheet reset value is `0x00` = power-down
+(ODR=0000) for both. Confirmed empirically, not just cited: read via raw
+I2C immediately after a fresh `regulator_enable()` (5 ms delay, matching
+production's own soft-start wait) and again at 15/25/35/45 ms, before any
+configuration write — `CTRL1_XL=0x00`, `CTRL2_G=0x00` at every delay,
+5/5 reads. The chip is already in its lowest-power state the moment it
+receives power, with no firmware action required or possible to improve
+on it.
+
+## 8.3 Our reply to Nordic (2026-09-01)
+
+Thank you for the follow-up questions on pin configuration and IMU power
+state. We tested both directly on hardware rather than re-deriving them
+from the datasheet, using a dedicated read-only diagnostic build on unit
+#02 (SWD/memory-trace readback, no UART/console involved).
+
+**1. Microphone clock/data (`PDM_CLK`/`PDM_DIN`).** Already covered in
+our original report, §8, "Further checks performed": `imu_vdd` and the
+on-board PDM microphone's `dmic_vdd` are the same physical LDO1 node
+(`imu_vdd: dmic_vdd: LDO1` in our devicetree). Driving the otherwise-
+floating `PDM_CLK`/`PDM_DIN` pins to a defined low level was tested twice
+— once in isolation, once again in the diagnostic build behind our §8.1
+trace — with **no change (253 µA) either time**. We have not re-tested a
+third time; the result already stands and we don't believe it needs
+revisiting.
+
+**2. IMU pins (SDA/SCL/INT1) high-Z with `imu_vdd` off.** This was the
+one part of your question we had not actually tested — every prior test
+in our isolation matrix (§8) measured *current*, none had read the
+*voltage/logic level* on these three pins with `imu_vdd` confirmed at
+0 V. New test: `imu_vdd` held disabled from boot (confirmed via
+`regulator_is_enabled()`), SDA (P0.08), SCL (P0.07), and INT1 (P0.06)
+each configured as a plain floating input (no SoC-side pull), sampled
+every 100 ms across three phases:
+
+| Phase | `imu_vdd` state | INT1 | SCL | SDA |
+|---|---|---|---|---|
+| Never enabled since boot (3 s, 30 samples) | confirmed off | stable low | stable low | stable low |
+| Enabled (3 s, 30 samples) | confirmed on | stable low | stable **high** from the first sample | stable **high** from the first sample |
+| Disabled again (3 s, 30 samples) | confirmed off | stable low | high for one 100 ms sample, then stable low | same |
+
+SDA/SCL only rise once `imu_vdd` is enabled, and decay back to low within
+~100 ms of it being disabled. Had an external pull-up on a rail other
+than `imu_vdd` been biasing these pins, they would already have read high
+in the first phase, before `imu_vdd` was ever touched — none did. This
+rules out our working hypothesis (leakage into the unpowered IMU through
+its own ESD/protection diodes from a pull-up on a still-powered rail):
+the SDA/SCL pull-up is on `imu_vdd` itself, and INT1 shows no pull in any
+phase. We're confident this is not a contributor to the §8 anomaly.
+
+**3. IMU initial low-power state.** The LSM6DS3TR-C's `CTRL1_XL` and
+`CTRL2_G` registers (accelerometer/gyroscope output-data-rate control)
+have a documented reset value of `0x00` (power-down, ODR = 0000) for
+both. We confirmed this empirically rather than by datasheet citation
+alone: read via direct I2C immediately after a fresh
+`regulator_enable()` on `imu_vdd` — at 5 ms (matching our production
+soft-start wait) and again at 15/25/35/45 ms, before any configuration
+write reaches the chip. Result: `CTRL1_XL = 0x00`, `CTRL2_G = 0x00` on
+5/5 reads at every delay tested. The chip is already at its lowest-power
+state the instant it receives power; there is no firmware action
+available to improve on this.
+
+**4. CS (P3.12) — confirmed against the official schematic, and one real
+(if partial) leak found and fixed.** After your reply we obtained
+Seeed's own schematic for this board (public wiki resource). It confirms
+a fourth pin we had never tested or even identified before: `IMU_CS`,
+routed to `P3.12`, pull-up 100 kΩ (`R37`) to the same switched
+`IMU&MIC_3V3` rail as SDA/SCL/INT1, with a documented mode-select table
+(CS high = I²C enabled, our intended state; CS low = SPI). We tested it
+the same way as SDA/SCL/INT1 (`imu_vdd` off/on/off, floating input, no
+SoC-side pull): CS behaves exactly like SDA/SCL — floats high only once
+`imu_vdd` is enabled, decays low within ~100 ms of it being disabled.
+Not the cause, confirmed three independent ways now (our test, the
+schematic's own topology, the mode-select table).
+
+INT1, however, did **not** behave like the other three: it read a stable
+**low** even while `imu_vdd` was enabled, when the 100 kΩ pull-up (`R38`)
+should have floated it high with nothing opposing it. Root cause, found
+in the LSM6DS3TR-C datasheet (DocID030071 Rev3, Table 57, CTRL3_C):
+`H_LACTIVE` defaults to 0 ("interrupt output pads active high"), and with
+no interrupt source ever routed to INT1 (`MD1_CFG=0x00`, never written —
+we don't use hardware interrupts, purely polling), the pad's permanent
+"inactive" state is *driven* low by the chip's own push-pull output,
+continuously fighting `R38` for as long as `imu_vdd` is enabled. Isolated
+measurement (single continuous PPK2 capture, `imu_vdd` held on
+throughout, only the CTRL3_C value changed mid-capture): **265.330 µA**
+with `H_LACTIVE=0` (current default) vs. **232.605 µA** with
+`H_LACTIVE=1` — a **32.725 µA** delta, matching the 3.3 V/100 kΩ
+calculation (33 µA) to within 1%. We've since set `H_LACTIVE=1` in
+production (one extra bit OR'd into the existing CTRL3_C write) and
+confirmed no regression at the full-system level (~22–23 µA steady
+state, matching our established baseline).
+
+**Where this leaves us.** Pin configuration is now fully verified
+correct (including the CS pin your reply flagged), initial chip state is
+verified correct, the microphone-rail hypothesis is ruled out, and we've
+found and shipped a small independent fix (INT1 polarity) worth ~33 µA
+whenever `imu_vdd` is active. None of this touches the dominant
+`LOADSW1`/`LDO1` steady-state current of ~250–275 µA with zero load and
+zero I2C traffic (§8), which still accounts for the large majority of
+that figure and remains unexplained on our side. We'd still welcome any
+guidance on a known internal quiescent/ground current for this block in
+LDO mode that isn't captured in the datasheet's electrical-specification
+tables — this is now the only open item standing between our current
+~20–22 µA and the 5–6 µA target.
+
+Happy to share the diagnostic firmware, the raw memory-trace dumps, or a
+fresh PPK2 capture if any of that would help narrow it down further.
+
 ## 9. Secondary observation (not yet confirmed as a recurring cost)
 
 The build links in the full NCS security stack — `mbedtls`, PSA Crypto,

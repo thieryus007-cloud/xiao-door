@@ -45,12 +45,63 @@ du firmware :
 
 | Fichier | Origine | Statut |
 |---|---|---|
-| `xiao_door_sensor/golden-image/unit01-verified-2026-08-30.bin` / `.hex` | Dump physique de l'unité #01 (lecture seule, `serial=C5F0E209`) | **Vérifiée en fonctionnement réel (~20 µA moyenne mesurée au PPK2)** — image de référence actuelle |
+| `xiao_door_sensor/golden-image/unit02-verified-2026-09-01-H_LACTIVE.bin` / `.hex` | Patch binaire (voir § suivant) de `unit01-verified-2026-08-30.bin`, un seul octet modifié | **Vérifiée en fonctionnement réel sur #02 (~22-23 µA moyenne mesurée au PPK2, en excluant les 3 premières secondes après flash — voir § « Ne pas inclure le transitoire de démarrage » ci-dessous)** — image de référence **actuelle** |
+| `xiao_door_sensor/golden-image/unit01-verified-2026-08-30.bin` / `.hex` | Dump physique de l'unité #01 (lecture seule, `serial=C5F0E209`) | Vérifiée (~20-22 µA) — **conservée comme base du patch ci-dessus et comme référence historique**, ne plus déployer directement (le fichier H_LACTIVE ci-dessus la remplace, correctif INT1 en plus, sinon identique à un octet près) |
 
-Ce fichier `.hex` doit rester suivi sur GitHub (exception dédiée dans
-`.gitignore` au motif générique `*.hex`) — c'est la seule référence dont
-la validité a été confirmée par une mesure physique, pas seulement par
-une relecture de code.
+Ces fichiers `.hex` doivent rester suivis sur GitHub (exception dédiée
+dans `.gitignore` au motif générique `*.hex`) — c'est la seule référence
+dont la validité a été confirmée par une mesure physique, pas seulement
+par une relecture de code.
+
+## Ne pas inclure le transitoire de démarrage dans une moyenne PPK2
+
+Posé explicitement le 2026-09-01, après une erreur qui a fait perdre du
+temps sur une fausse alerte de régression : **une capture PPK2 juste
+après un flash/reset contient un transitoire de démarrage (init BLE,
+première trame de santé si l'échéance retenue est à zéro après un flash)
+qui fausse fortement la moyenne globale, surtout sur une fenêtre courte
+(20 s).** Toujours exclure au minimum les 3 premières secondes de la
+capture avant de calculer une moyenne « au repos ». Exemple concret : un
+binaire identique à l'image d'or à un bit près a mesuré 31,1 µA en
+moyenne brute sur 20 s, contre 23,1 µA une fois les 3 premières secondes
+exclues (conforme à la référence ~22 µA) — la version brute avait
+déclenché une fausse investigation de régression.
+
+## Patcher un binaire existant plutôt que reconstruire depuis les sources
+
+**Depuis le 2026-09-01, `west build` sur `xiao_door_sensor/src/main.c`
+produit un binaire qui mesure ~33 µA au repos au lieu de ~20-22 µA**
+(64159 octets de différence avec l'image d'or sur 117396, cause exacte
+encore inconnue — `CONFIG_PM` ne s'active jamais sur cette puce, `HAS_PM`
+n'étant sélectionné nulle part pour la famille nRF54L, mais ce point est
+confirmé déjà vrai au moment de l'image d'or du 2026-08-30 donc **écarté**
+comme cause). Tant que cet écart de reconstruction n'est pas compris, ne
+pas utiliser `west build` pour produire une image de déploiement.
+
+**Méthode alternative utilisée avec succès pour le correctif H_LACTIVE**
+(un seul bit modifié dans un registre IMU, voir `Nordic-Support-Report-
+XIAO-nRF54LM20A.md` §8.3) : localiser l'instruction machine exacte dans
+un rebuild instrumenté (`objdump -dl`, corrélation avec les numéros de
+ligne source via `-g -gdwarf-4`), identifier l'encodage ARM Thumb-2 précis
+de l'octet à changer, vérifier son unicité dans le binaire d'or par
+recherche de motif binaire, puis modifier cet unique octet directement
+dans une copie de l'image d'or (jamais l'image d'or elle-même). Étapes :
+
+1. Compiler UNE FOIS avec le changement de code souhaité (juste pour
+   obtenir l'adresse/l'encodage exact via `objdump -dl`, pas pour
+   déployer ce binaire directement).
+2. Repérer l'instruction exacte (ex. `movw r3, #0x4412` -> `#0x6412`
+   pour ajouter un bit), vérifier l'encodage avec `arm-zephyr-eabi-as`
+   sur un fichier `.s` isolé si le calcul manuel des bits n'est pas
+   évident (encodages Thumb-2 souvent non contigus).
+3. Rechercher le motif d'octets exact (4-8 octets de contexte) dans
+   l'image d'or via un script Python (recherche binaire, pas texte) --
+   confirmer une seule occurrence avant de patcher.
+4. Copier l'image d'or, modifier le ou les octets identifiés, vérifier
+   par diff binaire complet que rien d'autre n'a changé.
+5. Flasher avec `verify_image` comme d'habitude, mesurer au PPK2 en
+   excluant le transitoire de démarrage (voir § ci-dessus) avant de
+   promouvoir comme nouvelle image d'or.
 
 **Historique de clonage :**
 
@@ -59,6 +110,8 @@ une relecture de code.
 | 2026-08-30 | #02 | `verify_image` OK, 117396 octets identiques à l'image d'or — consommation PPK2 à confirmer |
 | 2026-08-29 (session ultérieure) | #02 | Reclonée après un détour diagnostic (firmware de lecture registres PMIC, puis firmware de test avec correctif de confirmation intra-cycle — aucun des deux jamais destiné au déploiement). `verify_image` OK, 117396 octets. Diagnostic par trace instrumentée (SWD, 25 cycles réels) : boucle principale à la bonne cadence, aucune fausse détection de mouvement/angle, configuration LDO1/`imu_vdd` correcte (registres PMIC lus directement). Écart de consommation résiduel vs #01 (~45 µA de moyenne mesurée, plancher jamais sous ~3,8 µA sur 15,7 s) **non expliqué par le firmware** — toutes les pistes de logique applicative vérifiées et exclues une à une. Cause encore à déterminer à ce stade (mesure faite alors qu'un firmware de diagnostic venait d'être retiré, voir ligne suivante pour la confirmation propre). |
 | 2026-08-30 | #02 | Reclonée depuis `unit01-verified-2026-08-30.hex` (image d'or standard, sans aucune instrumentation de diagnostic) après nettoyage complet des firmwares de test. `verify_image` OK, 117396 octets. **Mesure PPK2 confirmée par l'utilisateur : moyenne de consommation identique à #01.** Cette mesure valide la procédure de clonage standard elle-même (déjà documentée depuis le début, aucune méthode différente) — les écarts précédents (~45-70 µA) sont attribuables aux firmwares de diagnostic laissés en place pendant l'investigation, pas à un défaut du clonage ou du firmware de référence. Voir `Configuration-nRF54LM20A-System-ON-IDLE.md` §4 « Règle absolue : ne jamais laisser un firmware de diagnostic flashé » pour l'incident et la règle qui en découle. |
+| 2026-08-31 | #02 | Reclonée depuis la même image d'or après une session de diagnostic lecture-seule (`xiao_imu_pin_diag`, questions broches/état IMU pour le suivi Nordic — voir `Nordic-Support-Report-XIAO-nRF54LM20A.md` §8.2/§8.3). `verify_image` OK, 117396 octets. Cycle d'alimentation USB-C complet effectué avant mesure (règle SWD ci-dessous). **Mesure PPK2 confirmée par l'utilisateur : ~22 µA, identique à la référence.** Confirme que des sessions SWD répétées (flash/lecture) n'altèrent pas la consommation une fois l'image d'or restaurée et un cycle d'alimentation complet effectué. |
+| 2026-09-01 | #02 | **Nouvelle image d'or produite** : correctif `H_LACTIVE` (registre CTRL3_C de l'IMU, voir §8.3 du rapport Nordic) patché directement dans l'image d'or du 2026-08-30 (un seul octet modifié, offset 46096, `0x44`→`0x46`, voir § « Patcher un binaire existant » ci-dessus — le rebuild depuis les sources était cassé ce jour-là, voir même section). `verify_image` OK, 117396 octets. **Mesure PPK2 confirmée : 23,061 µA en excluant les 3 premières secondes** (31,132 µA en moyenne brute — transitoire de démarrage, voir § dédié ci-dessus), conforme à la référence. Promue comme image d'or actuelle sous `unit02-verified-2026-09-01-H_LACTIVE.hex`. |
 
 ---
 
