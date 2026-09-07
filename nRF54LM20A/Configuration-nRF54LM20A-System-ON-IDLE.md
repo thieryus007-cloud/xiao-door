@@ -448,11 +448,15 @@ présence des entités.
 
 ---
 
-## 7. Déploiement actuel (2026-09-01)
+## 7. Déploiement actuel (2026-09-07)
+
+**Vérifier le numéro de série du pont SWD avant tout flash** (voir règle
+absolue dans `C:\ncs\CLAUDE.md`) — plusieurs unités peuvent être
+branchées simultanément, `vid_pid` seul ne les distingue pas.
 
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
-| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** — `unit01-verified-2026-08-30.bin` (sans le correctif `H_LACTIVE`) | Intégrée dans HA ; **~20-22 µA moyenne confirmée au PPK2** ; **jamais retouchée** (contrainte du projet) — ne reflète donc plus le tout dernier correctif, voir #02 |
+| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** — `unit01-verified-2026-08-30.bin` (sans le correctif `H_LACTIVE`) | Intégrée dans HA ; **~20-22 µA moyenne confirmée au PPK2** ; contenu restauré le 2026-09-07 (`verify_image` conforme au dump d'origine) après des tests menés dessus par erreur — voir CLAUDE.md |
 | 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C** — `unit02-verified-2026-09-01-H_LACTIVE.bin`, **image d'or actuelle** (correctif `H_LACTIVE` IMU en plus, un seul octet patché sur l'image d'or précédente, voir `Procedure-Clonage-XIAO-nRF54LM20A.md`) | Intégrée dans HA ; `verify_image` OK (117396 octets) ; **consommation PPK2 confirmée ~22-23 µA** (hors transitoire de démarrage) |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
