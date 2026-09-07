@@ -481,18 +481,42 @@ production (one extra bit OR'd into the existing CTRL3_C write) and
 confirmed no regression at the full-system level (~22–23 µA steady
 state, matching our established baseline).
 
+**5. `PP_OD` tested in addition to `H_LACTIVE`, per Nordic's follow-up
+(Simon, 2026-09-07).** Nordic pointed us to the same CTRL3_C table (and
+independently confirmed the R38/INT1 mechanism from Table 18, "Internal
+pin status" — INT1's documented default is literally "Output forced to
+ground"), and suggested also setting `PP_OD=1` (push-pull → open-drain)
+alongside `H_LACTIVE=1`. Tested the same isolated way, extended to four
+segments in one continuous capture:
+
+| Segment | CTRL3_C | Measured |
+|---|---|---|
+| `H_LACTIVE=0`, `PP_OD=0` (original default) | | 272.078 µA |
+| `H_LACTIVE=1`, `PP_OD=0` (already shipped) | | 239.009 µA |
+| `H_LACTIVE=1`, `PP_OD=1` (Nordic's suggestion) | | 239.082 µA |
+
+`H_LACTIVE` alone accounts for the full 33.07 µA (matches the
+3.3 V/100 kΩ calculation almost exactly, again). Adding `PP_OD` changes
+nothing — 239.082 vs. 239.009 µA is within measurement noise. Consistent
+with `H_LACTIVE=1` already making the push-pull driver source close
+enough to `VDDIO` that there's no meaningful current left through `R38`
+for open-drain to save. `PP_OD` left at its default (0, push-pull) in
+production; no further change made.
+
 **Where this leaves us.** Pin configuration is now fully verified
-correct (including the CS pin your reply flagged), initial chip state is
-verified correct, the microphone-rail hypothesis is ruled out, and we've
-found and shipped a small independent fix (INT1 polarity) worth ~33 µA
-whenever `imu_vdd` is active. None of this touches the dominant
-`LOADSW1`/`LDO1` steady-state current of ~250–275 µA with zero load and
-zero I2C traffic (§8), which still accounts for the large majority of
-that figure and remains unexplained on our side. We'd still welcome any
-guidance on a known internal quiescent/ground current for this block in
-LDO mode that isn't captured in the datasheet's electrical-specification
-tables — this is now the only open item standing between our current
-~20–22 µA and the 5–6 µA target.
+correct (including the CS pin Nordic's reply flagged), initial chip state
+is verified correct, the microphone-rail hypothesis is ruled out, and
+we've found, shipped, and fully characterized a small independent fix
+(INT1 polarity, `H_LACTIVE`) worth ~33 µA whenever `imu_vdd` is active —
+confirmed as the complete effect available from this pin, `PP_OD` adds
+nothing further. None of this touches the dominant `LOADSW1`/`LDO1`
+steady-state current, now measured at **~239 µA** with all four pins
+correctly configured, zero load, zero I2C traffic — still the large
+majority of the original figure and still unexplained on our side. We'd
+still welcome any guidance on a known internal quiescent/ground current
+for this block in LDO mode that isn't captured in the datasheet's
+electrical-specification tables — this is now the only open item
+standing between our current ~20–22 µA and the 5–6 µA target.
 
 Happy to share the diagnostic firmware, the raw memory-trace dumps, or a
 fresh PPK2 capture if any of that would help narrow it down further.

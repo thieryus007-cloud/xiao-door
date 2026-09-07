@@ -1,36 +1,36 @@
 /*
- * Test isole, une seule capture PPK2 continue, trois segments
- * directement comparables (meme rail, jamais coupe entre segments 2 et
- * 3 -- seul le contenu du registre CTRL3_C change) :
+ * Test isole, une seule capture PPK2 continue, QUATRE segments
+ * directement comparables (meme rail, jamais coupe entre segments 2, 3
+ * et 4 -- seul le contenu du registre CTRL3_C change) :
  *
- *   0-15 s   : imu_vdd ETEINT (reference -- doit redonner ~3-4 uA,
- *              comparable a la ligne "Baseline" de Nordic-Support-
- *              Report-XIAO-nRF54LM20A.md §8.1, 3,90 uA).
- *   15-45 s  : imu_vdd ALLUME, CTRL3_C = BDU|IF_INC uniquement --
- *              EXACTEMENT ce que sample_motion() en production ecrit
- *              aujourd'hui (H_LACTIVE=0, valeur reset). Doit redonner
- *              l'anomalie deja connue (~253-254 uA).
- *   45-75 s  : SANS jamais couper imu_vdd, CTRL3_C reecrit avec
- *              H_LACTIVE=1 en plus (BDU|IF_INC|H_LACTIVE). Hypothese a
- *              verifier : l'etat "inactif" (aucune source routee sur
- *              INT1, MD1_CFG=0x00 par defaut, jamais touche ici) passe
- *              de LOW a HIGH (voir datasheet DocID030071 Rev3, Table 57
- *              p.63 : "H_LACTIVE... 0: interrupt output pads active
- *              high [-> inactif = LOW, pousse par le driver push-pull
- *              contre le pull-up R38 100K vers imu_vdd, ~33 uA
- *              theorique] ; 1: interrupt output pads active low
- *              [-> inactif = HIGH, meme sens que le pull-up, plus de
- *              conflit]"). PP_OD n'est PAS touche ici (reste 0 =
- *              push-pull) -- erreur initialement envisagee puis
- *              corrigee : PP_OD ne change que le comportement du
- *              niveau HIGH, pas le LOW, donc n'aurait rien corrige.
- *   75 s+    : imu_vdd re-eteint, idle.
- *
- * Comparaison attendue si l'hypothese est correcte : segment 45-75 s
- * mesure ~30 uA de moins que le segment 15-45 s (l'ecart theorique du
- * pull-up R38, 3,3 V / 100 kOhm ~ 33 uA), le reste (~220 uA) restant
- * inexplique -- confirme ou infirme l'ampleur exacte de cette piste
- * sans toucher a la production avant d'avoir la preuve.
+ *   0-15 s    : imu_vdd ETEINT (reference -- doit redonner ~3-4 uA,
+ *               comparable a la ligne "Baseline" de Nordic-Support-
+ *               Report-XIAO-nRF54LM20A.md §8.1, 3,90 uA).
+ *   15-45 s   : imu_vdd ALLUME, CTRL3_C = BDU|IF_INC uniquement --
+ *               EXACTEMENT ce que sample_motion() ecrivait avant le
+ *               correctif (H_LACTIVE=0, PP_OD=0, valeurs reset). Doit
+ *               redonner l'anomalie deja connue (~253-265 uA).
+ *   45-75 s   : SANS jamais couper imu_vdd, CTRL3_C reecrit avec
+ *               H_LACTIVE=1 en plus (BDU|IF_INC|H_LACTIVE), PP_OD
+ *               toujours 0. C'est le correctif deja valide et deploye
+ *               en production (voir Nordic-Support-Report-XIAO-
+ *               nRF54LM20A.md §8.3) : 265,330 -> 232,605 uA mesure la
+ *               premiere fois (delta 32,725 uA, theorique 33 uA a moins
+ *               de 1%).
+ *   75-105 s  : SANS jamais couper imu_vdd, PP_OD=1 ajoute en plus
+ *               (BDU|IF_INC|H_LACTIVE|PP_OD, drain ouvert). Suite a la
+ *               reponse Nordic du 2026-09-07 (Simon) qui suggere aussi
+ *               ce changement, en plus de H_LACTIVE. Prediction : AUCUN
+ *               changement supplementaire attendu par rapport au
+ *               segment precedent (~232 uA) -- le gain deja mesure avec
+ *               H_LACTIVE seul correspond au calcul theorique complet
+ *               du courant R38 (3,3V/100k=33 uA) a moins de 1% pres,
+ *               ce qui ne laisse pas de marge pour un gain supplementaire
+ *               de PP_OD. Si le resultat contredit cette prediction
+ *               (nouvelle baisse), ce serait une decouverte reelle
+ *               (le driver push-pull n'atteint pas vraiment VDDIO en
+ *               sortie HIGH) -- a signaler immediatement.
+ *   105 s+    : imu_vdd re-eteint, idle.
  */
 
 #include <zephyr/device.h>
@@ -45,10 +45,12 @@ static const struct i2c_dt_spec imu_i2c = I2C_DT_SPEC_GET(DT_ALIAS(imu0));
 #define LSM6DSL_REG_CTRL3_C       0x12U
 #define LSM6DSL_CTRL3_C_BDU       BIT(6)
 #define LSM6DSL_CTRL3_C_H_LACTIVE BIT(5)
+#define LSM6DSL_CTRL3_C_PP_OD     BIT(4)
 #define LSM6DSL_CTRL3_C_IF_INC    BIT(2)
 
 static volatile uint8_t write1_rc = 0xAAU;
 static volatile uint8_t write2_rc = 0xAAU;
+static volatile uint8_t write3_rc = 0xAAU;
 
 int main(void)
 {
@@ -74,12 +76,22 @@ int main(void)
 	k_msleep(30000);
 
 	/* Segment 3 : 45-75 s, imu_vdd JAMAIS coupe, CTRL3_C reecrit avec
-	 * H_LACTIVE=1 en plus (correctif teste). */
+	 * H_LACTIVE=1 en plus (correctif deja valide et deploye). */
 	{
 		int rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL3_C,
 						 LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_IF_INC |
 						 LSM6DSL_CTRL3_C_H_LACTIVE);
 		write2_rc = (rc == 0) ? 0U : (uint8_t)(-rc);
+	}
+	k_msleep(30000);
+
+	/* Segment 4 : 75-105 s, imu_vdd JAMAIS coupe, PP_OD=1 ajoute en plus
+	 * (suggestion Nordic/Simon, 2026-09-07). */
+	{
+		int rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL3_C,
+						 LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_IF_INC |
+						 LSM6DSL_CTRL3_C_H_LACTIVE | LSM6DSL_CTRL3_C_PP_OD);
+		write3_rc = (rc == 0) ? 0U : (uint8_t)(-rc);
 	}
 	k_msleep(30000);
 
