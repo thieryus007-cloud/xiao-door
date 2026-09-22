@@ -194,6 +194,10 @@ static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios)
 #define LSM6DSL_CTRL3_C_IF_INC     BIT(2)
 #define LSM6DSL_REG_CTRL6_C        0x15
 #define LSM6DSL_CTRL6_C_XL_HM_MODE BIT(4)
+#define LSM6DSL_REG_CTRL1_XL   0x10
+#define LSM6DSL_REG_OUTX_L_XL  0x28
+#define CTRL1_XL_208HZ_2G      0x50   /* ODR_XL=0101, FS=+/-2 g */
+#define ACCEL_MS2_PER_LSB      (61e-6f * 9.80665f)  /* 0,061 mg/LSB a +/-2 g */
 
 static void print_reset_cause(uint32_t reset_cause)
 {
@@ -908,7 +912,6 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 			   int64_t last_frame_a_uptime, struct motion_result *out)
 {
 	int rc;
-	struct sensor_value x, y, z;
 
 	memset(out, 0, sizeof(*out));
 
@@ -922,22 +925,6 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 	 * marge ~2,8x, voir test #32. */
 	k_msleep(5);
 
-	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL3_C,
-				    LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_H_LACTIVE |
-				    LSM6DSL_CTRL3_C_IF_INC);
-	if (rc < 0) {
-		printf("Warning: IMU CTRL3_C rewrite failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
-		return rc;
-	}
-	rc = i2c_reg_update_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL6_C,
-				     LSM6DSL_CTRL6_C_XL_HM_MODE, LSM6DSL_CTRL6_C_XL_HM_MODE);
-	if (rc < 0) {
-		printf("Warning: IMU CTRL6_C rewrite failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
-		return rc;
-	}
-
 	if (!device_is_ready(imu_dev)) {
 		rc = device_init(imu_dev);
 		if (rc < 0 && rc != -EALREADY) {
@@ -947,33 +934,41 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		}
 	}
 
-	/* ODR 208 Hz -- reduit l'attente d'une periode d'echantillonnage
-	 * complete (test #36), XL_HM_MODE (bas-consommation) reste pose. */
-	struct sensor_value odr_attr = { .val1 = 208, .val2 = 0 };
-
-	rc = sensor_attr_set(imu_dev, SENSOR_CHAN_ACCEL_XYZ,
-			      SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr);
+	/* Une seule ecriture, auto-increment (IF_INC=1 des le reset) :
+	 * CTRL3_C, CTRL4_C, CTRL5_C, CTRL6_C. */
+	uint8_t ctrl3_6[5] = {
+		LSM6DSL_REG_CTRL3_C,
+		LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_H_LACTIVE | LSM6DSL_CTRL3_C_IF_INC, /* 0x64 */
+		0x00,                       /* CTRL4_C : reset */
+		0x00,                       /* CTRL5_C : reset */
+		LSM6DSL_CTRL6_C_XL_HM_MODE, /* 0x10 : mode normal (comme aujourd'hui) */
+	};
+	rc = i2c_write_dt(&imu_i2c, ctrl3_6, sizeof(ctrl3_6));
 	if (rc < 0) {
-		printf("Warning: IMU set ODR failed (%d)\n", rc);
+		printf("Warning: IMU CTRL3_6 burst write failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	/* Puis l'ODR, APRES XL_HM_MODE (pas de passage transitoire en HP). */
+	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL1_XL, CTRL1_XL_208HZ_2G);
+	if (rc < 0) {
+		printf("Warning: IMU CTRL1_XL write failed (%d)\n", rc);
 		regulator_disable(imu_vdd_dev);
 		return rc;
 	}
 	/* Periode reelle a 208 Hz = ~4,8 ms -- 6 ms garde une marge ~1,2 ms. */
 	k_msleep(6);
 
-	rc = sensor_sample_fetch_chan(imu_dev, SENSOR_CHAN_ACCEL_XYZ);
+	uint8_t raw[6];
+	rc = i2c_burst_read_dt(&imu_i2c, LSM6DSL_REG_OUTX_L_XL, raw, sizeof(raw));
 	if (rc < 0) {
-		printf("Warning: IMU sample fetch failed (%d)\n", rc);
+		printf("Warning: IMU XYZ burst read failed (%d)\n", rc);
 		regulator_disable(imu_vdd_dev);
 		return rc;
 	}
-	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_X, &x);
-	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Y, &y);
-	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Z, &z);
-
-	out->accel.ax = sensor_value_to_float(&x);
-	out->accel.ay = sensor_value_to_float(&y);
-	out->accel.az = sensor_value_to_float(&z);
+	out->accel.ax = (int16_t)sys_get_le16(&raw[0]) * ACCEL_MS2_PER_LSB;
+	out->accel.ay = (int16_t)sys_get_le16(&raw[2]) * ACCEL_MS2_PER_LSB;
+	out->accel.az = (int16_t)sys_get_le16(&raw[4]) * ACCEL_MS2_PER_LSB;
 	out->accel.valid = true;
 
 	if (want_temp) {
