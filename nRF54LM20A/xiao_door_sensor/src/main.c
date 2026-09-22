@@ -91,6 +91,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/hwinfo.h>
 #include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/mfd/npm13xx.h>
 #include <zephyr/drivers/regulator.h>
 #include <zephyr/drivers/retained_mem.h>
 #include <zephyr/drivers/sensor.h>
@@ -169,8 +170,12 @@ static const struct device *const flash_bus = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(
 #endif
 
 static const struct device *const charger_dev = DEVICE_DT_GET(DT_NODELABEL(pmic_charger));
-static const struct device *const imu_vdd_dev = DEVICE_DT_GET(DT_NODELABEL(imu_vdd));
 static const struct device *const imu_dev = DEVICE_DT_GET(DT_ALIAS(imu0));
+static const struct device *const pmic_dev = DEVICE_DT_GET(DT_NODELABEL(pmic));
+static const struct device *const pmic_regs = DEVICE_DT_GET(DT_PARENT(DT_NODELABEL(imu_vdd)));
+
+#define NPM13XX_LDSW_BASE     0x08
+#define NPM13XX_LDSW_TASK1CLR 0x01
 
 /* Acces I2C direct au LSM6DS3TR-C, independant du driver Zephyr --
  * necessaire pour reecrire CTRL3_C/CTRL6_C a chaque cycle (voir
@@ -908,6 +913,24 @@ struct motion_result {
  * directe des axes via l'API sensor standard, aucune configuration
  * d'interruption materielle (plus de reveil GPIO dans cette architecture,
  * voir en-tete de fichier). */
+
+/* Etape C (2026-09-22, plan #8.4) -- imu_vdd/LDO1 commande par front sur
+ * P1.25 (GPIO0 nPM1300) au lieu des ecritures I2C bit-bang
+ * TASKLDSW1SET/CLR. Pas de lecture I2C "errata [38]" apres le front :
+ * caracterisation xiao_ldo_gpio_char (20 essais/variante) a montre que
+ * le front seul (V1) est deja fiable (20/20 WHO_AM_I OK) et plus rapide
+ * que les variantes avec lecture (V2/V3) -- cas anticipe au plan §8.3
+ * (« si V1 est deja rapide : pas de lecture du tout »). */
+static int imu_rail_on(void)
+{
+	return regulator_parent_dvs_state_set(pmic_regs, 1);
+}
+
+static void imu_rail_off(void)
+{
+	(void)regulator_parent_dvs_state_set(pmic_regs, 0);
+}
+
 static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool want_temp,
 			   int64_t last_frame_a_uptime, struct motion_result *out)
 {
@@ -915,9 +938,9 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 
 	memset(out, 0, sizeof(*out));
 
-	rc = regulator_enable(imu_vdd_dev);
+	rc = imu_rail_on();
 	if (rc < 0) {
-		printf("Warning: imu_vdd regulator_enable failed (%d)\n", rc);
+		printf("Warning: imu_rail_on failed (%d)\n", rc);
 		return rc;
 	}
 
@@ -929,7 +952,7 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		rc = device_init(imu_dev);
 		if (rc < 0 && rc != -EALREADY) {
 			printf("Warning: IMU device_init failed (%d)\n", rc);
-			regulator_disable(imu_vdd_dev);
+			imu_rail_off();
 			return rc;
 		}
 	}
@@ -946,14 +969,14 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 	rc = i2c_write_dt(&imu_i2c, ctrl3_6, sizeof(ctrl3_6));
 	if (rc < 0) {
 		printf("Warning: IMU CTRL3_6 burst write failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
+		imu_rail_off();
 		return rc;
 	}
 	/* Puis l'ODR, APRES XL_HM_MODE (pas de passage transitoire en HP). */
 	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL1_XL, CTRL1_XL_208HZ_2G);
 	if (rc < 0) {
 		printf("Warning: IMU CTRL1_XL write failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
+		imu_rail_off();
 		return rc;
 	}
 	/* Periode reelle a 208 Hz = ~4,8 ms -- 6 ms garde une marge ~1,2 ms. */
@@ -963,7 +986,7 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 	rc = i2c_burst_read_dt(&imu_i2c, LSM6DSL_REG_OUTX_L_XL, raw, sizeof(raw));
 	if (rc < 0) {
 		printf("Warning: IMU XYZ burst read failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
+		imu_rail_off();
 		return rc;
 	}
 	out->accel.ax = (int16_t)sys_get_le16(&raw[0]) * ACCEL_MS2_PER_LSB;
@@ -996,7 +1019,7 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		out->gyro_read = true;
 	}
 
-	regulator_disable(imu_vdd_dev);
+	imu_rail_off();
 
 	/* Audit broches (2026-08-28) -- pull-down sur INT1 (gpio0.6) TENTE
 	 * puis RETIRE D'URGENCE : mesure PPK2 a montre un pic ~200 mA,
@@ -1050,6 +1073,12 @@ int main(void)
 	}
 
 	release_led_gpios();
+
+	/* Etape C (plan #8.4) -- force LDO1 a l'arret une fois au demarrage :
+	 * les registres du nPM1300 survivent a un reset du SoC, donc un
+	 * reset laissant le rail actif (front P1.25 haut) ne le coupe pas
+	 * tout seul sinon. */
+	(void)mfd_npm13xx_reg_write(pmic_dev, NPM13XX_LDSW_BASE, NPM13XX_LDSW_TASK1CLR, 1);
 
 	/* Configuration une seule fois au vrai demarrage : les broches SPI
 	 * externes et l'identite/pile BLE n'ont plus besoin d'etre
