@@ -37,6 +37,10 @@
 	};
 };
 
+&pmic_i2c {
+	clock-frequency = <400000>;   /* I2C_BITRATE_FAST */
+};
+
 /* Init differee du driver LSM6DSL -- necessaire : le SYS_INIT
  * automatique tournerait avant que main() ait active imu_vdd (avant
  * toute alimentation), echouerait silencieusement. Voir
