@@ -57,6 +57,16 @@ Commandes de build exactes à jour dans
 `Configuration-nRF54LM20A-System-ON-IDLE.md` § 5. Rappels valables
 quelle que soit la version du firmware :
 
+- **`openocd` (lecture du S/N, flash, verify_image) : toujours via
+  l'outil PowerShell, jamais Bash/Git-Bash — confirmé le 2026-09-22
+  après ~20 répétitions du même faux diagnostic (voir `C:\ncs\CLAUDE.md`).
+  Sous Bash, la lecture `CMSIS-DAP: Serial# = ...` échoue de façon quasi
+  systématique (périphérique introuvable, ou erreurs `WriteFile` en
+  cours de transaction) ; la commande strictement identique réussit sous
+  PowerShell. `west build`/git/fichiers restent en Bash sans problème
+  connu — c'est spécifique à `openocd` (accès USB/HID direct), pas au
+  reste du workflow. Commandes exactes (PowerShell) dans
+  `Configuration-nRF54LM20A-System-ON-IDLE.md` § 5.**
 - Toujours vérifier avec `verify_image` (jamais `dump_image`+`cmp` : la
   RRAM ne s'efface pas avant écriture, ce qui produit de fausses
   corruptions sur des zones de padding jamais exécutées par le fichier

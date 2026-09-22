@@ -385,19 +385,47 @@ west build -b xiao_nrf54lm20a/nrf54lm20a/cpuapp -d build --pristine \
   -- -DBOARD_ROOT="C:/ncs/vendor/platform-seeedboards/zephyr"
 ```
 
-```bash
-export PATH="/c/ncs/tools/xpack-openocd-0.12.0-7/bin:$PATH"
-BOARD_DIR="C:/ncs/vendor/platform-seeedboards/zephyr/boards/arm/xiao_nrf54lm20a"
-HEX="C:/ncs/projects/nRF54LM20A/xiao_door_sensor/build/xiao_door_sensor/zephyr/zephyr.hex"
+**`openocd` s'exécute TOUJOURS via l'outil PowerShell, jamais Bash/
+Git-Bash, sur cette machine — confirmé le 2026-09-22 après ~20
+répétitions du même diagnostic (voir `C:\ncs\CLAUDE.md`, règle « PowerShell
+pour tout outil USB/série/HID »). Sous Bash, la lecture du numéro de
+série échoue de façon quasi systématique (`unable to find a matching
+CMSIS-DAP device`, ou erreurs `WriteFile` en cours de transaction) ; la
+commande strictement identique réussit sous PowerShell. Les blocs
+ci-dessous sont donc en PowerShell — ne pas les convertir en Bash.**
 
-openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" \
-  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" \
-  -c "init" -c "reset halt" \
-  -c "nrf54lm20a-load \"$HEX\"" \
-  -c "reset halt" \
-  -c "verify_image \"$HEX\"" \
+Lecture seule (numéro de série + cible détectée, sans flasher) — à
+lancer avant TOUT flash, comparer le `Serial#` affiché au tableau § 7 :
+
+```powershell
+$env:Path = "C:\ncs\tools\xpack-openocd-0.12.0-7\bin;" + $env:Path
+$BOARD_DIR = "C:/ncs/vendor/platform-seeedboards/zephyr/boards/arm/xiao_nrf54lm20a"
+openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" `
+  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter speed 500" `
+  -c "init" -c "exit"
+```
+
+Flash + vérification, unité ciblée explicitement par `adapter serial`
+(remplacer `<SERIAL>` par le S/N confirmé à l'étape précédente,
+`<HEX>` par le chemin du `.hex`) :
+
+```powershell
+$env:Path = "C:\ncs\tools\xpack-openocd-0.12.0-7\bin;" + $env:Path
+$BOARD_DIR = "C:/ncs/vendor/platform-seeedboards/zephyr/boards/arm/xiao_nrf54lm20a"
+$HEX = "<HEX>"
+openocd -s "$BOARD_DIR/support" -f "$BOARD_DIR/support/openocd.cfg" `
+  -c "cmsis-dap vid_pid 0x2886 0x0068" -c "cmsis-dap backend hid" -c "adapter serial <SERIAL>" -c "adapter speed 500" `
+  -c "init" -c "reset halt" `
+  -c "nrf54lm20a-load `"$HEX`"" `
+  -c "reset halt" `
+  -c "verify_image `"$HEX`"" `
   -c "reset" -c "exit"
 ```
+
+Ne pas rediriger stderr (`2>&1`) sur ces commandes depuis PowerShell —
+ça enveloppe chaque ligne dans un `NativeCommandError` qui rend le code
+de sortie peu fiable même en cas de succès réel ; PowerShell capture déjà
+stderr sans ça.
 
 **`-c "cmsis-dap backend hid"` fait partie intégrante de la commande
 standard depuis le 2026-08-29 — ne pas l'omettre.** Sans cette ligne, le
