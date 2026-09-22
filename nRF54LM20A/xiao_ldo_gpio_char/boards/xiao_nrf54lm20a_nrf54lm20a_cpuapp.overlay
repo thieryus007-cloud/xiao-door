@@ -1,0 +1,15 @@
+/* Plan-Reduction-Consommation-2026-09-22.md #8.3 -- imu_vdd/LDO1 (tension,
+ * mode) deja entierement defini dans le dtsi de base du board, pas besoin
+ * de le redeclarer ici (meme constat que xiao_pdm_ldo_diag). P1.25/P0.08
+ * pilotes directement depuis main.c (gpio_pin_configure/set/get), pas de
+ * gpio-spec devicetree necessaire pour ce firmware de caracterisation. */
+
+/* Meme bug de build recurrent sur ce snapshot NCS 3.4.0 (nrf_usbhs_wrapper.c
+ * ne compile pas) que partout ailleurs dans ce projet. */
+&usbhs {
+	status = "disabled";
+};
+
+&usbhs_wrapper {
+	status = "disabled";
+};
