@@ -221,13 +221,89 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
 4. Résoudre ou contourner le point bloquant nPM1300 `imu_vdd`/LDO1
    (~250-300 µA, question posée à Nordic) — voir
    `Nordic-Support-Report-XIAO-nRF54LM20A.md`.
-5. Déploiement des ~17 XIAO nRF54LM20A restants par clonage de l'image
-   d'or (`Procédure-Clonage-XIAO-nRF54LM20A.md`) — en attente de la
-   confirmation PPK2 de #02 (étape 2) avant tout flash de lot.
+5. **Fait le 2026-09-13** : premier lot de 10 XIAO nRF54LM20A (unit04 à
+   unit13) déployés par clonage de l'image d'or, via les scripts
+   `xiao_door_sensor/deploy-scripts/check-unit.sh` + `flash-unit.sh`
+   (procédure recommandée pour tout lot suivant — voir
+   `Procédure-Clonage-XIAO-nRF54LM20A.md` § « Déployer un lot d'unités »).
+   `verify_image` conforme sur les 10 ; tests fonctionnels HA et mesure
+   PPK2 (sous-échantillon) restent à faire. **~7 unités restantes** à
+   déployer de la même façon.
 6. Remplacer le proxy BLE ESPHome temporaire par les ESP32-S3 dédiés une
    fois reçus, puis décommissionner `ble-proxy-temp`.
 7. Démarrage nRF52840 — voir `Transition-nRF52840-Sense-Demarrage.md`
    (projet frère, dépôt séparé).
+8. **Audit fait le 2026-09-19** : voir `Audit-Resilience-2026-09-19.md`.
+   Deux trouvailles critiques : (a) `CONFIG_RESET_ON_FATAL_ERROR` absent —
+   toute exception CPU fige le SoC indéfiniment sans redémarrage
+   automatique ; (b) watchdog matériel `wdt31` exposé par le board
+   (`watchdog0` alias) mais jamais activé. Egalement : panne persistante de
+   `sample_motion()` coupait aussi la trame santé ; question ouverte sur
+   `suspend_external_flash()` tranchée par `git log` (code mort depuis le
+   premier commit, confusion documentaire au 09-13, pas une régression).
+   **Plan complet implémenté et flashé le 2026-09-19 sur #02** (demande
+   explicite de l'utilisateur) : `CONFIG_RESET_ON_FATAL_ERROR=y`,
+   `CONFIG_WATCHDOG=y` + `&wdt31 status="okay"` + `wdt_feed()` en boucle
+   (délai 30 s), compteur d'échecs consécutifs `sample_motion()`/trame
+   santé avec reboot de secours (60 cycles), `suspend_external_flash()`
+   appelée à la place de `configure_spi_pins_for_system_off()` seule,
+   `retained_state` avec champ de version explicite + compteur de
+   redémarrages inattendus (persisté, pas encore exposé en BLE), `send_
+   frame_b()` ne publie plus de fausse valeur batterie sur échec I2C.
+
+   **Mesure PPK2 : ~35-38 µA au lieu des ~20-22 µA attendus — REJETÉ.**
+   Investigation approfondie (voir `Configuration-nRF54LM20A-System-ON-
+   IDLE.md` §11 pour le détail complet) : watchdog et `suspend_external_
+   flash()` innocentés individuellement ; un rebuild du commit d'origine
+   SANS aucun changement de résilience reproduit la même anomalie
+   (~30-33 µA) ; ccache, dérive toolchain/SDK/board-files, `NCS_TOOLCHAIN_
+   VERSION`, `ZEPHYR_TOOLCHAIN_VARIANT`, Bash vs PowerShell, état PMIC —
+   tous innocentés. Reflasher l'image d'or archivée sur #02 le même jour
+   avec le même PPK2 redonne ~23 µA de façon fiable, innocentant l'unité
+   et la mesure. Cause localisée par désassemblage + `addr2line` : le
+   compilateur genère un code different (mais logiquement equivalent)
+   pour la meme ligne source exacte dans `sample_motion()` (calcul de
+   `angle_crossed`) — tout ce qui est sous controle (source, Kconfig,
+   environnement, materiel) est prouve identique. **Decision : #02
+   restauree sur `golden-image/unit01-verified-2026-08-30.bin` (~23 µA),
+   plan de resilience NON deploye. Ticket ouvert aupres du support
+   Nordic sur la non-reproductibilite de `west build`** (toolchain
+   `dcbdc366a1`, NCS 3.4.0) — ne pas retenter de rebuild pour production
+   avant clarification. Item 7 du plan (exposition BLE du compteur de
+   resets) restait de toute facon a trancher separement (decision
+   produit sur le format).
+
+   **Suivi de ce point (statut, réponses Nordic, critère de déblocage
+   du plan de résilience) : voir
+   `Suivi-Nordic-Reproductibilite-Build-2026-09-19.md` — document vivant
+   à mettre à jour à chaque nouvelle réponse, jusqu'à résolution.**
+
+   **Correction (2026-09-22) : la non-reproductibilité ci-dessus était
+   une fausse piste — voir item 9 ci-dessous.** La cause reelle etait un
+   `k_msleep(40)` introduit par erreur apres le flash de l'image d'or
+   (commit `ccbe1b5`), jamais un defaut du compilateur/toolchain.
+9. **Analyse du 2026-09-22 — voir `Plan-Reduction-Consommation-2026-09-22.md`.**
+   (a) **Le build est reproductible** : `c63908d` recompilé = image d'or
+   `unit01-verified-2026-08-30` octet pour octet, `c63908d` + H_LACTIVE =
+   `unit02-verified-2026-09-01-H_LACTIVE` octet pour octet (SHA-256). Les
+   rebuilds « 33 µA » venaient d'un source différent (`k_msleep(40)` au
+   lieu de 6 ms, commit `ccbe1b5`). Ticket Nordic à clore (brouillon §11
+   du plan), docs à corriger (§1.3 du plan). (b) Décomposition PPK2 du
+   cycle (18,6 µC) : ~36 % I2C bit-bang PMIC, ~19 % recharge du rail,
+   ~19 % transactions IMU, ~13 % courant statique du rail. (c) Plan en
+   étapes A-D, prévision ~21,8 → ~12,5 µA, à mettre en œuvre et mesurer
+   étape par étape (Sonnet 5). Outils : `tools/ppk_cycle_stats.py`,
+   `tools/ppk_profile.py`.
+
+   **Phase 0 faite le 2026-09-22** (mise en œuvre, Sonnet 5) : `main.c`
+   réaligné (restauré depuis `c63908d` + H_LACTIVE réécrit dans le
+   source, plus de patch binaire), rebuild `--pristine` vérifié octet
+   pour octet contre l'image déployée (SHA-256 `0da087ae...`), commit
+   `630b32a`. Travail de résilience non commité (2026-09-19) sauvegardé
+   dans `archive/xiao_door_sensor-logs-et-backups/reference/*_
+   resilience-wip_2026-09-19.*.bak` avant restauration. Documentation
+   corrigée (`Configuration...md` §9/§11, item 8 ci-dessus). Suite :
+   mesure PPK2 de référence (§5.7 du plan) puis étapes A-D.
 
 ## Référence BTHome v2 — Object IDs (générique, réutilisable quelle que soit la version du firmware)
 

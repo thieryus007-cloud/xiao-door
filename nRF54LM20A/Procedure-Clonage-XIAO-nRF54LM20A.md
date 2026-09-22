@@ -53,6 +53,78 @@ dans `.gitignore` au motif générique `*.hex`) — c'est la seule référence
 dont la validité a été confirmée par une mesure physique, pas seulement
 par une relecture de code.
 
+## Déployer un lot d'unités — méthode recommandée (scripts)
+
+**Pour flasher plusieurs unités à la suite (déploiement en lot), utiliser
+les scripts `xiao_door_sensor/deploy-scripts/check-unit.sh` et
+`flash-unit.sh` plutôt que les commandes `openocd` manuelles des Étapes
+1-4 ci-dessous.** Les Étapes 1-2 (dump + conversion `.hex`) restent
+nécessaires **une seule fois**, uniquement pour produire ou mettre à jour
+l'image d'or elle-même (voir § précédent) — pas à chaque unité
+supplémentaire.
+
+Ces deux scripts encodent directement la règle absolue de ce projet
+(`C:\ncs\CLAUDE.md`, « vérifier le numéro de série SWD avant TOUT
+flash ») : impossible de flasher sans lecture indépendante et répétée du
+numéro de série, impossible de flasher #01/#02/#03 par erreur (liste
+interdite en dur dans les deux scripts), et chaque résultat (succès ou
+échec) est journalisé — jamais de faux succès silencieux.
+
+### Utilisation, par unité
+
+```bash
+cd "C:/ncs/projects/nRF54LM20A/xiao_door_sensor/deploy-scripts"
+
+# Etape 1 -- lecture seule, identifie l'unite branchee
+./check-unit.sh
+# -> affiche le numero de serie, refuse si c'est #01/#02/#03,
+#    signale si ce serial est deja dans le journal
+
+# Etape 2 -- flash, avec le numero de serie EXACT affiche par check-unit.sh
+./flash-unit.sh <etiquette, ex: unit14> <numero-de-serie>
+# -> relit le numero de serie de facon independante et refuse de flasher
+#    si une autre carte a ete branchee entretemps (mismatch)
+#    -> refuse aussi #01/#02/#03 (deuxieme filet de securite)
+#    -> flashe l'image d'or, verify_image, journalise le resultat
+```
+
+Après chaque flash réussi : débrancher/rebrancher complètement l'USB-C
+(sortir du Debug Interface Mode, voir § « Notes de connexion SWD » plus
+bas), puis vérifier au moins la présence des trames BTHome dans Home
+Assistant. Une mesure PPK2 complète (~20-22 µA) n'est pas nécessaire sur
+les 10 unités — un sous-échantillon suffit, la vérification `verify_image`
+byte-for-byte garantit déjà un contenu flash identique à l'image d'or.
+
+### Ce que les scripts gèrent déjà tout seuls
+
+- **Pont SAMD11 intermittent** (`unable to find a matching CMSIS-DAP
+  device`, `cannot read IDR`) : les deux scripts retentent automatiquement
+  jusqu'à 5 fois — symptôme déjà documenté, se résout presque toujours
+  ainsi sans intervention.
+- **Échec persistant au-delà de 5 tentatives** (observé le 2026-09-13,
+  après une longue série de sessions SWD consécutives sur la même unité) :
+  les scripts échouent proprement et journalisent l'échec plutôt que de
+  boucler indéfiniment. **Action manuelle requise dans ce cas** :
+  débrancher puis rebrancher complètement l'USB-C de l'unité concernée
+  (ou, si ça ne suffit pas, passer par un cycle d'alimentation PPK2 — voir
+  § « Notes de connexion SWD »), puis relancer `check-unit.sh` sur cette
+  même unité.
+- **Journal** : `deploy-scripts/deployment-log.csv` (horodatage,
+  étiquette, numéro de série, image utilisée, statut) — une ligne par
+  tentative, y compris les échecs, pour garder une trace complète.
+
+### Si l'image d'or change
+
+Mettre à jour la variable `GOLDEN_HEX` en tête de `flash-unit.sh` (chemin
+vers le nouveau `.hex`) avant de démarrer un nouveau lot — les scripts ne
+la déduisent pas automatiquement du tableau ci-dessus.
+
+### Historique des lots
+
+| Date | Étiquettes | Résultat |
+|---|---|---|
+| 2026-09-13 | unit04 à unit13 (10 unités) | `verify_image OK` sur les 10, aucune touche à #01/#02/#03 — détail complet dans `deploy-scripts/deployment-log.csv` et le tableau § 7 de `Configuration-nRF54LM20A-System-ON-IDLE.md` |
+
 ## Ne pas inclure le transitoire de démarrage dans une moyenne PPK2
 
 Posé explicitement le 2026-09-01, après une erreur qui a fait perdre du
@@ -69,14 +141,29 @@ déclenché une fausse investigation de régression.
 
 ## Patcher un binaire existant plutôt que reconstruire depuis les sources
 
-**Depuis le 2026-09-01, `west build` sur `xiao_door_sensor/src/main.c`
-produit un binaire qui mesure ~33 µA au repos au lieu de ~20-22 µA**
-(64159 octets de différence avec l'image d'or sur 117396, cause exacte
-encore inconnue — `CONFIG_PM` ne s'active jamais sur cette puce, `HAS_PM`
-n'étant sélectionné nulle part pour la famille nRF54L, mais ce point est
-confirmé déjà vrai au moment de l'image d'or du 2026-08-30 donc **écarté**
-comme cause). Tant que cet écart de reconstruction n'est pas compris, ne
-pas utiliser `west build` pour produire une image de déploiement.
+**Méthode obsolète depuis le 2026-09-22 — ne plus l'utiliser pour un
+nouveau correctif.** `west build` a été prouvé déterministe
+(`Plan-Reduction-Consommation-2026-09-22.md` §1) : un rebuild
+`--pristine` de `c63908d` + `H_LACTIVE` (`main.c` réaligné, commit
+`630b32a`) reproduit `golden-image/unit02-verified-2026-09-01-
+H_LACTIVE.bin` octet pour octet (SHA-256 `0da087ae...`). La cause
+apparente de l'écart ~33 µA ci-dessous était `k_msleep(40)` au lieu de
+`k_msleep(6)`, introduit par erreur dans le source après le flash de
+l'image d'or — pas un défaut de `west build`. Conservé ci-dessous comme
+référence historique de la technique et de son contexte, et parce que
+`unit02-verified-2026-09-01-H_LACTIVE.bin` (toujours l'image d'or de
+plusieurs unités déployées, voir tableau plus bas) a réellement été
+produite ainsi à l'origine.
+
+**Contexte d'origine (2026-09-01 → 2026-09-22, résolu)** : `west build`
+sur `xiao_door_sensor/src/main.c` produisait alors un binaire qui
+mesurait ~33 µA au repos au lieu de ~20-22 µA (64159 octets de
+différence avec l'image d'or sur 117396, cause exacte non comprise à
+l'époque — `CONFIG_PM` ne s'active jamais sur cette puce, `HAS_PM`
+n'étant sélectionné nulle part pour la famille nRF54L, mais ce point
+était déjà confirmé vrai au moment de l'image d'or du 2026-08-30 donc
+écarté comme cause à l'époque ; la vraie cause, `k_msleep(40)`, n'a été
+identifiée que le 2026-09-22).
 
 **Méthode alternative utilisée avec succès pour le correctif H_LACTIVE**
 (un seul bit modifié dans un registre IMU, voir `Nordic-Support-Report-

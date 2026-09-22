@@ -457,7 +457,7 @@ branchées simultanément, `vid_pid` seul ne les distingue pas.
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
 | 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** — `unit01-verified-2026-08-30.bin` (sans le correctif `H_LACTIVE`) | Intégrée dans HA ; **~20-22 µA moyenne confirmée au PPK2** ; contenu restauré le 2026-09-07 (`verify_image` conforme au dump d'origine) après des tests menés dessus par erreur — voir CLAUDE.md |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **System ON IDLE, firmware complet A/B/C** — `unit02-verified-2026-09-01-H_LACTIVE.bin`, **image d'or actuelle** (correctif `H_LACTIVE` IMU en plus, un seul octet patché sur l'image d'or précédente, voir `Procedure-Clonage-XIAO-nRF54LM20A.md`) | Intégrée dans HA ; `verify_image` OK (117396 octets) ; **consommation PPK2 confirmée ~22-23 µA** (hors transitoire de démarrage) |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **Restaurée sur `golden-image/unit01-verified-2026-08-30.bin` le 2026-09-19**, après tentative de flash du plan de résilience (`golden-image-candidates/unit02-resilience-2026-09-19-CANDIDAT-NON-VERIFIE.bin`, abandonné — voir §11 ci-dessous) | `verify_image` conforme (117396 octets) ; **~23 µA confirmé au PPK2 le 2026-09-19**, cohérent avec la référence |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
 **#01 et #02 tournent désormais des binaires légèrement différents** (un
@@ -470,9 +470,34 @@ Détail complet de l'ancienne architecture (#03) : voir
 `archive/docs-historique/` (document `xiao_nrf54lm20a_project_notes`
 archivé) si besoin de la reprendre en main.
 
-**~17 unités supplémentaires attendues** — à déployer par clonage de
-l'image d'or (`Procédure-Clonage-XIAO-nRF54LM20A.md`) une fois #02
-confirmée elle aussi à ~20 µA, jamais par rebuild individuel.
+**Lot de 10 unités supplémentaires déployé le 2026-09-13** (unit04 à
+unit13), par clonage de l'image d'or (`unit02-verified-2026-09-01-
+H_LACTIVE.hex`) via les scripts `xiao_door_sensor/deploy-scripts/
+check-unit.sh` + `flash-unit.sh` — vérification du numéro de série
+obligatoire et indépendante à chaque étape (lecture, puis re-lecture
+juste avant le flash), `verify_image` conforme sur les 10 unités,
+journal complet dans `deploy-scripts/deployment-log.csv`. Tests
+fonctionnels Home Assistant (présence des trames BTHome, mouvement
+réel) et mesure PPK2 de consommation restent à faire, au moins sur un
+sous-échantillon — voir ce fichier journal pour le détail par unité.
+
+| Étiquette | S/N pont SWD |
+|---|---|
+| unit04 | `D8E37DD8` |
+| unit05 | `89757F76` |
+| unit06 | `4EDD8A75` |
+| unit07 | `BF948013` |
+| unit08 | `59775734` |
+| unit09 | `DB541E5C` |
+| unit10 | `5662D48F` |
+| unit11 | `0E1FA1DD` |
+| unit12 | `1B073FBF` |
+| unit13 | `C655C476` |
+
+Reste ~7 unités attendues au-delà de ce lot — à déployer avec les mêmes
+scripts, jamais par rebuild individuel (voir §4 de
+`Audit-Consommation-2026-09-13.md` pour le problème de reconstruction
+non résolu).
 
 ---
 
@@ -490,6 +515,17 @@ question posée au support Nordic — voir
 ---
 
 ## 9. Étude alimentation par pile non rechargeable
+
+**Correction (2026-09-22)** : la conclusion « désactiver la charge
+augmente la consommation » ci-dessous n'est **pas établie**. Le firmware
+`xiao_no_charge_test/` utilisé pour ce test contient `k_msleep(40)` dans
+`sample_motion()` (vérifié : `xiao_no_charge_test/src/main.c:952`), le
+même bug de délai accéléromètre identifié et corrigé en
+`Plan-Reduction-Consommation-2026-09-22.md` §1 (+34 ms de rail par cycle
+≈ +11 µA). Les ~32 µA mesurés s'expliquent donc en grande partie par ce
+délai, pas par la désactivation de la charge elle-même. **À re-tester
+sur une base saine (k_msleep(6)) si l'option pile non rechargeable
+revient à l'ordre du jour** — ce test n'a pas encore été refait.
 
 **Contexte** : étude de la possibilité d'alimenter le XIAO par une pile
 non rechargeable (au lieu du LiPo actuel), ce qui impose de désactiver
@@ -547,3 +583,79 @@ conservés dans `archive/docs-historique/` — notamment
 (§ 1-9) est la seule référence nécessaire pour reprendre le travail sans
 avoir à rouvrir l'historique, sauf besoin spécifique de retrouver le
 raisonnement détaillé derrière une décision.
+
+---
+
+## 11. Bug de reconstruction non reproductible — RÉSOLU (2026-09-22)
+
+**Résolu, ticket Nordic à clore.** La prémisse de toute cette section
+était fausse : il n'y a jamais eu de non-déterminisme du compilateur.
+Preuve (`Plan-Reduction-Consommation-2026-09-22.md` §1, reproduite
+indépendamment le 2026-09-22) : un rebuild `--pristine` du commit
+`c63908d` + H_LACTIVE (`xiao_door_sensor/src/main.c` réaligné, voir
+commit `630b32a`) redonne `zephyr.bin` octet pour octet identique à
+`golden-image/unit02-verified-2026-09-01-H_LACTIVE.bin` (SHA-256
+`0da087ae45d087afdc334828e95a8c44283b1182b1cce5dc1525d7133853f778`).
+`west build` (NCS 3.4.0, toolchain `dcbdc366a1`) **est déterministe.**
+
+La vraie cause des rebuilds « ~33 µA » : le commit `ccbe1b5` (2026-08-29
+18:55, **après** le flash de l'image d'or 18:01) a changé
+`k_msleep(6)` → `k_msleep(40)` dans `sample_motion()` (délai de
+stabilisation accéléromètre) — présenté à l'époque comme une correction
+nécessaire (voir commentaire encore présent dans l'historique git),
+alors qu'il n'a jamais été appliqué à l'image d'or elle-même. +34 ms de
+rail `imu_vdd` actif par cycle ≈ +11 µA, ce qui explique intégralement
+l'écart ~22 → ~33 µA. La divergence de désassemblage observée sur
+`angle_crossed` (ci-dessous) est réelle mais n'était pas la cause
+principale : c'est un effet secondaire du même source modifié (logique
+de confirmation sur 2 cycles ajoutée en `1994112`, absente de l'image
+d'or), pas une preuve de non-déterminisme du compilateur sur du code
+identique.
+
+**Conséquence** : le plan de résilience (`Audit-Resilience-2026-09-19.md`)
+n'était pas en cause non plus — sa « régression » venait de la même base
+à 40 ms. À ré-appliquer séparément sur la base réalignée, avec sa propre
+mesure PPK2. Voir `xiao_nrf54lm20a_project_notes.md` item 9 et
+`Suivi-Nordic-Reproductibilite-Build-2026-09-19.md` (mis à jour) pour le
+suivi. Le paragraphe ci-dessous (décision du 2026-09-19) est conservé
+pour l'historique mais **superseded**.
+
+---
+
+**Décision (2026-09-19, historique, superseded ci-dessus) : #02 reste sur l'image d'or vérifiée (`golden-image/unit01-
+verified-2026-08-30.bin`, ~23 µA), le plan de résilience
+(`Audit-Resilience-2026-09-19.md`) n'est PAS déployé pour l'instant.**
+
+Tentative d'implémentation complète du plan de résilience sur #02 le
+2026-09-19 : rebuild propre depuis les sources, mesure PPK2 à ~35-38 µA
+au lieu des ~20-22 µA attendus. Investigation approfondie (isolation du
+watchdog, de `suspend_external_flash()`, comparaison ccache on/off,
+vérification de la dérive toolchain/SDK/board-files, `NCS_TOOLCHAIN_
+VERSION`, `ZEPHYR_TOOLCHAIN_VARIANT`, Bash vs PowerShell, coupure
+d'alimentation complète du PMIC) — **tout innocenté**. Un rebuild du
+commit d'origine SANS aucun changement de résilience reproduit la même
+anomalie (~30-33 µA), et reflasher l'image d'or archivée sur #02, le
+même jour, avec le même PPK2, redonne fiablement ~23 µA — ce qui
+innocente définitivement l'unité #02 et la méthode de mesure.
+
+Localisation précise par désassemblage + `addr2line` (infos DWARF) :
+le code compilé diverge du binaire d'or à l'intérieur de `main()`
+(avec `sample_motion()` inlinée), sur la ligne calculant `angle_
+crossed` (comparaison `abs()` sur deux `int16_t` — voir `main.c`,
+calcul de `angle_crossed`). Pour une source strictement identique, le
+compilateur (`arm-zephyr-eabi-gcc` 14.3.0, `-Os`) génère une séquence
+compacte (`ite`/mouvement conditionnel) dans un cas et une séquence
+branchue nettement plus longue dans l'autre — code exécuté à chaque
+cycle de boucle (1×/seconde, en continu), cohérent avec l'ampleur de
+l'écart mesuré. Une réécriture de contrôle (variables intermédiaires
+explicites) n'a pas reproduit la forme compacte — a produit un
+résultat encore plus gros (117444 octets) — confirmant que ce n'est
+pas maîtrisable de façon fiable depuis le code source.
+
+**Conclusion** : tout ce qui est sous notre contrôle (source, Kconfig,
+environnement, toolchain, matériel) est prouvé identique ; seul le
+code réellement compilé diffère. Ticket ouvert auprès du support
+Nordic avec le détail complet (voir mail archivé si besoin). **Ne pas
+retenter un rebuild pour production tant qu'une réponse n'a pas
+clarifié la reproductibilité de `west build` sur ce toolchain
+(`dcbdc366a1`, NCS 3.4.0).**
