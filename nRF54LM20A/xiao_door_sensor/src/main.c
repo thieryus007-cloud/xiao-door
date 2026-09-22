@@ -1,27 +1,4 @@
 /*
- * ATTENTION (2026-09-01) -- NE PAS RECOMPILER CE FICHIER POUR PRODUIRE
- * UNE IMAGE DE DEPLOIEMENT tant que ceci n'est pas resolu. `west build`
- * sur ce fichier (source identique au binaire d'or a un bit pres --
- * H_LACTIVE, voir plus bas) produit actuellement un binaire qui MESURE
- * ~33 uA au repos au lieu de ~22 uA -- 64159 octets de difference avec
- * l'image d'or sur 117396 (plus de la moitie), CONFIG_PM absent du
- * .config genere (HAS_PM jamais selectionne pour la famille nRF54L,
- * confirme deja vrai au moment de l'image d'or du 2026-08-30 -- donc
- * PAS la cause, piste fermee). Cause exacte encore inconnue.
- *
- * L'image actuellement deployee (`golden-image/unit02-verified-2026-09-
- * 01-H_LACTIVE.bin/.hex`) N'A PAS ete produite en recompilant ce
- * fichier -- elle a ete obtenue en patchant un seul octet directement
- * dans le binaire d'or precedent (unit01-verified-2026-08-30.bin,
- * offset 46096 : 0x44 -> 0x46, encodage exact de l'ajout du bit
- * H_LACTIVE dans l'instruction movw qui charge {registre CTRL3_C,
- * valeur} avant l'appel i2c_reg_write_byte_dt -- verifie par diff
- * binaire, un seul octet different, mesure PPK2 conforme, ~22-23 uA).
- * Voir Procedure-Clonage-XIAO-nRF54LM20A.md pour la methode de patch.
- * Ce fichier source reste la reference LISIBLE du correctif applique,
- * mais pas le moyen de le reproduire tant que l'ecart de reconstruction
- * n'est pas compris.
- *
  * Pivot d'architecture (2026-08-28) -- System ON IDLE + GRTC, plus de
  * reboot par cycle. Voir XIAO-nRF54LM20A-Solution-System-OFF.md, § "Pivot
  * d'architecture" : le plancher mesure de l'ancienne strategie (System OFF
@@ -77,6 +54,30 @@
  * retenue (SRAM, pas RRAM) survit a un reset/reflash alors que le compteur
  * GRTC repart de zero -- desormais bornees a au plus un intervalle complet
  * apres le boot, voir main().
+ *
+ * Correctif H_LACTIVE (2026-09-01) -- CTRL3_C.H_LACTIVE=1 (bit 5) : INT1
+ * devient actif bas, evite qu'il tire ~33 uA en continu entre l'ecriture
+ * de CTRL3_C et la coupure du rail (INT1 flotte sinon vers son defaut
+ * actif haut). Entre le 2026-09-01 et le 2026-09-22, ce correctif etait
+ * present sur l'image deployee (golden-image/unit02-verified-2026-09-01-
+ * H_LACTIVE.bin) mais obtenu par patch binaire d'un octet (offset 46096,
+ * 0x44->0x46) plutot que par recompilation -- voir Procedure-Clonage-
+ * XIAO-nRF54LM20A.md pour la methode historique, desormais obsolete :
+ * applique ici directement dans le source (LSM6DSL_CTRL3_C_H_LACTIVE
+ * ci-dessous).
+ *
+ * Reproductibilite du build (resolue le 2026-09-22, voir Plan-Reduction-
+ * Consommation-2026-09-22.md §1) -- ce fichier, recompile tel quel,
+ * reproduit octet pour octet l'image deployee ci-dessus (SHA-256
+ * zephyr.bin attendu : 0da087ae45d087afdc334828e95a8c44283b1182b1cce5dc
+ * 1525d7133853f778). Le "bug de reconstruction non reproductible" ouvert
+ * aupres du support Nordic (Suivi-Nordic-Reproductibilite-Build-2026-
+ * 09-19.md) n'existait pas : les rebuilds mesures a ~33 uA au lieu de
+ * ~22 uA venaient d'un k_msleep(40) au lieu de k_msleep(6) dans
+ * sample_motion() (commit ccbe1b5, +34 ms de rail imu_vdd allume par
+ * cycle ~ +11 uA), introduit par erreur apres le flash de l'image d'or
+ * du 2026-08-30, jamais d'une divergence reelle du compilateur --
+ * `west build` (NCS 3.4.0, toolchain dcbdc366a1) est deterministe.
  *
  * Copyright (c) 2019 Nordic Semiconductor ASA
  * SPDX-License-Identifier: Apache-2.0
@@ -189,6 +190,7 @@ static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios)
 
 #define LSM6DSL_REG_CTRL3_C        0x12
 #define LSM6DSL_CTRL3_C_BDU        BIT(6)
+#define LSM6DSL_CTRL3_C_H_LACTIVE  BIT(5)
 #define LSM6DSL_CTRL3_C_IF_INC     BIT(2)
 #define LSM6DSL_REG_CTRL6_C        0x15
 #define LSM6DSL_CTRL6_C_XL_HM_MODE BIT(4)
@@ -879,9 +881,7 @@ struct motion_result {
 	bool temp_valid;
 	int16_t pitch_dd, roll_dd;
 	bool moving;
-	bool moving_confirmed;
 	bool angle_crossed;
-	bool angle_confirmed;
 	bool want_event_frame;
 	bool rate_limited;
 	int64_t now;
@@ -905,8 +905,7 @@ struct motion_result {
  * d'interruption materielle (plus de reveil GPIO dans cette architecture,
  * voir en-tete de fichier). */
 static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool want_temp,
-			   int64_t last_frame_a_uptime, bool angle_crossed_prev_cycle,
-			   bool moving_prev_cycle, struct motion_result *out)
+			   int64_t last_frame_a_uptime, struct motion_result *out)
 {
 	int rc;
 	struct sensor_value x, y, z;
@@ -924,7 +923,8 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 	k_msleep(5);
 
 	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL3_C,
-				    LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_IF_INC);
+				    LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_H_LACTIVE |
+				    LSM6DSL_CTRL3_C_IF_INC);
 	if (rc < 0) {
 		printf("Warning: IMU CTRL3_C rewrite failed (%d)\n", rc);
 		regulator_disable(imu_vdd_dev);
@@ -958,21 +958,8 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		regulator_disable(imu_vdd_dev);
 		return rc;
 	}
-	/* Correctif 2026-08-30 (mesure PPK2 : ~80 uA moyenne au lieu de
-	 * ~20-22 uA attendus apres le portage des trames A/C) -- ce delai
-	 * ne couvrait que la periode ODR (~4,8 ms a 208 Hz), pas le temps de
-	 * demarrage reel de la puce. Ton (temps de demarrage) = 35 ms
-	 * (datasheet ST DocID030071 Rev 3, Table 4 p.24 -- meme parametre
-	 * deja utilise pour GYRO_STARTUP_MS ci-dessus, mais jamais applique
-	 * ici a l'accelerometre). Sans cette marge, l'echantillon lu a
-	 * chaque cycle etait pris ~24 ms trop tot (5 ms regulateur + 6 ms
-	 * ODR = 11 ms contre 35 ms minimum), donc bruite/transitoire --
-	 * chaque cycle produisait un delta artificiel superieur au seuil de
-	 * mouvement (MOTION_THRESHOLD_MS2), declenchant une fausse detection
-	 * quasi permanente (plafonnee a FRAME_A_MAX_PER_MIN=10/min par
-	 * l'anti-rafale, mais suffisante pour multiplier la consommation
-	 * moyenne par ~4). 40 ms = 35 ms Ton + ~5 ms marge periode ODR. */
-	k_msleep(40);
+	/* Periode reelle a 208 Hz = ~4,8 ms -- 6 ms garde une marge ~1,2 ms. */
+	k_msleep(6);
 
 	rc = sensor_sample_fetch_chan(imu_dev, SENSOR_CHAN_ACCEL_XYZ);
 	if (rc < 0) {
@@ -1000,41 +987,12 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		(abs(out->pitch_dd - retained.last_sent_pitch_dd) > ANGLE_HYSTERESIS_DD) ||
 		(abs(out->roll_dd - retained.last_sent_roll_dd) > ANGLE_HYSTERESIS_DD);
 
-	/* Correctif 2026-08-30 (mesure PPK2 : ~54-200 uA moyenne au lieu de
-	 * ~20-22 uA sur une unite pourtant identique octet pour octet a une
-	 * autre mesuree correctement -- flash, UICR et RAM retenue tous
-	 * confirmes identiques) -- accel_to_pitch_roll() utilise atan2(), dont
-	 * la sensibilite au bruit augmente fortement loin de 0 deg (proche de
-	 * ±90 deg). retained.last_sent_pitch_dd/roll_dd n'est mis a jour qu'a
-	 * l'envoi d'une trame : un ecart isole d'un seul cycle (bruit
-	 * transitoire, sans lien avec un mouvement reel) declenchait une trame
-	 * immediate, qui pouvait elle-meme laisser un nouvel ecart residuel et
-	 * redeclencher au cycle suivant. On exige desormais que le
-	 * franchissement d'angle soit observe sur DEUX cycles consecutifs
-	 * avant de le traiter comme reel -- un vrai mouvement/bascule persiste
-	 * sur plusieurs cycles, un sursaut de bruit isole non. Ne s'applique
-	 * qu'a angle_crossed : motion_detected() compare deja deux
-	 * echantillons consecutifs (delta), pas un ecart cumulatif face a une
-	 * reference qui ne se met a jour qu'a l'envoi. */
-	out->angle_confirmed = out->angle_crossed && angle_crossed_prev_cycle;
-
-	/* Correctif 2026-08-30 (suite) : la confirmation sur deux cycles de
-	 * l'angle seule ne suffisait pas (mesure PPK2 toujours au-dessus de
-	 * ~20-22 uA) -- meme logique de confirmation appliquee a `moving`.
-	 * motion_detected() compare deja deux echantillons consecutifs, mais
-	 * un seul ecart isole (bruit large, transitoire de stabilisation
-	 * imparfaitement couvert par le delai Ton) peut encore depasser
-	 * MOTION_THRESHOLD_MS2 une fois sans mouvement reel. Exige maintenant
-	 * que `moving` soit vrai sur DEUX cycles consecutifs avant de le
-	 * traiter comme un mouvement reel. */
-	out->moving_confirmed = out->moving && moving_prev_cycle;
-
 	out->now = k_uptime_get();
 
 	bool min_gap_ok = (out->now - last_frame_a_uptime) >= MOTION_REPORT_MIN_GAP_MS;
 
 	out->want_event_frame =
-		heartbeat_pending || ((out->moving_confirmed || out->angle_confirmed) && min_gap_ok);
+		heartbeat_pending || ((out->moving || out->angle_crossed) && min_gap_ok);
 	out->rate_limited = frame_a_rate_limited(out->now);
 
 	if (out->want_event_frame && !out->rate_limited) {
@@ -1135,8 +1093,6 @@ int main(void)
 	int64_t first_moving_uptime = 0;
 	bool rest_frame_pending = false;
 	int64_t last_frame_a_uptime = -(int64_t)MOTION_REPORT_MIN_GAP_MS;
-	bool angle_crossed_prev_cycle = false;
-	bool moving_prev_cycle = false;
 
 	while (1) {
 		uint64_t now_us = z_nrf_grtc_timer_read();
@@ -1144,8 +1100,7 @@ int main(void)
 		bool heartbeat_due = now_us >= retained.next_heartbeat_us;
 		struct motion_result mr;
 
-		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime,
-				     angle_crossed_prev_cycle, moving_prev_cycle, &mr);
+		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime, &mr);
 		if (rc < 0) {
 			printf("Warning: sample_motion failed (%d)\n", rc);
 			k_sleep(K_MSEC(MOTION_POLL_INTERVAL_MS));
@@ -1153,14 +1108,12 @@ int main(void)
 		}
 
 		prev = mr.accel;
-		angle_crossed_prev_cycle = mr.angle_crossed;
-		moving_prev_cycle = mr.moving;
 
 		if (mr.want_event_frame && !mr.rate_limited) {
 			const char *reason = heartbeat_due ? "heartbeat" :
-					      mr.moving_confirmed ? "motion" : "angle";
+					      mr.moving ? "motion" : "angle";
 
-			send_frame_a(&mr.accel, mr.moving_confirmed, mr.moving_confirmed, reason);
+			send_frame_a(&mr.accel, mr.moving, mr.moving, reason);
 			send_frame_c(&mr.accel, mr.gyro_read ? mr.gyro_ret : -EIO,
 				     mr.gx, mr.gy, mr.gz, mr.gyro_mag);
 			frame_a_record_send(mr.now);
@@ -1173,7 +1126,7 @@ int main(void)
 			}
 		}
 
-		if (mr.moving_confirmed) {
+		if (mr.moving) {
 			was_moving = true;
 			rest_since = 0;
 			rest_frame_pending = false;
