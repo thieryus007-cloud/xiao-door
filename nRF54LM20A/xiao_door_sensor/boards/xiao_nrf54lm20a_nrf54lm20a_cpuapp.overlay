@@ -23,11 +23,9 @@
  * controle manuel indispensable au sondage a faible rapport cyclique. */
 &pmic {
 	regulators {
-		dvs-gpios = <&gpio1 25 GPIO_ACTIVE_HIGH>;
 		imu_vdd: LDO1 {
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
-			enable-gpio-config = <0 GPIO_ACTIVE_HIGH>;   /* GPIO0 du nPM1300 */
 			/* Test #30 (2026-08-28) -- zephyr,deferred-init TENTE
 			 * ici, ECHEC DE COMPILATION : propriete non declaree
 			 * dans le binding nordic,npm1300-regulator.yaml (les
