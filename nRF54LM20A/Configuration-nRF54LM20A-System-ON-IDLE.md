@@ -16,13 +16,19 @@ la question ouverte auprès de Nordic, voir
 - **Firmware** : `xiao_door_sensor/` — architecture **System ON IDLE**
   (le SoC ne redémarre jamais en fonctionnement normal ; `CONFIG_PM=y`
   assure un vrai sommeil CPU tickless entre les cycles de sondage).
-- **Consommation mesurée** : **~20-22 µA** en moyenne au repos (unité
-  #01, PPK2, fenêtre 60 s — référence vérifiée) — contre 70-144 µA pour
-  l'ancienne architecture (System OFF + redémarrage complet par cycle).
-  #02 a été corrigée le 2026-08-30 par clonage direct de l'image d'or de
-  #01 (voir `Procédure-Clonage-XIAO-nRF54LM20A.md`), suite à une anomalie
-  (~80-200+ µA) causée par deux rebuilds successifs — consommation à
-  reconfirmer par PPK2.
+- **Consommation mesurée** : **#02 : ~16-17 µA** (régime établi, PPK2,
+  mesures 60 s/240 s/360 s cohérentes le 2026-09-22/23 — voir
+  `Plan-Reduction-Consommation-2026-09-22.md` et
+  `Journal-Travail-2026-09-22.md`) après application des étapes A
+  (I2C PMIC 400 kHz), B (IMU 6→3 transactions) et D (accéléromètre
+  833 Hz HP) ; **#01 : ~20-22 µA** (image d'or historique H_LACTIVE,
+  jamais retouchée — contrainte absolue du projet). **#01 et #02
+  tournent désormais des firmwares différents et à des niveaux de
+  consommation différents**, situation nouvelle depuis le 2026-09-23 —
+  redéploiement des unités 04-13 sur la nouvelle image en attente d'une
+  décision explicite de l'utilisateur (plan §12.2). Contre 70-144 µA
+  pour l'ancienne architecture (System OFF + redémarrage complet par
+  cycle).
 - **Fonctionnalités actives (parité de production atteinte le 2026-08-29)** :
   trame BTHome v2 santé (batterie %, tension, température die) toutes les
   15 min ; trame mouvement/orientation (pitch/roll/yaw, activité,
@@ -41,8 +47,13 @@ la question ouverte auprès de Nordic, voir
 
 **Objectif final non atteint à ce jour** : 5-6 µA (référence : projet
 frère XIAO nRF52840 Sense, ~10 µA avec détection de mouvement complète).
-Le principal poste restant est documenté et fait l'objet d'une question
-ouverte auprès du support Nordic (§ 8).
+Progression significative le 2026-09-22/23 : 24,47 → 16-17 µA (−30 %,
+plan `Plan-Reduction-Consommation-2026-09-22.md`), dans la fourchette
+cible du plan (13-15 µA) sans toutefois l'atteindre pleinement. Le
+poste dominant restant (rail `imu_vdd`/LDO1, ~250-300 µA statique tant
+qu'actif) reste documenté et fait l'objet d'une question ouverte
+auprès du support Nordic (§ 8) ; la tentative de le couper par
+commande GPIO (étape C du plan) a échoué (régression, voir Journal).
 
 ---
 
@@ -485,7 +496,7 @@ branchées simultanément, `vid_pid` seul ne les distingue pas.
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
 | 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** — `unit01-verified-2026-08-30.bin` (sans le correctif `H_LACTIVE`) | Intégrée dans HA ; **~20-22 µA moyenne confirmée au PPK2** ; contenu restauré le 2026-09-07 (`verify_image` conforme au dump d'origine) après des tests menés dessus par erreur — voir CLAUDE.md |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **Restaurée sur `golden-image/unit01-verified-2026-08-30.bin` le 2026-09-19**, après tentative de flash du plan de résilience (`golden-image-candidates/unit02-resilience-2026-09-19-CANDIDAT-NON-VERIFIE.bin`, abandonné — voir §11 ci-dessous) | `verify_image` conforme (117396 octets) ; **~23 µA confirmé au PPK2 le 2026-09-19**, cohérent avec la référence |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **Étapes A+B+D du `Plan-Reduction-Consommation-2026-09-22.md`** (2026-09-23) — `golden-image/unit02-verified-2026-09-23-ABD-16uA.bin`, commit `c477dc4` ; C (LDO1 par broche) et F (LDO1 3,0 V) tentées puis revertées (régressions, voir `Journal-Travail-2026-09-22.md`) | `verify_image` conforme (117128 octets) ; **régime établi 16,98/16,84/15,95 µA (trois mesures PPK2 indépendantes)** — **diverge maintenant de #01** (~20-22 µA, jamais retouchée) |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
 **#01 et #02 tournent désormais des binaires légèrement différents** (un
