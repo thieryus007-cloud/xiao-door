@@ -192,12 +192,10 @@ static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios)
 #define LSM6DSL_CTRL3_C_BDU        BIT(6)
 #define LSM6DSL_CTRL3_C_H_LACTIVE  BIT(5)
 #define LSM6DSL_CTRL3_C_IF_INC     BIT(2)
-#define LSM6DSL_REG_CTRL6_C        0x15
-#define LSM6DSL_CTRL6_C_XL_HM_MODE BIT(4)
 #define LSM6DSL_REG_CTRL1_XL   0x10
 #define LSM6DSL_REG_OUTX_L_XL  0x28
-#define CTRL1_XL_208HZ_2G      0x50   /* ODR_XL=0101, FS=+/-2 g */
 #define ACCEL_MS2_PER_LSB      (61e-6f * 9.80665f)  /* 0,061 mg/LSB a +/-2 g */
+#define ACCEL_FIRST_SAMPLE_US  3100 /* xiao_accel_odr_char, 833 Hz : t1=1873 us + 1 periode ODR */
 
 static void print_reset_cause(uint32_t reset_cause)
 {
@@ -934,30 +932,19 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		}
 	}
 
-	/* Une seule ecriture, auto-increment (IF_INC=1 des le reset) :
-	 * CTRL3_C, CTRL4_C, CTRL5_C, CTRL6_C. */
-	uint8_t ctrl3_6[5] = {
-		LSM6DSL_REG_CTRL3_C,
-		LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_H_LACTIVE | LSM6DSL_CTRL3_C_IF_INC, /* 0x64 */
-		0x00,                       /* CTRL4_C : reset */
-		0x00,                       /* CTRL5_C : reset */
-		LSM6DSL_CTRL6_C_XL_HM_MODE, /* 0x10 : mode normal (comme aujourd'hui) */
+	uint8_t cfg[4] = {
+		LSM6DSL_REG_CTRL1_XL,
+		0x70, /* CTRL1_XL : ODR_XL=0111 -> 833 Hz (HP), +/-2 g */
+		0x00, /* CTRL2_G  : gyroscope arrete */
+		LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_H_LACTIVE | LSM6DSL_CTRL3_C_IF_INC,
 	};
-	rc = i2c_write_dt(&imu_i2c, ctrl3_6, sizeof(ctrl3_6));
+	rc = i2c_write_dt(&imu_i2c, cfg, sizeof(cfg));
 	if (rc < 0) {
-		printf("Warning: IMU CTRL3_6 burst write failed (%d)\n", rc);
+		printf("Warning: IMU CTRL1_XL/CTRL2_G/CTRL3_C write failed (%d)\n", rc);
 		regulator_disable(imu_vdd_dev);
 		return rc;
 	}
-	/* Puis l'ODR, APRES XL_HM_MODE (pas de passage transitoire en HP). */
-	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL1_XL, CTRL1_XL_208HZ_2G);
-	if (rc < 0) {
-		printf("Warning: IMU CTRL1_XL write failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
-		return rc;
-	}
-	/* Periode reelle a 208 Hz = ~4,8 ms -- 6 ms garde une marge ~1,2 ms. */
-	k_msleep(6);
+	k_usleep(ACCEL_FIRST_SAMPLE_US); /* valeur issue de 9.1 : echantillon n°2 */
 
 	uint8_t raw[6];
 	rc = i2c_burst_read_dt(&imu_i2c, LSM6DSL_REG_OUTX_L_XL, raw, sizeof(raw));
