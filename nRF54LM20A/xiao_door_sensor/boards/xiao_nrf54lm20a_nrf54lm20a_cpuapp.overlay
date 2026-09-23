@@ -24,8 +24,8 @@
 &pmic {
 	regulators {
 		imu_vdd: LDO1 {
-			regulator-min-microvolt = <3000000>;
-			regulator-max-microvolt = <3000000>;
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
 			/* Test #30 (2026-08-28) -- zephyr,deferred-init TENTE
 			 * ici, ECHEC DE COMPILATION : propriete non declaree
 			 * dans le binding nordic,npm1300-regulator.yaml (les
