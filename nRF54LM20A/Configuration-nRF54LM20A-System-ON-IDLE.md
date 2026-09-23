@@ -486,56 +486,44 @@ présence des entités.
 
 ---
 
-## 7. Déploiement actuel (2026-09-07)
+## 7. Déploiement actuel
 
 **Vérifier le numéro de série du pont SWD avant tout flash** (voir règle
 absolue dans `C:\ncs\CLAUDE.md`) — plusieurs unités peuvent être
 branchées simultanément, `vid_pid` seul ne les distingue pas.
 
-| # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
+Image actuelle = `golden-image/unit01-verified-2026-09-23-ABD-VBUSFIX-15uA`.
+Les unités encore sur une image antérieure n'ont pas le correctif de
+tempête USB : à reflasher avec `deploy-scripts/Flash-XiaoUnit.ps1`
+(procédure : `Procédure-Test-Connexion-USB-Flash-XIAO-nRF54LM20A.md`).
+
+| # | S/N pont SWD | Adresse BLE | Image | Statut |
 |---|---|---|---|---|
-| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **Étapes A+B+D + correctif limite VBUS** (2026-09-23) — `golden-image/unit01-verified-2026-09-23-ABD-VBUSFIX-15uA.bin` | `verify_image` conforme (117260 octets) ; **15,65 µA au PPK2** ; 15 branchements USB sans tempête ; reflashée avec accord explicite de l'utilisateur |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **Étapes A+B+D du `archive/docs-historique/Plan-Reduction-Consommation-2026-09-22.md`** (2026-09-23) — `archive/golden-image-anciennes/unit02-verified-2026-09-23-ABD-16uA.bin`, commit `c477dc4` ; C (LDO1 par broche) et F (LDO1 3,0 V) tentées puis revertées (régressions, voir `archive/docs-historique/Journal-Travail-2026-09-22.md`) | `verify_image` conforme (117128 octets) ; **régime établi 16,98/16,84/15,95 µA (trois mesures PPK2 indépendantes)** — **diverge maintenant de #01** (~20-22 µA, jamais retouchée) |
-| 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
+| 01 | `C5F0E209` | `D2:3A:F7:B1:E8:18` | actuelle | 15,65 µA au PPK2 ; 15 branchements sans tempête |
+| 02 | `9C4A557D` | `DE:F6:A3:A9:0F:0F` | actuelle | 3 branchements sans tempête |
+| 03 | `4587B5C1` | `E6:C9:11:CE:6E:C6` | ancienne architecture (System OFF + réveil IMU) | aucun flash prévu |
+| 04 | `D8E37DD8` | `E5:0A:38:B7:12:FF` ¹ | actuelle | 4 branchements sans tempête |
+| 05 | `89757F76` | `D2:50:B2:FD:BF:66` ¹ | actuelle | 3 branchements sans tempête |
+| 06 | `4EDD8A75` | `D3:7F:04:96:41:F9` ¹ | actuelle | 4 branchements sans tempête |
+| 07 | `BF948013` | `D9:6A:B3:EC:F7:DF` ¹ | actuelle | 3 branchements sans tempête |
+| 08 | `59775734` | `FF:02:34:82:42:FB` ¹ | actuelle | 3 branchements sans tempête |
+| 09 | `DB541E5C` | `CA:EE:33:34:49:9C` ¹ | actuelle | 3 branchements sans tempête |
+| 10 | `5662D48F` | `C8:95:C4:33:A6:F1` ¹ | actuelle | 3 branchements sans tempête |
+| 11 | `0E1FA1DD` | `CC:FD:4E:FD:FB:CA` ¹ | actuelle | 3 branchements sans tempête |
+| 12 | `1B073FBF` | `C7:D7:93:C1:EB:FF` ¹ | actuelle | 3 branchements sans tempête |
+| 13 | `C655C476` | `F8:EC:81:E8:3F:9F` ¹ | actuelle | 3 branchements sans tempête |
+| ? | — (connecteur USB-C cassé) | à relever | à identifier | **reste à faire** : flash par J-Link externe, identité par la MAC BLE (`Procédure-Test-Connexion-USB-Flash-XIAO-nRF54LM20A.md` § « Unité sans USB ») |
 
-**#01 et #02 tournent désormais des binaires légèrement différents** (un
-bit, `H_LACTIVE`) — situation nouvelle, jamais le cas avant le
-2026-09-01. Sans conséquence fonctionnelle connue (correctif isolé à un
-registre IMU), mais à garder en tête si un écart de comportement entre
-les deux est observé.
+**Adresse BLE** : fixe par puce — le firmware la dérive de
+`FICR.INFO.DEVICEID` (`set_fixed_ble_identity()`, `main.c`).
+`Flash-XiaoUnit.ps1` lit ce registre (lecture seule) et affiche l'adresse
+avant chaque flash.
+¹ Calculée depuis le registre FICR ; à confirmer une fois dans Home
+Assistant (valide alors la méthode pour toutes les unités).
+² Relevée automatiquement au reflash.
 
-Détail complet de l'ancienne architecture (#03) : voir
-`archive/docs-historique/` (document `xiao_nrf54lm20a_project_notes`
-archivé) si besoin de la reprendre en main.
-
-**Lot de 10 unités supplémentaires déployé le 2026-09-13** (unit04 à
-unit13), par clonage de l'image d'or (`unit02-verified-2026-09-01-
-H_LACTIVE.hex`) via les scripts `xiao_door_sensor/deploy-scripts/
-check-unit.sh` + `flash-unit.sh` — vérification du numéro de série
-obligatoire et indépendante à chaque étape (lecture, puis re-lecture
-juste avant le flash), `verify_image` conforme sur les 10 unités,
-journal complet dans `deploy-scripts/deployment-log.csv`. Tests
-fonctionnels Home Assistant (présence des trames BTHome, mouvement
-réel) et mesure PPK2 de consommation restent à faire, au moins sur un
-sous-échantillon — voir ce fichier journal pour le détail par unité.
-
-| Étiquette | S/N pont SWD |
-|---|---|
-| unit04 | `D8E37DD8` |
-| unit05 | `89757F76` |
-| unit06 | `4EDD8A75` |
-| unit07 | `BF948013` |
-| unit08 | `59775734` |
-| unit09 | `DB541E5C` |
-| unit10 | `5662D48F` |
-| unit11 | `0E1FA1DD` |
-| unit12 | `1B073FBF` |
-| unit13 | `C655C476` |
-
-Reste ~7 unités attendues au-delà de ce lot — à déployer avec les mêmes
-scripts, jamais par rebuild individuel (voir §4 de
-`archive/docs-historique/Audit-Consommation-2026-09-13.md` pour le problème de reconstruction
-non résolu).
+~7 unités supplémentaires attendues : à flasher avec
+`Flash-XiaoUnit.ps1`, jamais par rebuild individuel.
 
 ---
 

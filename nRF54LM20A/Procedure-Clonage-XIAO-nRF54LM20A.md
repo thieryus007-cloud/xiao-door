@@ -55,71 +55,42 @@ dans `.gitignore` au motif générique `*.hex`) — c'est la seule référence
 dont la validité a été confirmée par une mesure physique, pas seulement
 par une relecture de code.
 
-## Déployer un lot d'unités — méthode recommandée (scripts)
+## Déployer ou mettre à jour une unité — outil unique
 
-**Pour flasher plusieurs unités à la suite (déploiement en lot), utiliser
-les scripts `xiao_door_sensor/deploy-scripts/check-unit.sh` et
-`flash-unit.sh` plutôt que les commandes `openocd` manuelles des Étapes
-1-4 ci-dessous.** Les Étapes 1-2 (dump + conversion `.hex`) restent
-nécessaires **une seule fois**, uniquement pour produire ou mettre à jour
-l'image d'or elle-même (voir § précédent) — pas à chaque unité
+**Outil : `xiao_door_sensor/deploy-scripts/Flash-XiaoUnit.ps1`
+(PowerShell), une unité à la fois.** Procédure pas à pas (branchement
+propre, flash, rebranchements de contrôle) :
+`Procédure-Test-Connexion-USB-Flash-XIAO-nRF54LM20A.md` § « Mettre à jour
+une unité du lot ». Les Étapes 1-2 ci-dessous (dump + conversion `.hex`)
+ne servent qu'à produire une image d'or, jamais pour une unité
 supplémentaire.
 
-Ces deux scripts encodent directement la règle absolue de ce projet
-(`C:\ncs\CLAUDE.md`, « vérifier le numéro de série SWD avant TOUT
-flash ») : impossible de flasher sans lecture indépendante et répétée du
-numéro de série, impossible de flasher #01/#02/#03 par erreur (liste
-interdite en dur dans les deux scripts), et chaque résultat (succès ou
-échec) est journalisé — jamais de faux succès silencieux.
-
-### Utilisation, par unité
-
-```bash
-cd "C:/ncs/projects/nRF54LM20A/xiao_door_sensor/deploy-scripts"
-
-# Etape 1 -- lecture seule, identifie l'unite branchee
-./check-unit.sh
-# -> affiche le numero de serie, refuse si c'est #01/#02/#03,
-#    signale si ce serial est deja dans le journal
-
-# Etape 2 -- flash, avec le numero de serie EXACT affiche par check-unit.sh
-./flash-unit.sh <etiquette, ex: unit14> <numero-de-serie>
-# -> relit le numero de serie de facon independante et refuse de flasher
-#    si une autre carte a ete branchee entretemps (mismatch)
-#    -> refuse aussi #01/#02/#03 (deuxieme filet de securite)
-#    -> flashe l'image d'or, verify_image, journalise le resultat
+```powershell
+cd C:\ncs\projects\nRF54LM20A\xiao_door_sensor\deploy-scripts
+.\Flash-XiaoUnit.ps1 -Serial <S/N du pont SWD> -Label <unitNN>
 ```
 
-Après chaque flash réussi : débrancher/rebrancher complètement l'USB-C
-(sortir du Debug Interface Mode, voir § « Notes de connexion SWD » plus
-bas), puis vérifier au moins la présence des trames BTHome dans Home
-Assistant. Une mesure PPK2 complète (~20-22 µA) n'est pas nécessaire sur
-les 10 unités — un sous-échantillon suffit, la vérification `verify_image`
-byte-for-byte garantit déjà un contenu flash identique à l'image d'or.
+Le script relit le S/N et refuse s'il diffère de celui passé en argument,
+refuse #01 (`C5F0E209`) sans `-AllowUnit01`, affiche l'adresse BLE (lue
+dans le registre FICR), flashe l'image d'or actuelle, fait `verify_image`
+(jusqu'à 5 tentatives) et ajoute une ligne à
+`deploy-scripts/deployment-log.csv` (succès ou échec, avec la MAC BLE).
+Il ne fonctionne que sur un branchement propre : pour une unité qui
+porte encore l'ancien firmware, vérifier d'abord l'absence de tempête USB.
 
-### Ce que les scripts gèrent déjà tout seuls
+Mesure PPK2 : un sous-échantillon suffit, `verify_image` garantit un
+contenu identique à l'image d'or.
 
-- **Pont SAMD11 intermittent** (`unable to find a matching CMSIS-DAP
-  device`, `cannot read IDR`) : les deux scripts retentent automatiquement
-  jusqu'à 5 fois — symptôme déjà documenté, se résout presque toujours
-  ainsi sans intervention.
-- **Échec persistant au-delà de 5 tentatives** (observé le 2026-09-13,
-  après une longue série de sessions SWD consécutives sur la même unité) :
-  les scripts échouent proprement et journalisent l'échec plutôt que de
-  boucler indéfiniment. **Action manuelle requise dans ce cas** :
-  débrancher puis rebrancher complètement l'USB-C de l'unité concernée
-  (ou, si ça ne suffit pas, passer par un cycle d'alimentation PPK2 — voir
-  § « Notes de connexion SWD »), puis relancer `check-unit.sh` sur cette
-  même unité.
-- **Journal** : `deploy-scripts/deployment-log.csv` (horodatage,
-  étiquette, numéro de série, image utilisée, statut) — une ligne par
-  tentative, y compris les échecs, pour garder une trace complète.
+**Si l'image d'or change** : mettre à jour `$HEX` en tête de
+`Flash-XiaoUnit.ps1` (le script ne la déduit pas du tableau ci-dessus).
 
-### Si l'image d'or change
+Unité dont le connecteur USB-C est inutilisable : variante
+`Flash-XiaoUnit-JLink.ps1` (sonde J-Link sur les pastilles SWD, identité
+par la MAC BLE) — `Procédure-Test-Connexion-USB-Flash-XIAO-nRF54LM20A.md`
+§ « Unité sans USB ».
 
-Mettre à jour la variable `GOLDEN_HEX` en tête de `flash-unit.sh` (chemin
-vers le nouveau `.hex`) avant de démarrer un nouveau lot — les scripts ne
-la déduisent pas automatiquement du tableau ci-dessus.
+Les anciens scripts Bash `check-unit.sh`/`flash-unit.sh` (lot du
+2026-09-13) sont dans `archive/scripts-abandonnes/`.
 
 ### Historique des lots
 

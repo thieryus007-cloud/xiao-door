@@ -43,14 +43,11 @@ lignes VID_2886 apparaissent avec des numéros de série différents,
 plusieurs XIAO sont branchés simultanément — ne jamais supposer qu'un
 seul l'est.**
 
-### Unités connues (voir `Configuration-nRF54LM20A-System-ON-IDLE.md` §7)
+### Unités connues
 
-| # | S/N pont SWD | Statut |
-|---|---|---|
-| 01 | `C5F0E209` | Production — reflashée le 2026-09-23 avec accord explicite ; toute autre modification requiert un nouvel accord |
-| 02 | `9C4A557D` | Unité de test/référence courante |
-| 03 | `4587B5C1` | Ancienne architecture — ne pas toucher |
-| 04-13 | voir §7 de `Configuration-...md` | Lot déployé le 2026-09-13 |
+Tableau unique (S/N, adresse BLE, image, statut) :
+`Configuration-nRF54LM20A-System-ON-IDLE.md` § 7. **#01 : toute
+modification requiert un accord explicite de l'utilisateur.**
 
 ---
 
@@ -154,6 +151,81 @@ consommation ou un test fonctionnel donnerait un résultat trompeur.
 
 ---
 
+## Mettre à jour une unité du lot (procédure courante)
+
+1. Brancher l'unité (seule). Vérifier en 8 s que le branchement est
+   propre (commande du § « Tempête USB au branchement »). Si tempête
+   (unité encore sur l'ancien firmware) : débrancher/rebrancher ; si elle
+   persiste, contournement PPK2 (§ dédié).
+2. `deploy-scripts\Flash-XiaoUnit.ps1 -Serial <S/N attendu>` (PowerShell) :
+   relit le S/N et refuse s'il diffère, affiche l'adresse BLE (FICR),
+   flashe l'image d'or actuelle, `verify_image`. Attendu :
+   `verified 117260 bytes`.
+3. Reporter S/N, adresse BLE et résultat dans
+   `Configuration-nRF54LM20A-System-ON-IDLE.md` § 7 et
+   `deploy-scripts/deployment-log.csv`.
+4. Débrancher/rebrancher 3 fois : LED rouge allumée à chaque branchement,
+   aucune rafale d'événements 1010 dans le journal Windows (une
+   disparition par débranchement uniquement).
+
+---
+
+## Unité sans USB (connecteur USB-C cassé) — flash par J-Link externe
+
+**Statut : procédure préparée, pas encore exécutée** — première exécution
+à superviser en lisant la sortie J-Link complète (le script l'affiche).
+
+**Sonde : J-Link V9** (logiciel SEGGER `C:\Program Files\SEGGER\JLink_V924a`,
+cible `nRF54LM20A_M33`). Un **CH340 ne convient pas** : convertisseur
+USB↔UART, il ne parle pas SWD, et ni le nRF54LM20A ni notre firmware
+n'ont de bootloader série. Si le logiciel SEGGER refuse le V9 (clone),
+repli possible : le J-Link embarqué d'une nRF52840 DK (connecteur
+« Debug out »).
+
+**Alimentation : PPK2 en Source meter, 3,7 V, sur BAT+/BAT-.** Ne pas
+utiliser la broche 5 V du J-Link : elle passerait par VBUS et la limite
+100 mA du nPM1300, avec le risque de redémarrages en boucle tant que
+l'unité porte l'ancien firmware (§ « Tempête USB au branchement »).
+Sans USB, le pont SAMD11 ne gêne pas la sonde (schéma V1.0, feuille
+« 04 Debug ») : son alimentation `SAMD11_3V3` vient de l'interrupteur U3,
+commandé par VBUS ; sans VBUS, le traducteur de niveaux U4 (UM3204H)
+entre le SAMD11 et le nRF54 a son OE tiré à la masse par R16 → sorties
+haute impédance.
+
+**Câblage** (connecteur J-Link 20 broches, broche 1 repérée par le
+triangle ; pastilles « Back debugging function points » au dos du XIAO,
+noms du schéma — utiliser TP1/TP2, **jamais TP7/TP8** `SWCLK2`/`SWDIO2`
+qui vont au SAMD11) :
+
+| J-Link (20 broches) | XIAO nRF54LM20A |
+|---|---|
+| 1 — VTref | TP5 `3V3` (= `3V3_OUT`), ou broche `3V3` du connecteur XIAO |
+| 4 (ou toute broche paire 4-20) — GND | TP3 `GND`, ou broche `GND` |
+| 7 — SWDIO | TP2 `SWDIO` (nRF54) |
+| 9 — SWCLK | TP1 `SWCLK` (nRF54) |
+| 15 — RESET | TP4 `RST` (nRF54, facultatif) |
+| 19 — 5 V | **ne rien brancher** |
+| PPK2 VOUT / GND | `BAT+` / `BAT-` |
+
+VTref est indispensable : le J-Link s'en sert pour régler ses niveaux
+logiques (sans lui : « VTref 0 V », pas de connexion).
+
+**Déroulé** :
+1. Câbler, J-Link branché au PC, puis PPK2 en Source meter 3,7 V, sortie
+   activée.
+2. Identification (lecture seule) : `deploy-scripts\Flash-XiaoUnit-JLink.ps1`
+   → affiche l'adresse BLE (FICR). La comparer au tableau
+   `Configuration-nRF54LM20A-System-ON-IDLE.md` § 7 pour savoir de quelle
+   unité il s'agit.
+3. Flash : `deploy-scripts\Flash-XiaoUnit-JLink.ps1 -Flash -ExpectedMac
+   <MAC lue à l'étape 2> -Label <unitNN>` — refuse si la MAC diffère ou
+   si c'est #01 ; `loadfile` + `verifybin` + ligne dans
+   `deployment-log.csv`.
+4. Couper puis rétablir l'alimentation PPK2 et vérifier le fonctionnement
+   (trames BTHome dans Home Assistant, LED rouge).
+
+---
+
 ## Pannes connues et leur traitement (appliquer directement, ne pas re-diagnostiquer)
 
 | Symptôme | Cause | Traitement |
@@ -164,35 +236,6 @@ consommation ou un test fonctionnel donnerait un résultat trompeur.
 | Pont qui disparaît/réapparaît en boucle dès le branchement, LED rouge éteinte, aucune session openocd possible | Tempête USB : limite VBUS 100 mA du nPM1300 dépassée par l'allumage de LDO1 (firmware sans correctif) | Voir § « Tempête USB au branchement » : vérifier en 8 s, rebrancher jusqu'à branchement propre, flasher l'image corrigée |
 | HardFault (`pc: 0xeffffffe`) au tout premier flash d'une carte avec une nouvelle version de firmware | Connu, cause non documentée plus précisément | Reflasher immédiatement la même commande — suffit systématiquement à ce jour |
 | `verify_image` échoue après un flash apparemment réussi | Vraie divergence de contenu — **NE PAS ignorer** | Ne pas déployer/utiliser l'unité ; réinvestiguer avant de recommencer |
-
----
-
-## ⚠️ Vérification en cours — `check-unit.sh` / `flash-unit.sh` (scripts Bash)
-
-`deploy-scripts/check-unit.sh` et `flash-unit.sh` (procédure de lot,
-voir `Procedure-Clonage-XIAO-nRF54LM20A.md`) sont des scripts **Bash**
-qui appellent `openocd` directement en interne — potentiellement en
-contradiction avec la règle PowerShell-only ci-dessus.
-
-**Chemin lecture (`check-unit.sh`) — testé le 2026-09-23, fonctionnel :**
-exécuté deux fois sous Git Bash sur #02 (commande brute `openocd`
-identique + le script lui-même) : les deux ont réussi du premier coup,
-`Serial# = 9C4A557D` lu correctement, cohérent avec les lectures
-PowerShell précédentes. Le filet de sécurité "unité de production
-interdite" du script s'est aussi déclenché correctement. **Ce résultat
-ne remet pas en cause la règle PowerShell-only elle-même** — si une
-commande de ce type échoue un jour sous Bash, la consigne reste
-d'appliquer PowerShell immédiatement, sans re-diagnostiquer. Il montre
-seulement que, dans les conditions actuelles de cette machine, ces deux
-invocations précises ont réussi.
-
-**Chemin écriture (`flash-unit.sh`) — non testé, en attente.** Ce script
-refuse volontairement #01/#02/#03 (filet de sécurité), donc impossible
-à tester sur l'unité actuellement branchée. Validation prévue sur une
-nouvelle unité (numéro de série hors liste interdite) — c'est le test
-qui tranchera si le lot des ~7 unités restantes peut être fait en
-confiance avec ces scripts tels quels, ou s'ils doivent être portés en
-PowerShell.
 
 ---
 

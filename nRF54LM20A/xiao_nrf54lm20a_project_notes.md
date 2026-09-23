@@ -140,10 +140,12 @@ sonde externe. Si un jour nécessaire :
 
 | Port | Cible | Où |
 |---|---|---|
-| `SWCLK`/`SWDIO`/`GND`/`RST` | nRF54LM20A (puce applicative) | Petit connecteur 6 pads au dos, au-dessus de l'USB-C |
-| `SWCLK2`/`SWDIO2` | SAMD11 (pont USB↔SWD) | Même connecteur (rangée du bas), ou pads `D11`/`D13` sur le bord de la carte |
+| `SWCLK`/`SWDIO`/`GND`/`RST`/`3V3` | nRF54LM20A (puce applicative) | Pastilles au dos : TP1/TP2/TP3/TP4/TP5 |
+| `RST2`/`SWCLK2`/`SWDIO2` | SAMD11 (pont USB↔SWD) | Pastilles au dos : TP6/TP7/TP8 |
 
-Les deux ports sont électriquement indépendants. Sources :
+Les deux ports sont électriquement indépendants. Câblage J-Link et
+alimentation d'une unité sans USB : `Procédure-Test-Connexion-USB-Flash-XIAO-nRF54LM20A.md`
+§ « Unité sans USB ». Sources :
 [schéma officiel](https://files.seeedstudio.com/wiki/XIAO_nRF54LM20A/getting_start/RES/XIAO_nRF54LM20A_Schematic.pdf),
 [pinout xlsx](https://files.seeedstudio.com/wiki/XIAO_nRF54LM20A/getting_start/RES/XIAO_nRF54LM20A_Pin_definition.xlsx).
 
@@ -238,14 +240,11 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
 4. Résoudre ou contourner le point bloquant nPM1300 `imu_vdd`/LDO1
    (~250-300 µA, question posée à Nordic) — voir
    `Nordic-Support-Report-XIAO-nRF54LM20A.md`.
-5. **Fait le 2026-09-13** : premier lot de 10 XIAO nRF54LM20A (unit04 à
-   unit13) déployés par clonage de l'image d'or, via les scripts
-   `xiao_door_sensor/deploy-scripts/check-unit.sh` + `flash-unit.sh`
-   (procédure recommandée pour tout lot suivant — voir
-   `Procedure-Clonage-XIAO-nRF54LM20A.md` § « Déployer un lot d'unités »).
-   `verify_image` conforme sur les 10 ; tests fonctionnels HA et mesure
-   PPK2 (sous-échantillon) restent à faire. **~7 unités restantes** à
-   déployer de la même façon.
+5. **Lot d'unités** : unit04 à unit13 déployées le 2026-09-13 ; toutes les
+   unités sont à remettre sur l'image d'or actuelle (correctif tempête
+   USB) avec `xiao_door_sensor/deploy-scripts/Flash-XiaoUnit.ps1` — état
+   par unité dans `Configuration-nRF54LM20A-System-ON-IDLE.md` § 7.
+   **~7 unités supplémentaires** à déployer de la même façon.
 6. Remplacer le proxy BLE ESPHome temporaire par les ESP32-S3 dédiés une
    fois reçus, puis décommissionner `ble-proxy-temp`.
 7. Démarrage nRF52840 — voir `Transition-nRF52840-Sense-Demarrage.md`
