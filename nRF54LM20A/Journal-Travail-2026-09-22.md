@@ -72,6 +72,27 @@ l'exécution.
    (2-6 µC = hypothèse confirmée). Résultat jugé significatif par
    l'utilisateur — étape validée.
 
+### Étape F — LDO1 3,3 → 3,0 V (tentée puis revertée)
+
+1. Overlay modifié (commit `b18eaaa`), flashé et vérifié sur #02.
+2. **Mesure PPK2** (`ppk-20260923T065912.csv`, 60 s) : **régression
+   sévère** — 0/41 salves de sondage normales détectées, chaque
+   événement dure ~509 ms (au lieu de ~13-20 ms), ~140 µC, moyenne
+   globale 97 µA. Profil : après ~3 ms d'activité I2C normale, plateau
+   plat ~270 µA (rail `imu_vdd` resté allumé, pas de l'activité I2C)
+   pendant le reste — signature identique au timeout I2C ~500 ms déjà
+   observé à la caractérisation LDO (variante V4). Hypothèse : à 3,0 V,
+   une transaction I2C vers l'IMU n'est plus acquittée (pull-ups
+   SDA/SCL sur le rail `imu_vdd` lui-même). Risque exact anticipé par
+   le plan (« garder seulement si aucune erreur I2C ») — confirmé dès
+   la première mesure, pas besoin du test 1h.
+3. **Revert** (commit `c477dc4`) : overlay restauré à l'état de l'étape
+   D (SHA-256 `zephyr.bin` identique, `b54850ec...`). Reflashé et
+   vérifié sur #02.
+
+**État final retenu : A+B+D, régime établi 16,98 µA (−30,6 % vs
+référence).** Prochaine étape : §12, validation finale.
+
 ### Étape B — IMU : 6 → 3 transactions I2C
 
 1. `sample_motion()` modifié dans `main.c` : écriture groupée
