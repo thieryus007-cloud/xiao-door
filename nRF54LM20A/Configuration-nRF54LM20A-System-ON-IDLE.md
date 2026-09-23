@@ -16,19 +16,15 @@ la question ouverte auprès de Nordic, voir
 - **Firmware** : `xiao_door_sensor/` — architecture **System ON IDLE**
   (le SoC ne redémarre jamais en fonctionnement normal ; `CONFIG_PM=y`
   assure un vrai sommeil CPU tickless entre les cycles de sondage).
-- **Consommation mesurée** : **#02 : ~16-17 µA** (régime établi, PPK2,
-  mesures 60 s/240 s/360 s cohérentes le 2026-09-22/23 — voir
-  `Plan-Reduction-Consommation-2026-09-22.md` et
-  `Journal-Travail-2026-09-22.md`) après application des étapes A
+- **Consommation mesurée (PPK2)** : **#01 : 15,65 µA** (image d'or
+  actuelle `golden-image/unit01-verified-2026-09-23-ABD-VBUSFIX-15uA`) ;
+  **#02 : ~16-17 µA** (même firmware sans le correctif VBUS, mesures
+  60 s/240 s/360 s — voir
+  `archive/docs-historique/Plan-Reduction-Consommation-2026-09-22.md` et
+  `archive/docs-historique/Journal-Travail-2026-09-22.md`). Étapes A
   (I2C PMIC 400 kHz), B (IMU 6→3 transactions) et D (accéléromètre
-  833 Hz HP) ; **#01 : ~20-22 µA** (image d'or historique H_LACTIVE,
-  jamais retouchée — contrainte absolue du projet). **#01 et #02
-  tournent désormais des firmwares différents et à des niveaux de
-  consommation différents**, situation nouvelle depuis le 2026-09-23 —
-  redéploiement des unités 04-13 sur la nouvelle image en attente d'une
-  décision explicite de l'utilisateur (plan §12.2). Contre 70-144 µA
-  pour l'ancienne architecture (System OFF + redémarrage complet par
-  cycle).
+  833 Hz HP) appliquées. Contre 70-144 µA pour l'ancienne architecture
+  (System OFF + redémarrage complet par cycle).
 - **Fonctionnalités actives (parité de production atteinte le 2026-08-29)** :
   trame BTHome v2 santé (batterie %, tension, température die) toutes les
   15 min ; trame mouvement/orientation (pitch/roll/yaw, activité,
@@ -37,18 +33,16 @@ la question ouverte auprès de Nordic, voir
   trame mouvement. Sondage accéléromètre toutes les 1 s, gyroscope lu
   uniquement en rafale au moment d'un événement (jamais en continu). Voir
   § 3.3 pour le détail.
-- **Unités déployées avec cette architecture** : #01 (firmware complet
-  A/B/C, référence/image d'or vérifiée) et #02 (même firmware visé, en
-  cours de reclonage depuis l'image d'or de #01 suite à l'anomalie de
-  consommation). Intégrées dans Home Assistant (découverte BTHome),
-  tests fonctionnels HA complets à reprendre séparément. #03 tourne
-  toujours l'ancienne architecture (déjà toutes les trames), aucun flash
-  de la nouvelle architecture prévu pour l'instant — voir § 7.
+- **Unités déployées avec cette architecture** : #01 sur l'image d'or
+  actuelle ; #02 et unit04-13 sur des images antérieures **sans le
+  correctif de tempête USB**, à reflasher avec l'image actuelle. #03
+  tourne toujours l'ancienne architecture, aucun flash prévu. Tableau
+  complet § 7. Intégrées dans Home Assistant (découverte BTHome).
 
 **Objectif final non atteint à ce jour** : 5-6 µA (référence : projet
 frère XIAO nRF52840 Sense, ~10 µA avec détection de mouvement complète).
 Progression significative le 2026-09-22/23 : 24,47 → 16-17 µA (−30 %,
-plan `Plan-Reduction-Consommation-2026-09-22.md`), dans la fourchette
+plan `archive/docs-historique/Plan-Reduction-Consommation-2026-09-22.md`), dans la fourchette
 cible du plan (13-15 µA) sans toutefois l'atteindre pleinement. Le
 poste dominant restant (rail `imu_vdd`/LDO1, ~250-300 µA statique tant
 qu'actif) reste documenté et fait l'objet d'une question ouverte
@@ -61,6 +55,12 @@ commande GPIO (étape C du plan) a échoué (régression, voir Journal).
 
 - `main()` est une boucle infinie unique : pas de `sys_poweroff()`, pas
   de redémarrage périodique.
+- Tout premier appel de `main()` : `raise_vbus_current_limit()` initialise
+  le chargeur et relève la limite d'entrée VBUS du nPM1300 à 500 mA
+  (100 mA par défaut à chaque branchement, faute de batterie) **avant**
+  tout allumage de LDO1 — sinon l'appel de courant de LDO1 fait
+  redémarrer la carte en boucle (tempête USB, voir
+  `Procédure-Test-Connexion-USB-Flash-XIAO-nRF54LM20A.md`).
 - Bluetooth (`bt_enable()`) initialisé **une seule fois**, au vrai
   démarrage.
 - L'IMU (`imu_vdd`/LDO1 + LSM6DS3TR-C) reste allumée en continu ~98 % du
@@ -177,9 +177,8 @@ trigger, la détection de mouvement reste un sondage logiciel).
 	zephyr,deferred-init;
 };
 
-/* Deferred-init : le chargeur ecrit ~12-15 transactions I2C a chaque
- * boot, meme sans lecture batterie -- seulement quand une trame sante
- * est due (voir read_battery() dans main.c). */
+/* Deferred-init : le chargeur est initialise explicitement en tout debut
+ * de main() par raise_vbus_current_limit(), avant LDO1. */
 &pmic_charger {
 	zephyr,deferred-init;
 };
@@ -287,7 +286,7 @@ présenter cette anomalie.
 : cesser de rebuilder/deviner depuis les sources pour corriger #02, et
 à la place **cloner octet pour octet la mémoire flash de #01** (l'image
 qui fonctionne, vérifiée physiquement) directement sur #02 — voir
-`Procédure-Clonage-XIAO-nRF54LM20A.md` pour la procédure complète. Ceci
+`Procedure-Clonage-XIAO-nRF54LM20A.md` pour la procédure complète. Ceci
 fait, `verify_image` a confirmé 117396 octets identiques entre #01 et
 #02 (2026-08-30). Ceci élimine le risque qu'un rebuild introduise un
 nouveau bug non détecté avant flash réel, quelle que soit la qualité
@@ -333,7 +332,7 @@ duplique que la structure, pas le code entier).
 
 ## 4. Déployer une unité
 
-**Voir le document dédié `Procédure-Clonage-XIAO-nRF54LM20A.md`** —
+**Voir le document dédié `Procedure-Clonage-XIAO-nRF54LM20A.md`** —
 procédure complète (dump, conversion, flash, vérification), image d'or
 actuelle, historique des clonages, et notes de connexion SWD. Depuis le
 2026-08-30, une unité supplémentaire se déploie **par clonage d'une
@@ -474,7 +473,7 @@ toujours à 0 (non implémentés côté driver), bouton physique toujours à 0
 (bug connu non résolu).
 
 **Reste à faire** : confirmer par PPK2 que #02, clonée depuis l'image
-d'or de #01 le 2026-08-30 (`Procédure-Clonage-XIAO-nRF54LM20A.md`),
+d'or de #01 le 2026-08-30 (`Procedure-Clonage-XIAO-nRF54LM20A.md`),
 revient bien à ~20 µA — le rebuild du 2026-08-29/30 depuis les sources
 avait introduit un bug réel (delta accéléromètre bruité, ~80-200+ µA
 mesuré sur #02 selon la version) qui n'a jamais été observé sur #01 ;
@@ -495,8 +494,8 @@ branchées simultanément, `vid_pid` seul ne les distingue pas.
 
 | # | Adresse BLE | Pont USB↔SWD | Architecture | Statut |
 |---|---|---|---|---|
-| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **System ON IDLE, firmware complet A/B/C** — `unit01-verified-2026-08-30.bin` (sans le correctif `H_LACTIVE`) | Intégrée dans HA ; **~20-22 µA moyenne confirmée au PPK2** ; contenu restauré le 2026-09-07 (`verify_image` conforme au dump d'origine) après des tests menés dessus par erreur — voir CLAUDE.md |
-| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **Étapes A+B+D du `Plan-Reduction-Consommation-2026-09-22.md`** (2026-09-23) — `golden-image/unit02-verified-2026-09-23-ABD-16uA.bin`, commit `c477dc4` ; C (LDO1 par broche) et F (LDO1 3,0 V) tentées puis revertées (régressions, voir `Journal-Travail-2026-09-22.md`) | `verify_image` conforme (117128 octets) ; **régime établi 16,98/16,84/15,95 µA (trois mesures PPK2 indépendantes)** — **diverge maintenant de #01** (~20-22 µA, jamais retouchée) |
+| 01 | `D2:3A:F7:B1:E8:18` | `C5F0E209` | **Étapes A+B+D + correctif limite VBUS** (2026-09-23) — `golden-image/unit01-verified-2026-09-23-ABD-VBUSFIX-15uA.bin` | `verify_image` conforme (117260 octets) ; **15,65 µA au PPK2** ; 15 branchements USB sans tempête ; reflashée avec accord explicite de l'utilisateur |
+| 02 | `DE:F6:A3:A9:0F:0F` | `9C4A557D` | **Étapes A+B+D du `archive/docs-historique/Plan-Reduction-Consommation-2026-09-22.md`** (2026-09-23) — `archive/golden-image-anciennes/unit02-verified-2026-09-23-ABD-16uA.bin`, commit `c477dc4` ; C (LDO1 par broche) et F (LDO1 3,0 V) tentées puis revertées (régressions, voir `archive/docs-historique/Journal-Travail-2026-09-22.md`) | `verify_image` conforme (117128 octets) ; **régime établi 16,98/16,84/15,95 µA (trois mesures PPK2 indépendantes)** — **diverge maintenant de #01** (~20-22 µA, jamais retouchée) |
 | 03 | `E6:C9:11:CE:6E:C6` | `4587B5C1` | **Ancienne** (System OFF + réveil IMU par interruption) | Inchangée ; déjà toutes les trames ; aucun flash de la nouvelle architecture prévu pour l'instant |
 
 **#01 et #02 tournent désormais des binaires légèrement différents** (un
@@ -535,7 +534,7 @@ sous-échantillon — voir ce fichier journal pour le détail par unité.
 
 Reste ~7 unités attendues au-delà de ce lot — à déployer avec les mêmes
 scripts, jamais par rebuild individuel (voir §4 de
-`Audit-Consommation-2026-09-13.md` pour le problème de reconstruction
+`archive/docs-historique/Audit-Consommation-2026-09-13.md` pour le problème de reconstruction
 non résolu).
 
 ---
@@ -557,10 +556,10 @@ question posée au support Nordic — voir
 
 **Correction (2026-09-22)** : la conclusion « désactiver la charge
 augmente la consommation » ci-dessous n'est **pas établie**. Le firmware
-`xiao_no_charge_test/` utilisé pour ce test contient `k_msleep(40)` dans
-`sample_motion()` (vérifié : `xiao_no_charge_test/src/main.c:952`), le
+`archive/projets-test/xiao_no_charge_test/` utilisé pour ce test contient `k_msleep(40)` dans
+`sample_motion()` (vérifié : `archive/projets-test/xiao_no_charge_test/src/main.c:952`), le
 même bug de délai accéléromètre identifié et corrigé en
-`Plan-Reduction-Consommation-2026-09-22.md` §1 (+34 ms de rail par cycle
+`archive/docs-historique/Plan-Reduction-Consommation-2026-09-22.md` §1 (+34 ms de rail par cycle
 ≈ +11 µA). Les ~32 µA mesurés s'expliquent donc en grande partie par ce
 délai, pas par la désactivation de la charge elle-même. **À re-tester
 sur une base saine (k_msleep(6)) si l'option pile non rechargeable
@@ -572,7 +571,7 @@ la fonctionnalité de charge du nPM1300 (charger une pile non
 rechargeable est à proscrire).
 
 **Test effectué (2026-08-30, exclusif #02, jamais sur #01)** : firmware
-de test dans un dossier séparé (`xiao_no_charge_test/`), overlay
+de test dans un dossier séparé (`archive/projets-test/xiao_no_charge_test/`), overlay
 identique à `xiao_door_sensor` avec un seul changement :
 `/delete-property/ charging-enable;` sur `&pmic_charger`. Mécanisme
 exact (vérifié dans le driver,
@@ -629,11 +628,11 @@ raisonnement détaillé derrière une décision.
 
 **Résolu, ticket Nordic à clore.** La prémisse de toute cette section
 était fausse : il n'y a jamais eu de non-déterminisme du compilateur.
-Preuve (`Plan-Reduction-Consommation-2026-09-22.md` §1, reproduite
+Preuve (`archive/docs-historique/Plan-Reduction-Consommation-2026-09-22.md` §1, reproduite
 indépendamment le 2026-09-22) : un rebuild `--pristine` du commit
 `c63908d` + H_LACTIVE (`xiao_door_sensor/src/main.c` réaligné, voir
 commit `630b32a`) redonne `zephyr.bin` octet pour octet identique à
-`golden-image/unit02-verified-2026-09-01-H_LACTIVE.bin` (SHA-256
+`archive/golden-image-anciennes/unit02-verified-2026-09-01-H_LACTIVE.bin` (SHA-256
 `0da087ae45d087afdc334828e95a8c44283b1182b1cce5dc1525d7133853f778`).
 `west build` (NCS 3.4.0, toolchain `dcbdc366a1`) **est déterministe.**
 
@@ -655,7 +654,7 @@ identique.
 n'était pas en cause non plus — sa « régression » venait de la même base
 à 40 ms. À ré-appliquer séparément sur la base réalignée, avec sa propre
 mesure PPK2. Voir `xiao_nrf54lm20a_project_notes.md` item 9 et
-`Suivi-Nordic-Reproductibilite-Build-2026-09-19.md` (mis à jour) pour le
+`archive/docs-historique/Suivi-Nordic-Reproductibilite-Build-2026-09-19.md` (mis à jour) pour le
 suivi. Le paragraphe ci-dessous (décision du 2026-09-19) est conservé
 pour l'historique mais **superseded**.
 

@@ -1,0 +1,41 @@
+/* Audit-Consommation-2026-09-13.md, §3 -- LDO2 n'existe dans aucun
+ * fichier de carte Seeed (verifie par recherche exhaustive dans
+ * vendor/platform-seeedboards) : aucune charge connue cablee dessus sur
+ * ce board. Le declarer ici l'instancie comme device regulateur
+ * (regulator_npm13xx.c, REGULATOR_NPM13XX_DEFINE_COND macro, gate sur
+ * DT_NODE_EXISTS) sans toucher a la charge reelle -- but : mesurer le
+ * courant propre du bloc LDO/LOADSW du PMIC seul, sans aucune charge,
+ * pour le comparer au ~250-275 uA mesure sur LDO1 (imu_vdd, micro PDM
+ * partage). imu_vdd/LDO1 lui-meme est deja entierement defini dans le
+ * dtsi de base du board (tension, mode LDO) -- pas besoin de le
+ * redeclarer ici, seulement de le piloter depuis main.c comme le fait
+ * deja sample_motion() en production. */
+#include <zephyr/dt-bindings/regulator/npm13xx.h>
+
+&pmic {
+	regulators {
+		ldo2_diag: LDO2 {
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-initial-mode = <NPM13XX_LDSW_MODE_LDO>;
+		};
+	};
+};
+
+/* Hypothese #2 (voir prj.conf) : activer la flash externe pour pouvoir
+ * la mettre en deep-power-down comme le fait la production, plutot que
+ * de la laisser status="disabled" (jamais touchee du tout). */
+&py25q64 {
+	status = "okay";
+};
+
+/* Meme bug de build recurrent sur ce snapshot NCS 3.4.0 (nrf_usbhs_wrapper.c
+ * ne compile pas) que partout ailleurs dans ce projet -- necessaire pour
+ * compiler quel que soit le firmware. */
+&usbhs {
+	status = "disabled";
+};
+
+&usbhs_wrapper {
+	status = "disabled";
+};

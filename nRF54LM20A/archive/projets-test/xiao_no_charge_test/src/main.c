@@ -55,30 +55,6 @@
  * GRTC repart de zero -- desormais bornees a au plus un intervalle complet
  * apres le boot, voir main().
  *
- * Correctif H_LACTIVE (2026-09-01) -- CTRL3_C.H_LACTIVE=1 (bit 5) : INT1
- * devient actif bas, evite qu'il tire ~33 uA en continu entre l'ecriture
- * de CTRL3_C et la coupure du rail (INT1 flotte sinon vers son defaut
- * actif haut). Entre le 2026-09-01 et le 2026-09-22, ce correctif etait
- * present sur l'image deployee (golden-image/unit02-verified-2026-09-01-
- * H_LACTIVE.bin) mais obtenu par patch binaire d'un octet (offset 46096,
- * 0x44->0x46) plutot que par recompilation -- voir Procedure-Clonage-
- * XIAO-nRF54LM20A.md pour la methode historique, desormais obsolete :
- * applique ici directement dans le source (LSM6DSL_CTRL3_C_H_LACTIVE
- * ci-dessous).
- *
- * Reproductibilite du build (resolue le 2026-09-22, voir Plan-Reduction-
- * Consommation-2026-09-22.md §1) -- ce fichier, recompile tel quel,
- * reproduit octet pour octet l'image deployee ci-dessus (SHA-256
- * zephyr.bin attendu : 0da087ae45d087afdc334828e95a8c44283b1182b1cce5dc
- * 1525d7133853f778). Le "bug de reconstruction non reproductible" ouvert
- * aupres du support Nordic (Suivi-Nordic-Reproductibilite-Build-2026-
- * 09-19.md) n'existait pas : les rebuilds mesures a ~33 uA au lieu de
- * ~22 uA venaient d'un k_msleep(40) au lieu de k_msleep(6) dans
- * sample_motion() (commit ccbe1b5, +34 ms de rail imu_vdd allume par
- * cycle ~ +11 uA), introduit par erreur apres le flash de l'image d'or
- * du 2026-08-30, jamais d'une divergence reelle du compilateur --
- * `west build` (NCS 3.4.0, toolchain dcbdc366a1) est deterministe.
- *
  * Copyright (c) 2019 Nordic Semiconductor ASA
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -190,12 +166,9 @@ static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios)
 
 #define LSM6DSL_REG_CTRL3_C        0x12
 #define LSM6DSL_CTRL3_C_BDU        BIT(6)
-#define LSM6DSL_CTRL3_C_H_LACTIVE  BIT(5)
 #define LSM6DSL_CTRL3_C_IF_INC     BIT(2)
-#define LSM6DSL_REG_CTRL1_XL   0x10
-#define LSM6DSL_REG_OUTX_L_XL  0x28
-#define ACCEL_MS2_PER_LSB      (61e-6f * 9.80665f)  /* 0,061 mg/LSB a +/-2 g */
-#define ACCEL_FIRST_SAMPLE_US  3100 /* xiao_accel_odr_char, 833 Hz : t1=1873 us + 1 periode ODR */
+#define LSM6DSL_REG_CTRL6_C        0x15
+#define LSM6DSL_CTRL6_C_XL_HM_MODE BIT(4)
 
 static void print_reset_cause(uint32_t reset_cause)
 {
@@ -417,7 +390,10 @@ static int read_battery(uint8_t *out_pct, uint16_t *out_mv)
 	struct sensor_value v;
 	int ret;
 
-	/* Normalement deja initialise par raise_vbus_current_limit() au demarrage. */
+	/* Test #29 (2026-08-28) -- init differee (voir overlay) : le driver
+	 * chargeur n'ecrit ses ~12-15 transactions I2C de configuration que
+	 * lorsqu'une lecture batterie est reellement demandee (health_due),
+	 * plus a chaque demarrage. */
 	if (!device_is_ready(charger_dev)) {
 		ret = device_init(charger_dev);
 		if (ret < 0 && ret != -EALREADY) {
@@ -440,24 +416,6 @@ static int read_battery(uint8_t *out_pct, uint16_t *out_mv)
 	*out_mv = (uint16_t)(v.val1 * 1000 + v.val2 / 1000);
 	*out_pct = voltage_to_percent(*out_mv);
 	return 0;
-}
-
-/* nPM1300 demarre a 100 mA sur VBUS a chaque branchement (pas de batterie) :
- * l'appel de courant de LDO1 le fait disjoncter et toute la carte, pont SAMD11
- * compris, redemarre en boucle (Seeed platform-seeedboards#81). */
-static int raise_vbus_current_limit(void)
-{
-	const struct sensor_value limit = { .val1 = 0, .val2 = 500000 };
-	int ret;
-
-	if (!device_is_ready(charger_dev)) {
-		ret = device_init(charger_dev);
-		if (ret < 0 && ret != -EALREADY) {
-			return ret;
-		}
-	}
-	return sensor_attr_set(charger_dev, SENSOR_CHAN_CURRENT, SENSOR_ATTR_CONFIGURATION,
-			       &limit);
 }
 
 /* --- Etat retenu a travers un reset inattendu (watchdog/brownout) --
@@ -898,7 +856,9 @@ struct motion_result {
 	bool temp_valid;
 	int16_t pitch_dd, roll_dd;
 	bool moving;
+	bool moving_confirmed;
 	bool angle_crossed;
+	bool angle_confirmed;
 	bool want_event_frame;
 	bool rate_limited;
 	int64_t now;
@@ -922,9 +882,11 @@ struct motion_result {
  * d'interruption materielle (plus de reveil GPIO dans cette architecture,
  * voir en-tete de fichier). */
 static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool want_temp,
-			   int64_t last_frame_a_uptime, struct motion_result *out)
+			   int64_t last_frame_a_uptime, bool angle_crossed_prev_cycle,
+			   bool moving_prev_cycle, struct motion_result *out)
 {
 	int rc;
+	struct sensor_value x, y, z;
 
 	memset(out, 0, sizeof(*out));
 
@@ -938,6 +900,21 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 	 * marge ~2,8x, voir test #32. */
 	k_msleep(5);
 
+	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL3_C,
+				    LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_IF_INC);
+	if (rc < 0) {
+		printf("Warning: IMU CTRL3_C rewrite failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	rc = i2c_reg_update_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL6_C,
+				     LSM6DSL_CTRL6_C_XL_HM_MODE, LSM6DSL_CTRL6_C_XL_HM_MODE);
+	if (rc < 0) {
+		printf("Warning: IMU CTRL6_C rewrite failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+
 	if (!device_is_ready(imu_dev)) {
 		rc = device_init(imu_dev);
 		if (rc < 0 && rc != -EALREADY) {
@@ -947,30 +924,46 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		}
 	}
 
-	uint8_t cfg[4] = {
-		LSM6DSL_REG_CTRL1_XL,
-		0x70, /* CTRL1_XL : ODR_XL=0111 -> 833 Hz (HP), +/-2 g */
-		0x00, /* CTRL2_G  : gyroscope arrete */
-		LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_H_LACTIVE | LSM6DSL_CTRL3_C_IF_INC,
-	};
-	rc = i2c_write_dt(&imu_i2c, cfg, sizeof(cfg));
-	if (rc < 0) {
-		printf("Warning: IMU CTRL1_XL/CTRL2_G/CTRL3_C write failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
-		return rc;
-	}
-	k_usleep(ACCEL_FIRST_SAMPLE_US); /* valeur issue de 9.1 : echantillon n°2 */
+	/* ODR 208 Hz -- reduit l'attente d'une periode d'echantillonnage
+	 * complete (test #36), XL_HM_MODE (bas-consommation) reste pose. */
+	struct sensor_value odr_attr = { .val1 = 208, .val2 = 0 };
 
-	uint8_t raw[6];
-	rc = i2c_burst_read_dt(&imu_i2c, LSM6DSL_REG_OUTX_L_XL, raw, sizeof(raw));
+	rc = sensor_attr_set(imu_dev, SENSOR_CHAN_ACCEL_XYZ,
+			      SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr);
 	if (rc < 0) {
-		printf("Warning: IMU XYZ burst read failed (%d)\n", rc);
+		printf("Warning: IMU set ODR failed (%d)\n", rc);
 		regulator_disable(imu_vdd_dev);
 		return rc;
 	}
-	out->accel.ax = (int16_t)sys_get_le16(&raw[0]) * ACCEL_MS2_PER_LSB;
-	out->accel.ay = (int16_t)sys_get_le16(&raw[2]) * ACCEL_MS2_PER_LSB;
-	out->accel.az = (int16_t)sys_get_le16(&raw[4]) * ACCEL_MS2_PER_LSB;
+	/* Correctif 2026-08-30 (mesure PPK2 : ~80 uA moyenne au lieu de
+	 * ~20-22 uA attendus apres le portage des trames A/C) -- ce delai
+	 * ne couvrait que la periode ODR (~4,8 ms a 208 Hz), pas le temps de
+	 * demarrage reel de la puce. Ton (temps de demarrage) = 35 ms
+	 * (datasheet ST DocID030071 Rev 3, Table 4 p.24 -- meme parametre
+	 * deja utilise pour GYRO_STARTUP_MS ci-dessus, mais jamais applique
+	 * ici a l'accelerometre). Sans cette marge, l'echantillon lu a
+	 * chaque cycle etait pris ~24 ms trop tot (5 ms regulateur + 6 ms
+	 * ODR = 11 ms contre 35 ms minimum), donc bruite/transitoire --
+	 * chaque cycle produisait un delta artificiel superieur au seuil de
+	 * mouvement (MOTION_THRESHOLD_MS2), declenchant une fausse detection
+	 * quasi permanente (plafonnee a FRAME_A_MAX_PER_MIN=10/min par
+	 * l'anti-rafale, mais suffisante pour multiplier la consommation
+	 * moyenne par ~4). 40 ms = 35 ms Ton + ~5 ms marge periode ODR. */
+	k_msleep(40);
+
+	rc = sensor_sample_fetch_chan(imu_dev, SENSOR_CHAN_ACCEL_XYZ);
+	if (rc < 0) {
+		printf("Warning: IMU sample fetch failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_X, &x);
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Y, &y);
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Z, &z);
+
+	out->accel.ax = sensor_value_to_float(&x);
+	out->accel.ay = sensor_value_to_float(&y);
+	out->accel.az = sensor_value_to_float(&z);
 	out->accel.valid = true;
 
 	if (want_temp) {
@@ -984,12 +977,41 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		(abs(out->pitch_dd - retained.last_sent_pitch_dd) > ANGLE_HYSTERESIS_DD) ||
 		(abs(out->roll_dd - retained.last_sent_roll_dd) > ANGLE_HYSTERESIS_DD);
 
+	/* Correctif 2026-08-30 (mesure PPK2 : ~54-200 uA moyenne au lieu de
+	 * ~20-22 uA sur une unite pourtant identique octet pour octet a une
+	 * autre mesuree correctement -- flash, UICR et RAM retenue tous
+	 * confirmes identiques) -- accel_to_pitch_roll() utilise atan2(), dont
+	 * la sensibilite au bruit augmente fortement loin de 0 deg (proche de
+	 * ±90 deg). retained.last_sent_pitch_dd/roll_dd n'est mis a jour qu'a
+	 * l'envoi d'une trame : un ecart isole d'un seul cycle (bruit
+	 * transitoire, sans lien avec un mouvement reel) declenchait une trame
+	 * immediate, qui pouvait elle-meme laisser un nouvel ecart residuel et
+	 * redeclencher au cycle suivant. On exige desormais que le
+	 * franchissement d'angle soit observe sur DEUX cycles consecutifs
+	 * avant de le traiter comme reel -- un vrai mouvement/bascule persiste
+	 * sur plusieurs cycles, un sursaut de bruit isole non. Ne s'applique
+	 * qu'a angle_crossed : motion_detected() compare deja deux
+	 * echantillons consecutifs (delta), pas un ecart cumulatif face a une
+	 * reference qui ne se met a jour qu'a l'envoi. */
+	out->angle_confirmed = out->angle_crossed && angle_crossed_prev_cycle;
+
+	/* Correctif 2026-08-30 (suite) : la confirmation sur deux cycles de
+	 * l'angle seule ne suffisait pas (mesure PPK2 toujours au-dessus de
+	 * ~20-22 uA) -- meme logique de confirmation appliquee a `moving`.
+	 * motion_detected() compare deja deux echantillons consecutifs, mais
+	 * un seul ecart isole (bruit large, transitoire de stabilisation
+	 * imparfaitement couvert par le delai Ton) peut encore depasser
+	 * MOTION_THRESHOLD_MS2 une fois sans mouvement reel. Exige maintenant
+	 * que `moving` soit vrai sur DEUX cycles consecutifs avant de le
+	 * traiter comme un mouvement reel. */
+	out->moving_confirmed = out->moving && moving_prev_cycle;
+
 	out->now = k_uptime_get();
 
 	bool min_gap_ok = (out->now - last_frame_a_uptime) >= MOTION_REPORT_MIN_GAP_MS;
 
 	out->want_event_frame =
-		heartbeat_pending || ((out->moving || out->angle_crossed) && min_gap_ok);
+		heartbeat_pending || ((out->moving_confirmed || out->angle_confirmed) && min_gap_ok);
 	out->rate_limited = frame_a_rate_limited(out->now);
 
 	if (out->want_event_frame && !out->rate_limited) {
@@ -1015,11 +1037,6 @@ int main(void)
 	uint32_t reset_cause = 0U;
 
 	printf("\n=== %s ultra-low-power system-on-idle (GRTC+RAM+BLE+IMU) ===\n", CONFIG_BOARD);
-
-	rc = raise_vbus_current_limit();
-	if (rc < 0) {
-		printf("Warning: could not raise VBUS current limit (%d)\n", rc);
-	}
 
 	rc = hwinfo_get_reset_cause(&reset_cause);
 	if (rc == 0) {
@@ -1095,6 +1112,8 @@ int main(void)
 	int64_t first_moving_uptime = 0;
 	bool rest_frame_pending = false;
 	int64_t last_frame_a_uptime = -(int64_t)MOTION_REPORT_MIN_GAP_MS;
+	bool angle_crossed_prev_cycle = false;
+	bool moving_prev_cycle = false;
 
 	while (1) {
 		uint64_t now_us = z_nrf_grtc_timer_read();
@@ -1102,7 +1121,8 @@ int main(void)
 		bool heartbeat_due = now_us >= retained.next_heartbeat_us;
 		struct motion_result mr;
 
-		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime, &mr);
+		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime,
+				     angle_crossed_prev_cycle, moving_prev_cycle, &mr);
 		if (rc < 0) {
 			printf("Warning: sample_motion failed (%d)\n", rc);
 			k_sleep(K_MSEC(MOTION_POLL_INTERVAL_MS));
@@ -1110,12 +1130,14 @@ int main(void)
 		}
 
 		prev = mr.accel;
+		angle_crossed_prev_cycle = mr.angle_crossed;
+		moving_prev_cycle = mr.moving;
 
 		if (mr.want_event_frame && !mr.rate_limited) {
 			const char *reason = heartbeat_due ? "heartbeat" :
-					      mr.moving ? "motion" : "angle";
+					      mr.moving_confirmed ? "motion" : "angle";
 
-			send_frame_a(&mr.accel, mr.moving, mr.moving, reason);
+			send_frame_a(&mr.accel, mr.moving_confirmed, mr.moving_confirmed, reason);
 			send_frame_c(&mr.accel, mr.gyro_read ? mr.gyro_ret : -EIO,
 				     mr.gx, mr.gy, mr.gz, mr.gyro_mag);
 			frame_a_record_send(mr.now);
@@ -1128,7 +1150,7 @@ int main(void)
 			}
 		}
 
-		if (mr.moving) {
+		if (mr.moving_confirmed) {
 			was_moving = true;
 			rest_since = 0;
 			rest_frame_pending = false;

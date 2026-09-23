@@ -1,0 +1,10 @@
+/* Firmware de diagnostic en lecture seule des registres ADC/chargeur
+ * nPM1300 (bancs ADC_BASE=0x05 et CHGR_BASE=0x03) -- but : comprendre
+ * pourquoi la tension VBAT lue (SENSOR_CHAN_GAUGE_VOLTAGE) differe
+ * entre #01 (~4V) et #02 (~1V) alors qu'aucune des deux unites n'a de
+ * batterie connectee (BAT+/BAT- non cablees, fait confirme par
+ * l'utilisateur). Pas un firmware de production, jamais destine au
+ * deploiement. */
+
+&usbhs { status = "disabled"; };
+&usbhs_wrapper { status = "disabled"; };

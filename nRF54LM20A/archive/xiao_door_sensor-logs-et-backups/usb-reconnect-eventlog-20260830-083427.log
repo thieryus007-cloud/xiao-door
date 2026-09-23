@@ -1,0 +1,15 @@
+﻿=== Surveillance journal Windows demarree 08/30/2026 08:34:27 ===
+[09/07/2026 16:15:43] [Microsoft-Windows-UserPnp] Id=20003 Level=Information
+  La gestion des pilotes a terminé le processus d’ajout du service usbser pour l’ID d’instance de périphérique USB\VID_2886&PID_8045&MI_00\7&1DB719C9&0&0000 avec le statut suivant : 0.
+[09/07/2026 16:41:19] [Microsoft-Windows-UserPnp] Id=20003 Level=Information
+  La gestion des pilotes a terminé le processus d’ajout du service usbser pour l’ID d’instance de périphérique USB\VID_2886&PID_0045&MI_00\7&A4B9946&0&0000 avec le statut suivant : 0.
+[09/07/2026 16:41:19] [Microsoft-Windows-UserPnp] Id=20003 Level=Information
+  La gestion des pilotes a terminé le processus d’ajout du service usbser pour l’ID d’instance de périphérique USB\VID_2886&PID_0045&MI_00\7&A4B9946&0&0000 avec le statut suivant : 0.
+[09/07/2026 16:46:13] [Microsoft-Windows-UserPnp] Id=20003 Level=Information
+  La gestion des pilotes a terminé le processus d’ajout du service usbser pour l’ID d’instance de périphérique USB\VID_2886&PID_8045&MI_00\7&42C595C&0&0000 avec le statut suivant : 0.
+[09/07/2026 16:48:27] [Microsoft-Windows-UserPnp] Id=20003 Level=Information
+  La gestion des pilotes a terminé le processus d’ajout du service usbser pour l’ID d’instance de périphérique USB\VID_2886&PID_0045&MI_00\7&1C5BBC0A&0&0000 avec le statut suivant : 0.
+[09/07/2026 16:52:47] [Microsoft-Windows-UserPnp] Id=20003 Level=Information
+  La gestion des pilotes a terminé le processus d’ajout du service usbser pour l’ID d’instance de périphérique USB\VID_2886&PID_8045&MI_00\7&1E60FA35&0&0000 avec le statut suivant : 0.
+[09/07/2026 16:54:06] [Microsoft-Windows-UserPnp] Id=20003 Level=Information
+  La gestion des pilotes a terminé le processus d’ajout du service usbser pour l’ID d’instance de périphérique USB\VID_2886&PID_0045&MI_00\7&1D832C67&0&0000 avec le statut suivant : 0.

@@ -1,4 +1,27 @@
 /*
+ * ATTENTION (2026-09-01) -- NE PAS RECOMPILER CE FICHIER POUR PRODUIRE
+ * UNE IMAGE DE DEPLOIEMENT tant que ceci n'est pas resolu. `west build`
+ * sur ce fichier (source identique au binaire d'or a un bit pres --
+ * H_LACTIVE, voir plus bas) produit actuellement un binaire qui MESURE
+ * ~33 uA au repos au lieu de ~22 uA -- 64159 octets de difference avec
+ * l'image d'or sur 117396 (plus de la moitie), CONFIG_PM absent du
+ * .config genere (HAS_PM jamais selectionne pour la famille nRF54L,
+ * confirme deja vrai au moment de l'image d'or du 2026-08-30 -- donc
+ * PAS la cause, piste fermee). Cause exacte encore inconnue.
+ *
+ * L'image actuellement deployee (`golden-image/unit02-verified-2026-09-
+ * 01-H_LACTIVE.bin/.hex`) N'A PAS ete produite en recompilant ce
+ * fichier -- elle a ete obtenue en patchant un seul octet directement
+ * dans le binaire d'or precedent (unit01-verified-2026-08-30.bin,
+ * offset 46096 : 0x44 -> 0x46, encodage exact de l'ajout du bit
+ * H_LACTIVE dans l'instruction movw qui charge {registre CTRL3_C,
+ * valeur} avant l'appel i2c_reg_write_byte_dt -- verifie par diff
+ * binaire, un seul octet different, mesure PPK2 conforme, ~22-23 uA).
+ * Voir Procedure-Clonage-XIAO-nRF54LM20A.md pour la methode de patch.
+ * Ce fichier source reste la reference LISIBLE du correctif applique,
+ * mais pas le moyen de le reproduire tant que l'ecart de reconstruction
+ * n'est pas compris.
+ *
  * Pivot d'architecture (2026-08-28) -- System ON IDLE + GRTC, plus de
  * reboot par cycle. Voir XIAO-nRF54LM20A-Solution-System-OFF.md, § "Pivot
  * d'architecture" : le plancher mesure de l'ancienne strategie (System OFF
@@ -55,30 +78,6 @@
  * GRTC repart de zero -- desormais bornees a au plus un intervalle complet
  * apres le boot, voir main().
  *
- * Correctif H_LACTIVE (2026-09-01) -- CTRL3_C.H_LACTIVE=1 (bit 5) : INT1
- * devient actif bas, evite qu'il tire ~33 uA en continu entre l'ecriture
- * de CTRL3_C et la coupure du rail (INT1 flotte sinon vers son defaut
- * actif haut). Entre le 2026-09-01 et le 2026-09-22, ce correctif etait
- * present sur l'image deployee (golden-image/unit02-verified-2026-09-01-
- * H_LACTIVE.bin) mais obtenu par patch binaire d'un octet (offset 46096,
- * 0x44->0x46) plutot que par recompilation -- voir Procedure-Clonage-
- * XIAO-nRF54LM20A.md pour la methode historique, desormais obsolete :
- * applique ici directement dans le source (LSM6DSL_CTRL3_C_H_LACTIVE
- * ci-dessous).
- *
- * Reproductibilite du build (resolue le 2026-09-22, voir Plan-Reduction-
- * Consommation-2026-09-22.md §1) -- ce fichier, recompile tel quel,
- * reproduit octet pour octet l'image deployee ci-dessus (SHA-256
- * zephyr.bin attendu : 0da087ae45d087afdc334828e95a8c44283b1182b1cce5dc
- * 1525d7133853f778). Le "bug de reconstruction non reproductible" ouvert
- * aupres du support Nordic (Suivi-Nordic-Reproductibilite-Build-2026-
- * 09-19.md) n'existait pas : les rebuilds mesures a ~33 uA au lieu de
- * ~22 uA venaient d'un k_msleep(40) au lieu de k_msleep(6) dans
- * sample_motion() (commit ccbe1b5, +34 ms de rail imu_vdd allume par
- * cycle ~ +11 uA), introduit par erreur apres le flash de l'image d'or
- * du 2026-08-30, jamais d'une divergence reelle du compilateur --
- * `west build` (NCS 3.4.0, toolchain dcbdc366a1) est deterministe.
- *
  * Copyright (c) 2019 Nordic Semiconductor ASA
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -95,6 +94,7 @@
 #include <zephyr/drivers/retained_mem.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/timer/nrf_grtc_timer.h>
+#include <zephyr/drivers/watchdog.h>
 #include <zephyr/kernel.h>
 #include <ram_pwrdn.h>
 #include <zephyr/pm/device.h>
@@ -126,6 +126,23 @@
  * (~10 uA, reactivite ~1 s) prioritaire sur le gain de consommation --
  * voir XIAO-nRF54LM20A-Solution-System-OFF.md. */
 #define MOTION_POLL_INTERVAL_MS 1000
+
+/* Chien de garde materiel (wdt31) -- audit resilience 2026-09-19. Delai
+ * cale au-dessus du pire cas legitime d'une seule iteration de boucle : la
+ * trame de repos repetee (send_final_state_frame()) peut a elle seule
+ * bloquer environ FINAL_STATE_REPEATS*(ADV_BURST_MS+
+ * FINAL_STATE_REPEAT_GAP_MS) ~= 11,1 s -- marge large retenue pour ne
+ * jamais declencher sur un cycle normal. */
+#define WATCHDOG_TIMEOUT_MS 30000
+
+/* Compteur d'echecs fonctionnels consecutifs (sample_motion()/trame sante)
+ * -- audit resilience 2026-09-19. Distinct du chien de garde materiel : ce
+ * compteur couvre une panne fonctionnelle persistante (bus I2C en echec,
+ * regulateur qui ne repond plus) qui NE bloque PAS la boucle (donc ne
+ * declenche jamais le watchdog), mais laisserait sinon l'unite
+ * definitivement silencieuse en BLE. ~60 cycles a 1 Hz ~= 60 s avant
+ * redemarrage de secours. */
+#define MAX_CONSECUTIVE_FAILURES 60
 
 /* --- Logique evenementielle trame A, reprise telle quelle de l'ancien
  * firmware de reference (main_full_2026-08-27.c.bak) -- constantes
@@ -171,6 +188,7 @@ static const struct device *const flash_bus = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(
 static const struct device *const charger_dev = DEVICE_DT_GET(DT_NODELABEL(pmic_charger));
 static const struct device *const imu_vdd_dev = DEVICE_DT_GET(DT_NODELABEL(imu_vdd));
 static const struct device *const imu_dev = DEVICE_DT_GET(DT_ALIAS(imu0));
+static const struct device *const wdt_dev = DEVICE_DT_GET(DT_ALIAS(watchdog0));
 
 /* Acces I2C direct au LSM6DS3TR-C, independant du driver Zephyr --
  * necessaire pour reecrire CTRL3_C/CTRL6_C a chaque cycle (voir
@@ -190,12 +208,9 @@ static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios)
 
 #define LSM6DSL_REG_CTRL3_C        0x12
 #define LSM6DSL_CTRL3_C_BDU        BIT(6)
-#define LSM6DSL_CTRL3_C_H_LACTIVE  BIT(5)
 #define LSM6DSL_CTRL3_C_IF_INC     BIT(2)
-#define LSM6DSL_REG_CTRL1_XL   0x10
-#define LSM6DSL_REG_OUTX_L_XL  0x28
-#define ACCEL_MS2_PER_LSB      (61e-6f * 9.80665f)  /* 0,061 mg/LSB a +/-2 g */
-#define ACCEL_FIRST_SAMPLE_US  3100 /* xiao_accel_odr_char, 833 Hz : t1=1873 us + 1 periode ODR */
+#define LSM6DSL_REG_CTRL6_C        0x15
+#define LSM6DSL_CTRL6_C_XL_HM_MODE BIT(4)
 
 static void print_reset_cause(uint32_t reset_cause)
 {
@@ -417,7 +432,10 @@ static int read_battery(uint8_t *out_pct, uint16_t *out_mv)
 	struct sensor_value v;
 	int ret;
 
-	/* Normalement deja initialise par raise_vbus_current_limit() au demarrage. */
+	/* Test #29 (2026-08-28) -- init differee (voir overlay) : le driver
+	 * chargeur n'ecrit ses ~12-15 transactions I2C de configuration que
+	 * lorsqu'une lecture batterie est reellement demandee (health_due),
+	 * plus a chaque demarrage. */
 	if (!device_is_ready(charger_dev)) {
 		ret = device_init(charger_dev);
 		if (ret < 0 && ret != -EALREADY) {
@@ -442,30 +460,23 @@ static int read_battery(uint8_t *out_pct, uint16_t *out_mv)
 	return 0;
 }
 
-/* nPM1300 demarre a 100 mA sur VBUS a chaque branchement (pas de batterie) :
- * l'appel de courant de LDO1 le fait disjoncter et toute la carte, pont SAMD11
- * compris, redemarre en boucle (Seeed platform-seeedboards#81). */
-static int raise_vbus_current_limit(void)
-{
-	const struct sensor_value limit = { .val1 = 0, .val2 = 500000 };
-	int ret;
-
-	if (!device_is_ready(charger_dev)) {
-		ret = device_init(charger_dev);
-		if (ret < 0 && ret != -EALREADY) {
-			return ret;
-		}
-	}
-	return sensor_attr_set(charger_dev, SENSOR_CHAN_CURRENT, SENSOR_ATTR_CONFIGURATION,
-			       &limit);
-}
-
 /* --- Etat retenu a travers un reset inattendu (watchdog/brownout) --
  * etendu le 2026-08-29 pour porter les trames A/C : derniers angles
  * envoyes (hysteresis), yaw integre (survit au reset comme sur l'ancien
  * firmware), echeance heartbeat en plus de l'echeance sante. RAM retenue,
  * CRC-validee comme l'exemple officiel Zephyr system_off. --- */
+/* Version de disposition -- audit resilience 2026-09-19 (Audit-Resilience-
+ * 2026-09-19.md §5). Le CRC seul protege contre une corruption aleatoire,
+ * pas contre un reordonnancement de champs qui laisserait sizeof() et
+ * l'offset du CRC inchanges : les octets bruts en RAM retenue (SRAM
+ * ordinaire, survit a un reflash) valideraient alors silencieusement un
+ * ancien contenu reinterprete sous le nouveau layout. Verifie explicitement
+ * dans retained_load(), en plus du CRC. A incrementer a chaque changement
+ * de disposition des champs ci-dessous. */
+#define RETAINED_LAYOUT_VERSION 2
+
 struct retained_state {
+	uint16_t layout_version;
 	uint8_t  bthome_pid;
 	int16_t  last_sent_pitch_dd;
 	int16_t  last_sent_roll_dd;
@@ -475,6 +486,17 @@ struct retained_state {
 				       * l'ancien firmware de reference. */
 	uint64_t next_health_us;     /* prochaine trame B, temps GRTC absolu */
 	uint64_t next_heartbeat_us;  /* prochain heartbeat trame A, idem */
+	uint32_t unexpected_reset_count; /* audit resilience 2026-09-19 --
+					   * incremente au boot si reset_cause
+					   * indique autre chose qu'une session
+					   * debug (watchdog, brownout, reboot
+					   * logiciel de secours). Lisible par
+					   * SWD pour diagnostiquer un cycle de
+					   * reset repete sur le terrain --
+					   * jamais expose par BLE a ce stade,
+					   * choix de format a trancher
+					   * separement (voir Audit-Resilience-
+					   * 2026-09-19.md §8). */
 	uint32_t crc;
 };
 
@@ -493,6 +515,9 @@ static bool retained_load(void)
 	uint32_t crc;
 
 	if (retained_mem_read(retained_dev, 0, (uint8_t *)&retained, sizeof(retained)) != 0) {
+		return false;
+	}
+	if (retained.layout_version != RETAINED_LAYOUT_VERSION) {
 		return false;
 	}
 	crc = crc32_ieee((const uint8_t *)&retained, RETAINED_CRC_OFFSET);
@@ -854,13 +879,23 @@ static void send_frame_c(const struct imu_sample *accel, int gyro_ret, float gx,
 	advertise_burst(frame_c_ad, ARRAY_SIZE(frame_c_ad));
 }
 
-static void send_frame_b(int16_t temp_cc)
+/* Retourne <0 si la trame n'a pas ete envoyee -- audit resilience
+ * 2026-09-19 (Audit-Resilience-2026-09-19.md §7). Auparavant, un echec de
+ * lecture batterie (glitch I2C transitoire sur le chargeur nPM1300)
+ * envoyait quand meme la trame avec battery_pct=0/battery_mv=0, ce qui
+ * positionne OBJ_BATTERY_LOW=1 et affiche 0% dans Home Assistant comme si
+ * la batterie etait reellement dechargee. La valeur de retour permet a
+ * l'appelant de ne pas faire avancer l'echeance de sante (retained.
+ * next_health_us) sur un echec, pour reessayer au cycle suivant plutot que
+ * d'attendre le prochain intervalle de 15 min. */
+static int send_frame_b(int16_t temp_cc)
 {
-	uint8_t battery_pct = 0;
-	uint16_t battery_mv = 0;
+	uint8_t battery_pct;
+	uint16_t battery_mv;
 
 	if (read_battery(&battery_pct, &battery_mv) < 0) {
-		printf("battery read failed, sending frame B without a fresh value\n");
+		printf("battery read failed, will retry next cycle\n");
+		return -EIO;
 	}
 
 	retained.bthome_pid++;
@@ -875,6 +910,7 @@ static void send_frame_b(int16_t temp_cc)
 	       temp_cc / 100, abs(temp_cc % 100));
 
 	advertise_burst(frame_b_ad, ARRAY_SIZE(frame_b_ad));
+	return 0;
 }
 
 static uint64_t next_health_deadline(uint64_t from_us)
@@ -898,7 +934,9 @@ struct motion_result {
 	bool temp_valid;
 	int16_t pitch_dd, roll_dd;
 	bool moving;
+	bool moving_confirmed;
 	bool angle_crossed;
+	bool angle_confirmed;
 	bool want_event_frame;
 	bool rate_limited;
 	int64_t now;
@@ -922,9 +960,11 @@ struct motion_result {
  * d'interruption materielle (plus de reveil GPIO dans cette architecture,
  * voir en-tete de fichier). */
 static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool want_temp,
-			   int64_t last_frame_a_uptime, struct motion_result *out)
+			   int64_t last_frame_a_uptime, bool angle_crossed_prev_cycle,
+			   bool moving_prev_cycle, struct motion_result *out)
 {
 	int rc;
+	struct sensor_value x, y, z;
 
 	memset(out, 0, sizeof(*out));
 
@@ -938,6 +978,21 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 	 * marge ~2,8x, voir test #32. */
 	k_msleep(5);
 
+	rc = i2c_reg_write_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL3_C,
+				    LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_IF_INC);
+	if (rc < 0) {
+		printf("Warning: IMU CTRL3_C rewrite failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	rc = i2c_reg_update_byte_dt(&imu_i2c, LSM6DSL_REG_CTRL6_C,
+				     LSM6DSL_CTRL6_C_XL_HM_MODE, LSM6DSL_CTRL6_C_XL_HM_MODE);
+	if (rc < 0) {
+		printf("Warning: IMU CTRL6_C rewrite failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+
 	if (!device_is_ready(imu_dev)) {
 		rc = device_init(imu_dev);
 		if (rc < 0 && rc != -EALREADY) {
@@ -947,30 +1002,46 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		}
 	}
 
-	uint8_t cfg[4] = {
-		LSM6DSL_REG_CTRL1_XL,
-		0x70, /* CTRL1_XL : ODR_XL=0111 -> 833 Hz (HP), +/-2 g */
-		0x00, /* CTRL2_G  : gyroscope arrete */
-		LSM6DSL_CTRL3_C_BDU | LSM6DSL_CTRL3_C_H_LACTIVE | LSM6DSL_CTRL3_C_IF_INC,
-	};
-	rc = i2c_write_dt(&imu_i2c, cfg, sizeof(cfg));
-	if (rc < 0) {
-		printf("Warning: IMU CTRL1_XL/CTRL2_G/CTRL3_C write failed (%d)\n", rc);
-		regulator_disable(imu_vdd_dev);
-		return rc;
-	}
-	k_usleep(ACCEL_FIRST_SAMPLE_US); /* valeur issue de 9.1 : echantillon n°2 */
+	/* ODR 208 Hz -- reduit l'attente d'une periode d'echantillonnage
+	 * complete (test #36), XL_HM_MODE (bas-consommation) reste pose. */
+	struct sensor_value odr_attr = { .val1 = 208, .val2 = 0 };
 
-	uint8_t raw[6];
-	rc = i2c_burst_read_dt(&imu_i2c, LSM6DSL_REG_OUTX_L_XL, raw, sizeof(raw));
+	rc = sensor_attr_set(imu_dev, SENSOR_CHAN_ACCEL_XYZ,
+			      SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr);
 	if (rc < 0) {
-		printf("Warning: IMU XYZ burst read failed (%d)\n", rc);
+		printf("Warning: IMU set ODR failed (%d)\n", rc);
 		regulator_disable(imu_vdd_dev);
 		return rc;
 	}
-	out->accel.ax = (int16_t)sys_get_le16(&raw[0]) * ACCEL_MS2_PER_LSB;
-	out->accel.ay = (int16_t)sys_get_le16(&raw[2]) * ACCEL_MS2_PER_LSB;
-	out->accel.az = (int16_t)sys_get_le16(&raw[4]) * ACCEL_MS2_PER_LSB;
+	/* Correctif 2026-08-30 (mesure PPK2 : ~80 uA moyenne au lieu de
+	 * ~20-22 uA attendus apres le portage des trames A/C) -- ce delai
+	 * ne couvrait que la periode ODR (~4,8 ms a 208 Hz), pas le temps de
+	 * demarrage reel de la puce. Ton (temps de demarrage) = 35 ms
+	 * (datasheet ST DocID030071 Rev 3, Table 4 p.24 -- meme parametre
+	 * deja utilise pour GYRO_STARTUP_MS ci-dessus, mais jamais applique
+	 * ici a l'accelerometre). Sans cette marge, l'echantillon lu a
+	 * chaque cycle etait pris ~24 ms trop tot (5 ms regulateur + 6 ms
+	 * ODR = 11 ms contre 35 ms minimum), donc bruite/transitoire --
+	 * chaque cycle produisait un delta artificiel superieur au seuil de
+	 * mouvement (MOTION_THRESHOLD_MS2), declenchant une fausse detection
+	 * quasi permanente (plafonnee a FRAME_A_MAX_PER_MIN=10/min par
+	 * l'anti-rafale, mais suffisante pour multiplier la consommation
+	 * moyenne par ~4). 40 ms = 35 ms Ton + ~5 ms marge periode ODR. */
+	k_msleep(40);
+
+	rc = sensor_sample_fetch_chan(imu_dev, SENSOR_CHAN_ACCEL_XYZ);
+	if (rc < 0) {
+		printf("Warning: IMU sample fetch failed (%d)\n", rc);
+		regulator_disable(imu_vdd_dev);
+		return rc;
+	}
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_X, &x);
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Y, &y);
+	sensor_channel_get(imu_dev, SENSOR_CHAN_ACCEL_Z, &z);
+
+	out->accel.ax = sensor_value_to_float(&x);
+	out->accel.ay = sensor_value_to_float(&y);
+	out->accel.az = sensor_value_to_float(&z);
 	out->accel.valid = true;
 
 	if (want_temp) {
@@ -984,12 +1055,41 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 		(abs(out->pitch_dd - retained.last_sent_pitch_dd) > ANGLE_HYSTERESIS_DD) ||
 		(abs(out->roll_dd - retained.last_sent_roll_dd) > ANGLE_HYSTERESIS_DD);
 
+	/* Correctif 2026-08-30 (mesure PPK2 : ~54-200 uA moyenne au lieu de
+	 * ~20-22 uA sur une unite pourtant identique octet pour octet a une
+	 * autre mesuree correctement -- flash, UICR et RAM retenue tous
+	 * confirmes identiques) -- accel_to_pitch_roll() utilise atan2(), dont
+	 * la sensibilite au bruit augmente fortement loin de 0 deg (proche de
+	 * ±90 deg). retained.last_sent_pitch_dd/roll_dd n'est mis a jour qu'a
+	 * l'envoi d'une trame : un ecart isole d'un seul cycle (bruit
+	 * transitoire, sans lien avec un mouvement reel) declenchait une trame
+	 * immediate, qui pouvait elle-meme laisser un nouvel ecart residuel et
+	 * redeclencher au cycle suivant. On exige desormais que le
+	 * franchissement d'angle soit observe sur DEUX cycles consecutifs
+	 * avant de le traiter comme reel -- un vrai mouvement/bascule persiste
+	 * sur plusieurs cycles, un sursaut de bruit isole non. Ne s'applique
+	 * qu'a angle_crossed : motion_detected() compare deja deux
+	 * echantillons consecutifs (delta), pas un ecart cumulatif face a une
+	 * reference qui ne se met a jour qu'a l'envoi. */
+	out->angle_confirmed = out->angle_crossed && angle_crossed_prev_cycle;
+
+	/* Correctif 2026-08-30 (suite) : la confirmation sur deux cycles de
+	 * l'angle seule ne suffisait pas (mesure PPK2 toujours au-dessus de
+	 * ~20-22 uA) -- meme logique de confirmation appliquee a `moving`.
+	 * motion_detected() compare deja deux echantillons consecutifs, mais
+	 * un seul ecart isole (bruit large, transitoire de stabilisation
+	 * imparfaitement couvert par le delai Ton) peut encore depasser
+	 * MOTION_THRESHOLD_MS2 une fois sans mouvement reel. Exige maintenant
+	 * que `moving` soit vrai sur DEUX cycles consecutifs avant de le
+	 * traiter comme un mouvement reel. */
+	out->moving_confirmed = out->moving && moving_prev_cycle;
+
 	out->now = k_uptime_get();
 
 	bool min_gap_ok = (out->now - last_frame_a_uptime) >= MOTION_REPORT_MIN_GAP_MS;
 
 	out->want_event_frame =
-		heartbeat_pending || ((out->moving || out->angle_crossed) && min_gap_ok);
+		heartbeat_pending || ((out->moving_confirmed || out->angle_confirmed) && min_gap_ok);
 	out->rate_limited = frame_a_rate_limited(out->now);
 
 	if (out->want_event_frame && !out->rate_limited) {
@@ -1009,17 +1109,57 @@ static int sample_motion(struct imu_sample *prev, bool heartbeat_pending, bool w
 	return 0;
 }
 
+/* Chien de garde materiel -- audit resilience 2026-09-19
+ * (Audit-Resilience-2026-09-19.md §2). WDT_OPT_PAUSE_HALTED_BY_DBG evite un
+ * declenchement pendant une session SWD (breakpoint, pas-a-pas). Installe
+ * une seule fois, apres toute l'init de demarrage -- voir main(), appele
+ * juste avant d'entrer dans la boucle principale, pour que le delai ne
+ * couvre que les iterations de la boucle, pas le temps d'init BLE/MFD. */
+static int wdt_channel_id = -1;
+
+static int watchdog_init(void)
+{
+	int rc;
+	struct wdt_timeout_cfg wdt_config = {
+		.window = { .min = 0, .max = WATCHDOG_TIMEOUT_MS },
+		.callback = NULL,
+		.flags = WDT_FLAG_RESET_SOC,
+	};
+
+	if (!device_is_ready(wdt_dev)) {
+		printf("Warning: watchdog device not ready, no hardware safety net\n");
+		return -ENODEV;
+	}
+
+	wdt_channel_id = wdt_install_timeout(wdt_dev, &wdt_config);
+	if (wdt_channel_id < 0) {
+		printf("Warning: wdt_install_timeout failed (%d)\n", wdt_channel_id);
+		return wdt_channel_id;
+	}
+
+	rc = wdt_setup(wdt_dev, WDT_OPT_PAUSE_HALTED_BY_DBG);
+	if (rc < 0) {
+		printf("Warning: wdt_setup failed (%d)\n", rc);
+		wdt_channel_id = -1;
+		return rc;
+	}
+
+	return 0;
+}
+
+static inline void watchdog_feed(void)
+{
+	if (wdt_channel_id >= 0) {
+		wdt_feed(wdt_dev, wdt_channel_id);
+	}
+}
+
 int main(void)
 {
 	int rc;
 	uint32_t reset_cause = 0U;
 
 	printf("\n=== %s ultra-low-power system-on-idle (GRTC+RAM+BLE+IMU) ===\n", CONFIG_BOARD);
-
-	rc = raise_vbus_current_limit();
-	if (rc < 0) {
-		printf("Warning: could not raise VBUS current limit (%d)\n", rc);
-	}
 
 	rc = hwinfo_get_reset_cause(&reset_cause);
 	if (rc == 0) {
@@ -1034,6 +1174,17 @@ int main(void)
 	 * fonctionnement normal. */
 	if (!retained_load()) {
 		memset(&retained, 0, sizeof(retained));
+	}
+	retained.layout_version = RETAINED_LAYOUT_VERSION;
+
+	/* Audit resilience 2026-09-19 (§8) : compteur de redemarrages
+	 * inattendus, persiste en RAM retenue -- aucune trace exploitable a
+	 * distance n'existait avant ce correctif (reset_cause n'etait
+	 * qu'affiche par printf(), invisible en production, CONFIG_SERIAL=n).
+	 * Une session de debug (sonde SWD branchee, RESET_DEBUG) n'est pas
+	 * comptee : c'est un reset volontaire attendu, pas une anomalie. */
+	if ((reset_cause != 0U) && !(reset_cause & RESET_DEBUG)) {
+		retained.unexpected_reset_count++;
 	}
 
 	/* Correctif 2026-08-29 : la RAM retenue est de la SRAM ordinaire (pas
@@ -1060,7 +1211,25 @@ int main(void)
 
 	/* Configuration une seule fois au vrai demarrage : les broches SPI
 	 * externes et l'identite/pile BLE n'ont plus besoin d'etre
-	 * reconfigurees a chaque cycle puisque le SoC ne redemarre plus. */
+	 * reconfigurees a chaque cycle puisque le SoC ne redemarre plus.
+	 * Audit resilience 2026-09-19 (§3) : appelle desormais
+	 * suspend_external_flash() (qui suspend aussi le driver flash et le
+	 * bus SPI via l'API PM Zephyr, PM_DEVICE_ACTION_SUSPEND, avant de
+	 * forcer les broches GPIO) au lieu de configure_spi_pins_for_
+	 * system_off() seule -- suspend_external_flash() l'appelle deja en
+	 * interne en derniere etape, ce changement n'ajoute qu'une mise en
+	 * veille profonde JEDEC reelle du driver, jamais executee jusqu'ici
+	 * (code mort confirme par git log depuis le premier commit de cette
+	 * architecture, voir Audit-Resilience-2026-09-19.md §3). */
+	/* TEST DIAGNOSTIC TEMPORAIRE (2026-09-19) -- isole l'hypothese
+	 * suspend_external_flash() suite a une regression de consommation
+	 * mesuree (~35-38 uA au lieu de ~20-22 uA) apres le flash complet du
+	 * plan de resilience sur #02 ; le watchdog a deja ete innocente par un
+	 * test isole precedent (consommation inchangee watchdog desarme).
+	 * Revient temporairement a l'appel unique d'avant l'audit
+	 * (configure_spi_pins_for_system_off(), sans les pm_device_action_run()
+	 * SUSPEND sur le driver flash/bus SPI) -- a retirer des que le test
+	 * est interprete. */
 	rc = configure_spi_pins_for_system_off();
 	if (rc < 0) {
 		printf("Warning: could not configure flash SPI pins (%d)\n", rc);
@@ -1089,12 +1258,26 @@ int main(void)
 	 * besoin de RAM (BLE/MPSL inclus). */
 	power_down_unused_ram();
 
+	/* Chien de garde active juste avant la boucle principale, apres toute
+	 * l'init de demarrage (BLE, MFD/regulateur) -- le delai (30 s) ne
+	 * couvre ainsi que les iterations de la boucle, jamais le temps
+	 * d'init au tout premier demarrage. */
+	rc = watchdog_init();
+	if (rc < 0) {
+		printf("Warning: hardware watchdog unavailable, no automatic "
+		       "recovery from hangs (%d)\n", rc);
+	}
+
 	struct imu_sample prev = { .valid = false };
 	bool was_moving = false;
 	int64_t rest_since = 0;
 	int64_t first_moving_uptime = 0;
 	bool rest_frame_pending = false;
 	int64_t last_frame_a_uptime = -(int64_t)MOTION_REPORT_MIN_GAP_MS;
+	bool angle_crossed_prev_cycle = false;
+	bool moving_prev_cycle = false;
+	int consecutive_sample_failures = 0;
+	int consecutive_health_failures = 0;
 
 	while (1) {
 		uint64_t now_us = z_nrf_grtc_timer_read();
@@ -1102,20 +1285,45 @@ int main(void)
 		bool heartbeat_due = now_us >= retained.next_heartbeat_us;
 		struct motion_result mr;
 
-		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime, &mr);
+		rc = sample_motion(&prev, heartbeat_due, health_due, last_frame_a_uptime,
+				     angle_crossed_prev_cycle, moving_prev_cycle, &mr);
 		if (rc < 0) {
 			printf("Warning: sample_motion failed (%d)\n", rc);
+			consecutive_sample_failures++;
+			/* Audit resilience 2026-09-19 (§4) : sans ce compteur,
+			 * une panne persistante (bus I2C bloque, regulateur en
+			 * echec) fait sauter inconditionnellement TOUTE trame
+			 * (A/B/C, pas seulement les trames evenementielles) --
+			 * l'unite devient silencieuse en BLE indefiniment, sans
+			 * aucune echappatoire. Le redemarrage reinitialise
+			 * l'I2C/le regulateur au passage (device_init() se
+			 * re-execute), avec une chance reelle de sortir d'un
+			 * etat transitoire bloque. */
+			if (consecutive_sample_failures >= MAX_CONSECUTIVE_FAILURES) {
+				printf("Error: sample_motion failed %d times in a row, "
+				       "rebooting\n", consecutive_sample_failures);
+				sys_reboot(SYS_REBOOT_COLD);
+			}
+			/* Nourrir le chien de garde ici : la boucle n'est pas
+			 * bloquee (elle progresse normalement), seule la
+			 * fonction echoue -- ne pas laisser le watchdog
+			 * materiel (qui detecte un blocage reel) se confondre
+			 * avec cette escalade logicielle independante. */
+			watchdog_feed();
 			k_sleep(K_MSEC(MOTION_POLL_INTERVAL_MS));
 			continue;
 		}
+		consecutive_sample_failures = 0;
 
 		prev = mr.accel;
+		angle_crossed_prev_cycle = mr.angle_crossed;
+		moving_prev_cycle = mr.moving;
 
 		if (mr.want_event_frame && !mr.rate_limited) {
 			const char *reason = heartbeat_due ? "heartbeat" :
-					      mr.moving ? "motion" : "angle";
+					      mr.moving_confirmed ? "motion" : "angle";
 
-			send_frame_a(&mr.accel, mr.moving, mr.moving, reason);
+			send_frame_a(&mr.accel, mr.moving_confirmed, mr.moving_confirmed, reason);
 			send_frame_c(&mr.accel, mr.gyro_read ? mr.gyro_ret : -EIO,
 				     mr.gx, mr.gy, mr.gz, mr.gyro_mag);
 			frame_a_record_send(mr.now);
@@ -1128,7 +1336,7 @@ int main(void)
 			}
 		}
 
-		if (mr.moving) {
+		if (mr.moving_confirmed) {
 			was_moving = true;
 			rest_since = 0;
 			rest_frame_pending = false;
@@ -1156,8 +1364,29 @@ int main(void)
 		}
 
 		if (health_due) {
-			send_frame_b(mr.temp_valid ? mr.temp_cc : 0);
-			retained.next_health_us = next_health_deadline(z_nrf_grtc_timer_read());
+			/* Audit resilience 2026-09-19 (§7) : n'avancer l'echeance
+			 * que si la trame est reellement partie -- sinon
+			 * health_due reste vrai et le cycle suivant (1 s plus
+			 * tard) retente, au lieu d'attendre le prochain
+			 * intervalle de 15 min sur un simple glitch I2C
+			 * transitoire du chargeur. Compteur d'echecs consecutifs
+			 * symetrique a celui de sample_motion() (§4) : le bus
+			 * I2C du chargeur (pmic_i2c, bit-bang GPIO) est
+			 * physiquement distinct de celui de l'IMU (i2c22) --
+			 * une panne ici ne serait jamais vue par l'autre
+			 * compteur. */
+			if (send_frame_b(mr.temp_valid ? mr.temp_cc : 0) == 0) {
+				retained.next_health_us =
+					next_health_deadline(z_nrf_grtc_timer_read());
+				consecutive_health_failures = 0;
+			} else {
+				consecutive_health_failures++;
+				if (consecutive_health_failures >= MAX_CONSECUTIVE_FAILURES) {
+					printf("Error: frame B failed %d times in a row, "
+					       "rebooting\n", consecutive_health_failures);
+					sys_reboot(SYS_REBOOT_COLD);
+				}
+			}
 		}
 
 		/* RAM ordinaire (pas RRAM) : cout d'ecriture negligeable, pas
@@ -1165,6 +1394,8 @@ int main(void)
 		 * suivre precisement quel champ a change (yaw/pitch/roll/
 		 * heartbeat/pid peuvent tous evoluer independamment). */
 		retained_save();
+
+		watchdog_feed();
 
 		k_sleep(K_MSEC(MOTION_POLL_INTERVAL_MS));
 	}

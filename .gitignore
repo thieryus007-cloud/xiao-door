@@ -25,6 +25,10 @@ build_*/
 # ne pas l'absorber ici pour éviter un conflit de .git imbriqué) :
 nRF52840/xiao_nrf52840_door_sensor/
 
+# Projet HLK-LD6001B versionné séparément (son propre dépôt/remote GitHub,
+# HLK-6001B.git, 2026-09-03) — même raison que nRF52840 ci-dessus :
+HLK-LD6001B/
+
 # Artefacts volumineux hors code source (installeurs, binaires J-Link, essai
 # jetable) — pas couverts par le motif build/ car pas nommés ainsi. Portee
 # reduite au sous-dossier nRF52840/ (2026-08-27, reorganisation par
@@ -48,4 +52,11 @@ nRF54LM20A/**/*.csv
 # source ; le .hex correspondant est deja exclu par le motif *.hex
 # general ci-dessus (pas d'exception ajoutee, contrairement a l'image
 # d'or, qui reste la seule reference physiquement verifiee suivie ici) :
-nRF54LM20A/unit01-backup-2026-08-30/*.bin
+nRF54LM20A/archive/unit01-backup-2026-08-30/*.bin
+
+# Archives conservees en local uniquement (jamais publiees) : mesures
+# brutes PPK2 (.ppk2/.csv/.txt, volumineuses), echanges avec le support
+# Nordic, notes personnelles de l'utilisateur :
+nRF54LM20A/archive/mesures-brutes/
+nRF54LM20A/archive/support-nordic/
+nRF54LM20A/archive/notes/

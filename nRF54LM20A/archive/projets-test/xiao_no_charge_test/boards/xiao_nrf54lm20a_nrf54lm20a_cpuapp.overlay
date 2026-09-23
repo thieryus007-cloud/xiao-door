@@ -37,10 +37,6 @@
 	};
 };
 
-&pmic_i2c {
-	clock-frequency = <400000>;   /* I2C_BITRATE_FAST */
-};
-
 /* Init differee du driver LSM6DSL -- necessaire : le SYS_INIT
  * automatique tournerait avant que main() ait active imu_vdd (avant
  * toute alimentation), echouerait silencieusement. Voir
@@ -55,11 +51,24 @@
  * a CHAQUE demarrage, meme sans lecture batterie -- negligeable a
  * 1/15 min, suspecte d'etre le facteur dominant a 1/s (voir analyse
  * tests #26-28, salve dense de nombreux pics courts, ~90-100 uC/cycle
- * constant quel que soit l'intervalle). device_init() explicite en tout
- * debut de main() par raise_vbus_current_limit() : limite VBUS relevee
- * avant LDO1, sinon tempete USB (Seeed platform-seeedboards#81). */
+ * constant quel que soit l'intervalle). device_init() explicite
+ * uniquement quand une lecture batterie est reellement necessaire
+ * (voir read_battery() dans main.c, deja gate par health_due).
+ *
+ * Test alimentation par pile non rechargeable (2026-08-30, exclusif
+ * #02) -- /delete-property/ charging-enable AJOUTE ici : sans cette
+ * propriete, npm13xx_charger.c:669 (« Enable charging if configured »)
+ * n'ecrit jamais CHGR_BASE/CHGR_OFFSET_EN_SET -- la machine a etats de
+ * charge du nPM1300 (regulation CC/CV, surveillance VBUS pour la
+ * charge) n'est jamais activee. Les autres transactions du driver
+ * (ADC_OFFSET_IBAT_EN pour la mesure tension/courant, config
+ * thermistance) restent inchangees -- le pourcentage batterie (trame
+ * B) continue de fonctionner normalement. Hypothese non testee dans
+ * l'investigation de consommation precedente (Nordic-Support-Report-
+ * XIAO-nRF54LM20A.md n'isole que imu_vdd/LDO1). */
 &pmic_charger {
 	zephyr,deferred-init;
+	/delete-property/ charging-enable;
 };
 
 /* Region RAM retenue (packet_id, echeances GRTC) -- reprise telle quelle

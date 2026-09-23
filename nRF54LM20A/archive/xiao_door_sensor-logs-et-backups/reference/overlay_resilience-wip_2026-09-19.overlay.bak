@@ -37,10 +37,6 @@
 	};
 };
 
-&pmic_i2c {
-	clock-frequency = <400000>;   /* I2C_BITRATE_FAST */
-};
-
 /* Init differee du driver LSM6DSL -- necessaire : le SYS_INIT
  * automatique tournerait avant que main() ait active imu_vdd (avant
  * toute alimentation), echouerait silencieusement. Voir
@@ -55,9 +51,9 @@
  * a CHAQUE demarrage, meme sans lecture batterie -- negligeable a
  * 1/15 min, suspecte d'etre le facteur dominant a 1/s (voir analyse
  * tests #26-28, salve dense de nombreux pics courts, ~90-100 uC/cycle
- * constant quel que soit l'intervalle). device_init() explicite en tout
- * debut de main() par raise_vbus_current_limit() : limite VBUS relevee
- * avant LDO1, sinon tempete USB (Seeed platform-seeedboards#81). */
+ * constant quel que soit l'intervalle). device_init() explicite
+ * uniquement quand une lecture batterie est reellement necessaire
+ * (voir read_battery() dans main.c, deja gate par health_due). */
 &pmic_charger {
 	zephyr,deferred-init;
 };
@@ -105,4 +101,13 @@
 
 &usbhs_wrapper {
 	status = "disabled";
+};
+
+/* Chien de garde materiel -- audit resilience 2026-09-19. wdt31 est le
+ * seul des deux WDT du SoC accessible depuis cpuapp (wdt30 est fige a
+ * Secure) ; le board Seeed l'expose deja sous l'alias watchdog0 mais le
+ * node reste "disabled" par defaut au niveau SoC (nrf54lm20a_a_b.dtsi).
+ */
+&wdt31 {
+	status = "okay";
 };

@@ -521,6 +521,140 @@ standing between our current ~20–22 µA and the 5–6 µA target.
 Happy to share the diagnostic firmware, the raw memory-trace dumps, or a
 fresh PPK2 capture if any of that would help narrow it down further.
 
+## 8.4 Our reply to Nordic (2026-09-13, draft)
+
+Reply to Simon's message pointing at ferrite-bead removal and a possible
+LDO1/VOUT2 voltage mismatch.
+
+Hi Simon,
+
+Thank you for the follow-up. Two things to address, plus new isolation
+data from today.
+
+**1. LDO1 / VOUT2 voltage.** We re-verified LDO1's actual configured
+voltage by reading it back directly from the PMIC hardware register at
+runtime (not just re-reading our devicetree source):
+`regulator_get_voltage()` on the `imu_vdd`/LDO1 device returns
+`3,300,000 µV` (3.3 V) with a success return code, matching our
+devicetree's `regulator-min/max-microvolt = <3300000>` exactly. So LDO1
+is confirmed at 3.3 V on real hardware, not 1.8 V — we don't have an
+explanation for where the 1.8 V figure came from on your side; could you
+point us to the specific file/line you were looking at, in case it's an
+older revision we shared earlier in this thread?
+
+For VOUT2: we don't have a devicetree consumer for the nPM1300's BUCK2
+output anywhere in our firmware — it's not used by any driver in our
+design, so we don't have an equivalent runtime readback for it. If you
+have visibility into what R28/R29 physically connect to on the schematic
+(LDO1's output specifically, vs. VOUT2, vs. something else), that would
+help us target further testing without guessing. Our working assumption
+(schematic + VSET2 resistor) is that VOUT2 is at 3.3 V and isn't in the
+power path to LDO1 (LDO1 is powered directly, no BUCK in that path, per
+our earlier confirmation) — happy to be corrected.
+
+**2. Ferrite bead removal.** We'd prefer not to do this at this stage —
+it means modifying the board in a way that isn't easily reversible, and
+we don't have a spare unit we're willing to risk for exploratory rework
+right now. If there's a non-destructive way to get equivalent
+information (a current probe across the ferrite instead of removing it,
+or anything else), we're glad to try that instead.
+
+**3. New isolation data since our last message.** Two further
+single-variable tests, same PPK2 protocol as before:
+
+- **LDO2 in isolation** (second LDO/LOADSW channel on the same nPM1300,
+  same driver path, nothing wired to it on this board): enabling it alone
+  shows **no measurable increase over baseline** (~5.9 µA vs. ~6.0 µA
+  baseline, within noise) — against LDO1's ~218 µA excess under
+  otherwise identical conditions in the same session (baseline-corrected;
+  matches our September 7 figure of ~239 µA within normal session-to-
+  session variance). This points at the anomaly being specific to
+  whatever's wired to LDO1's output net, not a property of the LOADSW/LDO
+  block itself.
+
+- **PDM microphone wake sequence, revisited.** Our September message
+  called the microphone-rail hypothesis ruled out, based on driving
+  PDM_CLK to a static low level from power-up. Re-reading the
+  MSM261D3526H1CPM's own datasheet since then: it documents three
+  clock-frequency-gated states — Sleep (≤50 kHz, 1 µA typ.), Low-Power
+  (150-900 kHz, 290 µA typ. — close to our measured anomaly), Standard
+  (1.1-4 MHz, 670 µA typ.) — and its state diagram shows Sleep is only
+  reachable *via* Standard Performance Mode, never directly from
+  power-up. Our original test never clocked the part at all, so it may
+  never have reached a characterized state in the first place. We tried
+  the documented transition instead — a brief clock burst in the
+  Low-Power/Standard range, then dropping to static low — and measured
+  **no change** (still ~218 µA excess). So this specific mechanism
+  doesn't hold up as tested — though we can't fully rule it out, since
+  our clock generation was software GPIO toggling with no oscilloscope
+  available to confirm the actual frequency landed in range.
+
+Given the LDO2 result, we still think the cause is tied to LDO1's
+specific net rather than a generic PMIC characteristic. Any pointer
+toward what else could be pulling ~220 µA specifically through that net
+would be very helpful. Happy to share the diagnostic firmware or raw PPK2
+traces for any of the above.
+
+Best regards,
+Thiery
+
+## 8.5 Isolation tests on unit #02 — rail-always-on vs. duty-cycled (2026-09-19)
+
+Follow-up to a viewer question (video reporting a 17 µA → 6 µA improvement
+on an nRF54L15 by acting on a LIS2DH12 accelerometer) — checked whether an
+equivalent strategy applies here. It doesn't directly (different IMU,
+different dominant cost — see §8), but it prompted three clean isolation
+tests we hadn't run before, plus a dead end on the PMIC side worth
+recording so it isn't re-investigated later.
+
+**PMIC "sleep mode" for LOADSW1/LDO1 — ruled out by source inspection, no
+hardware test needed.** Checked the Zephyr regulator driver
+(`regulator_npm13xx.c`) and its devicetree bindings directly: retention
+mode (the nPM1300's actual "reduced quiescent while still enabled"
+mechanism) is wired up only for `BUCK1`/`BUCK2` — `retention_set_voltage()`
+returns `-ENOTSUP` for `LDO1`/`LDO2`, and `regulator_npm13xx_set_ldsw_pin_ctrl()`
+only implements the `ENABLE` GPIO type, not `RETENTION`, for LDSW channels.
+The PMIC's own Ship/Hibernate modes exist but are whole-device, not
+per-channel, and would drop BLE/GRTC too. No per-channel low-power mode
+exists for this rail to test.
+
+**Three isolation tests run instead, on unit #02** (S/N `9C4A557D`),
+dedicated diagnostic firmware per test (`archive/projets-test/xiao_door_sensor_test1_rail_only/`,
+`archive/projets-test/t2_lowpower/`, `archive/projets-test/t3_railon/` — kept as reference, never left flashed after
+measurement), same boot bring-up as production (`release_led_gpios()` +
+`configure_spi_pins_for_system_off()` — an early run of test 1 omitting
+these two calls measured a 37.6 µA baseline instead of the expected
+~4 µA, confirming their absence is what was causing the standing ~33 µA
+leak pattern this project has seen before with unreleased/unconfigured
+pins). PPK2 Ampere-meter protocol as in §6, 90 s captures, 100 kHz CSV
+export analyzed directly (not just PPK2's own on-screen average).
+
+| Test | Configuration | Baseline (`imu_vdd` off) | Steady state |
+|---|---|---|---|
+| 1 | Rail enabled once, never disabled; chip never touched by I2C (stays at reset/power-down) | 4.10 µA | **247.63 µA** |
+| 2 | Rail enabled once, never disabled; chip configured (`CTRL3_C`+`CTRL6_C`/XL_HM_MODE) and sampled continuously at 208 Hz | 4.08 µA | **337.29 µA** |
+| 3 | Rail enabled once, never disabled; chip explicitly power-cycled (`CTRL1_XL`) around each 1 s read, same cadence/ODR/margins as production `sample_motion()` | 4.06 µA | **253.26 µA** |
+
+Test 1 (247.63 µA) independently reproduces §8.1's figure on unit #01
+(~253.98–254.06 µA) — cross-unit confirmation, ~2.5% apart, same order of
+magnitude. Test 2 shows a real, previously uncharacterized ~90 µA
+(+36%) cost specific to continuous active sampling — not visible in any
+prior isolation test, all of which used zero I2C traffic. Test 3 confirms
+that cost disappears once the chip returns to power-down between reads,
+converging back to test 1's figure (253.26 µA) rather than test 2's — the
+90 µA is tied to sustained activity, not a one-time or permanent effect of
+enabling the rail.
+
+**The comparison that matters for the architecture**: test 3 — rail never
+disabled, chip properly power-cycled, same read cadence/margins as
+production — still averages 253.26 µA, ~11–12× higher than the ~20–22 µA
+the current duty-cycled design (`regulator_enable()`/`regulator_disable()`
+around each cycle) actually achieves. Confirms by direct measurement,
+not inference, that toggling the whole rail off between cycles remains
+the better strategy — an always-on-rail redesign is not a viable path to
+the 5–6 µA target, independent of how carefully the sensor's own state is
+managed.
+
 ## 9. Secondary observation (not yet confirmed as a recurring cost)
 
 The build links in the full NCS security stack — `mbedtls`, PSA Crypto,

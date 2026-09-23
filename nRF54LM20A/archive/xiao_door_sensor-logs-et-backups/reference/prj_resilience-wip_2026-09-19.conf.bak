@@ -1,0 +1,120 @@
+# Pivot d'architecture (2026-08-28) -- System ON IDLE + GRTC (plus de
+# reboot par cycle, voir XIAO-nRF54LM20A-Solution-System-OFF.md) + RAM
+# retenue + BLE/BTHome (trame B sante/batterie) + sondage IMU periodique.
+# Serial desactive en dur (pas suspendu a l'execution) -- meme approche
+# que la production, meme cause : bug driver UARTE (fuite de reference PM
+# runtime, retour DevZone Nordic) qui fait echouer la suspension a
+# l'execution (pm_device_action_run -120 systematique, confirme sur ce
+# build avec BLE actif) et laisse le serial actif en System OFF. Le
+# test #13 (sans BLE) s'en sortait avec la suspension a l'execution --
+# echoue ici. Sans backend console, les printf() restants dans main.c
+# n'ecrivent simplement plus nulle part (pas d'erreur, juste silencieux).
+# Console reactivee temporairement le 2026-08-27 pour lire LDSWCONFIG
+# (registre confirme a 0x00 = valeur de reset, piste ecartee). Repassee
+# en dur a n ici -- regle absolue, voir prj.conf plus haut dans
+# l'historique et XIAO-nRF54LM20A-Solution-System-OFF.md.
+# CONFIG_BOOT_BANNER=n seul ne suffit PAS : CONFIG_NCS_BOOT_BANNER (SDK
+# Nordic, nrf/lib/boot_banner/Kconfig, "default y") est un symbole
+# SEPARE qui fait "select PRINTK" + "select EARLY_CONSOLE" -- c'est lui
+# qui imprime "Booting nRF Connect SDK vX.X.X". Sans cette ligne,
+# CONFIG_PRINTK repassait a y malgre CONFIG_PRINTK=n explicite
+# ci-dessous (trouve via zephyr/.config-trace.json, 2026-08-27). Sans
+# backend console/serial, ceci reste sans impact materiel (aucun
+# peripherique UARTE lie), mais les deux symboles de banniere doivent
+# etre desactives ensemble (pratique officielle NCS, voir
+# nrf/tests/subsys/west_debug/prj.conf).
+# Test #23 (2026-08-28) -- verification fonctionnelle par serie
+# impossible sous debug (RESET_DEBUG => fresh_session=1 a chaque
+# cycle, tant que la sonde SWD est branchee -- artefact de la methode,
+# pas un bug du correctif). La mesure PPK2 (apres coupure reelle) est
+# le seul test valide pour ce changement. Console desactivee en dur.
+# Test #29 (2026-08-28) -- verification fonctionnelle OK (lecture
+# batterie correcte a chaque cycle, "trame B #N: battery=100%
+# (4228 mV)", aucune erreur). Console desactivee en dur pour mesure.
+CONFIG_SERIAL=n
+CONFIG_CONSOLE=n
+CONFIG_UART_CONSOLE=n
+CONFIG_PRINTK=n
+CONFIG_BOOT_BANNER=n
+CONFIG_NCS_BOOT_BANNER=n
+CONFIG_GPIO=y
+CONFIG_SPI=y
+CONFIG_FLASH=y
+CONFIG_SPI_NOR=y
+# Pivot d'architecture (2026-08-28) -- System ON IDLE + GRTC, plus de
+# reboot par cycle (voir XIAO-nRF54LM20A-Solution-System-OFF.md). CONFIG_PM
+# active l'idle tickless (WFI) du CPU entre les cycles de sondage -- sans
+# lui, k_sleep() ne ferait que retarder logiciellement, sans le gain de
+# consommation documente par Nordic (datasheet p.1, 4,3 uA System ON IDLE).
+# CONFIG_POWEROFF retire : sys_poweroff() n'est plus appele.
+CONFIG_PM=y
+CONFIG_PM_DEVICE=y
+CONFIG_PM_DEVICE_RUNTIME=y
+CONFIG_HWINFO=y
+
+# Audit resilience (2026-09-19) -- Audit-Resilience-2026-09-19.md §1/§2.
+# Sans CONFIG_RESET_ON_FATAL_ERROR, toute exception CPU (HardFault, stack
+# overflow, kernel oops) fige le SoC indefiniment (arch_system_halt(),
+# interruptions coupees) au lieu de redemarrer -- confirme absent de
+# l'autoconf.h genere avant ce correctif. La bibliotheque NCS
+# nrf/lib/fatal_error fournit un k_sys_fatal_error_handler() qui appelle
+# sys_arch_reboot() a la place du blocage par defaut de Zephyr.
+CONFIG_RESET_ON_FATAL_ERROR=y
+
+# Chien de garde materiel wdt31 (cpuapp) -- couvre les blocages qui ne
+# declenchent aucune exception CPU (deadlock logiciel, bus I2C reellement
+# fige), donc jamais rattrapes par RESET_ON_FATAL_ERROR ci-dessus. Node
+# devicetree correspondant passe a status="okay" dans l'overlay (disabled
+# par defaut au niveau SoC, wdt31 expose par le board sous l'alias
+# watchdog0). Voir watchdog_init()/watchdog_feed() dans main.c.
+CONFIG_WATCHDOG=y
+
+# Etude datasheet Nordic (2026-08-28) -- bibliotheque officielle NCS,
+# explicitement supportee pour CONFIG_SOC_NRF54LM20A_CPUAPP
+# (nrf/lib/ram_pwrdn/ram_pwrdn.c). Notre image n'utilise que ~23,5 Ko sur
+# les 507 Ko retenus/alimentes en permanence par l'overlay -- coupe les
+# sections RAM inutilisees (~15/16) en System ON IDLE. Aucun appel
+# malloc()/k_malloc() dans ce firmware (verifie), pile BLE Zephyr n'alloue
+# pas dynamiquement (pools net_buf statiques) -- voir
+# XIAO-nRF54LM20A-Solution-System-OFF.md pour le detail.
+CONFIG_RAM_POWER_DOWN_LIBRARY=y
+
+# Bluetooth : broadcaster seul (advertising, pas de connexion), trame B
+# uniquement (sante/batterie).
+CONFIG_BT=y
+CONFIG_BT_BROADCASTER=y
+CONFIG_BT_DEVICE_NAME="XIAO-DOOR"
+
+# RAM retenue (packet_id, echeances GRTC) -- ne sert plus qu'a survivre a
+# un reset inattendu (watchdog/brownout) depuis le pivot System ON IDLE,
+# plus a traverser un System OFF. Backend CONFIG_RETAINED_MEM_ZEPHYR_RAM
+# (RAM ordinaire, se selectionne via le noeud "zephyr,retained-ram" seul,
+# aucune dependance a CONFIG_POWEROFF) -- CONFIG_RETAINED_MEM_NRF_RAM_CTRL
+# (registre de retention materielle specifique au System OFF) ne s'active
+# plus, sans consequence puisque plus utilise.
+CONFIG_RETAINED_MEM=y
+CONFIG_CRC=y
+
+# Batterie via le PMIC nPM1300 (trame B)
+CONFIG_SENSOR=y
+CONFIG_NPM13XX_CHARGER=y
+CONFIG_MFD=y
+
+# IMU LSM6DS3TR-C (trames A/B/C -- mouvement/orientation/yaw + temperature
+# die + IMU brut). CONFIG_LSM6DSL est deja auto-selectionne (default y
+# depends on DT_HAS_ST_LSM6DSL_ENABLED) mais explicite ici par coherence
+# avec le reste du fichier. CONFIG_LSM6DSL_ENABLE_TEMP est en revanche
+# REQUIS explicitement : sans cette ligne, tout le code de lecture
+# SENSOR_CHAN_DIE_TEMP est compile hors du driver (#if defined(...) dans
+# lsm6dsl.c) et sensor_sample_fetch_chan() retombe silencieusement sur
+# -ENOTSUP -- confirme absent du .config genere avant ce changement.
+CONFIG_LSM6DSL=y
+CONFIG_LSM6DSL_ENABLE_TEMP=y
+
+CONFIG_REGULATOR=y
+
+CONFIG_MAIN_STACK_SIZE=4096
+CONFIG_SYSTEM_WORKQUEUE_STACK_SIZE=2048
+
+# sys_reboot() -- si bt_enable() echoue au boot
+CONFIG_REBOOT=y

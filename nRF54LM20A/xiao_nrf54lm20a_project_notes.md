@@ -46,7 +46,7 @@ La carte XIAO nRF54LM20A n'est pas incluse nativement dans ce checkout NCS
 **Pour déployer une unité supplémentaire, ne pas rebuilder depuis les
 sources — cloner l'image d'or déjà vérifiée physiquement**, procédure
 complète (dump, conversion, flash, vérification, notes de connexion
-SWD) dans le document dédié `Procédure-Clonage-XIAO-nRF54LM20A.md` (un
+SWD) dans le document dédié `Procedure-Clonage-XIAO-nRF54LM20A.md` (un
 rebuild a introduit un bug de consommation réel, non détecté avant
 flash, sur l'unité #02 le 2026-08-30). Rebuild depuis les sources
 uniquement pour régénérer l'image d'or après une vraie modification de
@@ -71,6 +71,13 @@ quelle que soit la version du firmware :
   RRAM ne s'efface pas avant écriture, ce qui produit de fausses
   corruptions sur des zones de padding jamais exécutées par le fichier
   courant).
+- **Pont USB qui disparaît/réapparaît en boucle dès le branchement (LED
+  rouge éteinte, openocd impossible)** = tempête USB causée par le
+  firmware : limite VBUS 100 mA du nPM1300 dépassée par l'allumage de
+  LDO1. Cause, correctif (`raise_vbus_current_limit()` dans `main.c`),
+  détection en 8 s et pièges à ne pas refaire :
+  `Procédure-Test-Connexion-USB-Flash-XIAO-nRF54LM20A.md` § « Tempête USB
+  au branchement ». Ne pas re-diagnostiquer.
 - `vid_pid 0x2886 0x0068` nécessaire (VID Seeed absent de la liste par
   défaut d'OpenOCD).
 - **`-c "cmsis-dap backend hid" fait partie de la commande standard depuis
@@ -221,7 +228,7 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
    LSM6DSL n'expose pas ces événements matériels). **Unité #01 vérifiée
    à ~20 µA (image d'or de référence) ; #02 a montré une anomalie
    ~80-200+ µA non résolue par deux rebuilds, corrigée le 2026-08-30 par
-   clonage direct depuis #01 (`Procédure-Clonage-XIAO-nRF54LM20A.md`,
+   clonage direct depuis #01 (`Procedure-Clonage-XIAO-nRF54LM20A.md`,
    `verify_image` OK) — consommation PPK2 de #02 à reconfirmer.**
 2. Confirmer par PPK2 que #02, clonée, revient bien à ~20-22 µA (le
    rebuild avait fait monter la consommation jusqu'à ~200+ µA).
@@ -235,7 +242,7 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
    unit13) déployés par clonage de l'image d'or, via les scripts
    `xiao_door_sensor/deploy-scripts/check-unit.sh` + `flash-unit.sh`
    (procédure recommandée pour tout lot suivant — voir
-   `Procédure-Clonage-XIAO-nRF54LM20A.md` § « Déployer un lot d'unités »).
+   `Procedure-Clonage-XIAO-nRF54LM20A.md` § « Déployer un lot d'unités »).
    `verify_image` conforme sur les 10 ; tests fonctionnels HA et mesure
    PPK2 (sous-échantillon) restent à faire. **~7 unités restantes** à
    déployer de la même façon.
@@ -275,7 +282,7 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
    pour la meme ligne source exacte dans `sample_motion()` (calcul de
    `angle_crossed`) — tout ce qui est sous controle (source, Kconfig,
    environnement, materiel) est prouve identique. **Decision : #02
-   restauree sur `golden-image/unit01-verified-2026-08-30.bin` (~23 µA),
+   restauree sur `archive/golden-image-anciennes/unit01-verified-2026-08-30.bin` (~23 µA),
    plan de resilience NON deploye. Ticket ouvert aupres du support
    Nordic sur la non-reproductibilite de `west build`** (toolchain
    `dcbdc366a1`, NCS 3.4.0) — ne pas retenter de rebuild pour production
@@ -285,14 +292,14 @@ Wi-Fi/ESPHome). Réception confirmée et stable lors du dernier test.
 
    **Suivi de ce point (statut, réponses Nordic, critère de déblocage
    du plan de résilience) : voir
-   `Suivi-Nordic-Reproductibilite-Build-2026-09-19.md` — document vivant
+   `archive/docs-historique/Suivi-Nordic-Reproductibilite-Build-2026-09-19.md` — document vivant
    à mettre à jour à chaque nouvelle réponse, jusqu'à résolution.**
 
    **Correction (2026-09-22) : la non-reproductibilité ci-dessus était
    une fausse piste — voir item 9 ci-dessous.** La cause reelle etait un
    `k_msleep(40)` introduit par erreur apres le flash de l'image d'or
    (commit `ccbe1b5`), jamais un defaut du compilateur/toolchain.
-9. **Analyse du 2026-09-22 — voir `Plan-Reduction-Consommation-2026-09-22.md`.**
+9. **Analyse du 2026-09-22 — voir `archive/docs-historique/Plan-Reduction-Consommation-2026-09-22.md`.**
    (a) **Le build est reproductible** : `c63908d` recompilé = image d'or
    `unit01-verified-2026-08-30` octet pour octet, `c63908d` + H_LACTIVE =
    `unit02-verified-2026-09-01-H_LACTIVE` octet pour octet (SHA-256). Les
