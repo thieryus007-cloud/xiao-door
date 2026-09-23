@@ -203,6 +203,26 @@ la référence historique de l'investigation ; le plan de réduction de
 consommation (`Plan-Reduction-Consommation-2026-09-22.md`) prend le
 relais pour la suite du travail sur #02.
 
+### Deuxième confirmation (2026-09-23) — sur le code évolué, pas seulement la Phase 0
+
+Demandée explicitement par l'utilisateur pour valider que le code
+**actuel** (après étapes A, B, D du plan de réduction de consommation ;
+C et F tentées puis revertées) recompile toujours de façon
+déterministe — pas seulement l'état figé de la Phase 0 ci-dessus.
+
+Procédure : HEAD (commit `c477dc4`) vérifié sans modification non
+commitée, rebuild `--pristine` complet, SHA-256 comparé à l'image de
+l'étape D déjà flashée et validée par deux mesures PPK2 indépendantes
+(16,98 µA puis 16,84 µA sur 240 s). **Résultat : SHA-256 identique**
+(`b54850ec5e29dfdb8530df934acbba85d5374565bcc06567b71778c3c21d78fa`).
+Binaire reflashé sur #02, `verified 117128 bytes`, réussi du premier
+coup. Deuxième preuve indépendante, sur un état source sensiblement
+différent (nouvelles écritures I2C groupées, nouvel ODR IMU, nouveau
+délai) de celui testé le 2026-09-22 — renforce la confiance que le
+déterminisme de `west build` est une propriété générale de ce
+toolchain (NCS 3.4.0, `dcbdc366a1`), pas un résultat isolé à un seul
+état de source. Détail complet : `Journal-Travail-2026-09-22.md`.
+
 ---
 
 ## 7. Historique des mises à jour de ce document

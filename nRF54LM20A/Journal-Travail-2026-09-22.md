@@ -93,6 +93,82 @@ l'exécution.
 **État final retenu : A+B+D, régime établi 16,98 µA (−30,6 % vs
 référence).** Prochaine étape : §12, validation finale.
 
+### Validation finale (§12) — en cours
+
+- Mesure PPK2 240 s (`ppk-20260923T071227.csv`) : régime établi
+  **16,84 µA**, plancher 3,76 µA — cohérent avec l'étape D (16,98 µA)
+  sur une fenêtre 4× plus longue, confirme la stabilité. Tests
+  fonctionnels HA confirmés par l'utilisateur (« HA fonctionne »).
+  Point non tranché : capture < 5 min exigées par le plan, et aucun
+  événement identifiable comme une trame santé (BLE + lecture
+  batterie/température, transactions PMIC supplémentaires) dans cette
+  fenêtre de 240 s — à confirmer avec une capture plus longue (jusqu'à
+  15 min, intervalle réel de la trame santé) ou une confirmation
+  indépendante (horodatage de mise à jour batterie/température dans
+  HA).
+
+### Second test de reproductibilité du build (2026-09-23)
+
+Demandé explicitement par l'utilisateur pour valider que le code
+**actuel** (après étapes A, B, D ; C et F revertées) recompile de façon
+déterministe — pas seulement l'état de la Phase 0 (déjà prouvé le
+2026-09-22, voir plus haut et `Suivi-Nordic-Reproductibilite-Build-
+2026-09-19.md` §8).
+
+**Procédure exacte :**
+1. Vérification que HEAD (commit `c477dc4`) ne porte aucune
+   modification non commitée sur `main.c`/`prj.conf`/l'overlay
+   (`git status --short`) — confirmé propre.
+2. Rebuild `--pristine` complet depuis les sources (commande §5 de
+   `Configuration...md`, PowerShell — pas Bash, voir plus bas).
+3. `sha256sum build/xiao_door_sensor/zephyr/zephyr.bin` comparé à la
+   valeur déjà enregistrée pour l'image de l'étape D, elle-même
+   flashée et validée par deux mesures PPK2 indépendantes (16,98 µA
+   puis 16,84 µA).
+4. **Résultat : SHA-256 identique**
+   (`b54850ec5e29dfdb8530df934acbba85d5374565bcc06567b71778c3c21d78fa`)
+   — reproductibilité confirmée sur le code réellement évolué de cette
+   session, pas seulement sur la base de départ. Deuxième preuve
+   indépendante du même fait (`west build` déterministe sur ce
+   toolchain, NCS 3.4.0, `dcbdc366a1`).
+5. Ce binaire fraîchement recompilé reflashé sur #02 (S/N `9C4A557D`
+   confirmé) : `verified 117128 bytes`, réussi du premier coup.
+
+**Précision sur `k_msleep(6)`/`k_msleep(40)`** : ces deux valeurs,
+citées dans l'incident Nordic original (Phase 0, voir §1 du plan), ne
+figurent plus nulle part dans le code actuel — l'étape D les a
+remplacées par `k_usleep(ACCEL_FIRST_SAMPLE_US=3100)`, une valeur
+issue de la caractérisation `xiao_accel_odr_char` (échantillon n°2 à
+833 Hz), sans lien avec l'ancien débat 6 ms/40 ms. Le dossier Nordic
+reste clos à raison.
+
+### Incident session — échec de détection USB/SWD en début de session
+
+Question posée explicitement par l'utilisateur : pourquoi les tout
+premiers essais de lecture du numéro de série SWD (avant le premier
+flash de la session) échouaient à détecter la présence du XIAO sur le
+port USB.
+
+**Cause identifiée** : `openocd` était lancé via l'outil **Bash**
+(Git-Bash/MSYS) de Claude Code. 13 tentatives consécutives (deux
+rounds) ont échoué de façon quasi systématique — soit « unable to find
+a matching CMSIS-DAP device » (périphérique non trouvé du tout), soit
+une connexion partielle interrompue en cours de transaction (CMD_INFO
+jamais complété, aucun `Serial#` affiché). Une fausse piste
+(`nrfutil-device.exe`, watcher hotplug de l'extension VS Code nRF
+Connect, arrêté par précaution) n'a eu aucun effet sur les échecs
+suivants, confirmant qu'elle n'était pas la cause. La commande
+strictement identique lancée depuis l'outil **PowerShell** a réussi
+dès le premier essai réel.
+
+**Correctif appliqué le jour même** : règle dédiée dans
+`C:\ncs\CLAUDE.md` (« PowerShell pour tout outil USB/série/HID, jamais
+Bash/Git-Bash ») + réécriture directe en PowerShell des modèles de
+commande `openocd` dans `Configuration-nRF54LM20A-System-ON-IDLE.md`
+§5 et rappel dans `xiao_nrf54lm20a_project_notes.md` — la source de
+copier-coller elle-même est corrigée, pas seulement une règle à se
+rappeler.
+
 ### Étape B — IMU : 6 → 3 transactions I2C
 
 1. `sample_motion()` modifié dans `main.c` : écriture groupée
